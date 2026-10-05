@@ -1,165 +1,75 @@
-# Desafio GC 2026 — IA & Dados
+# Desafio GC 2026 — Padronização de Códigos de Serviço
 
-## 1. Sobre o projeto
+Projeto da trilha de **IA & Dados**, voltado à identificação de possíveis duplicidades e inconsistências no catálogo de códigos de serviço da Gerdau.
 
-O projeto busca apoiar a identificação de códigos de serviço duplicados ou semelhantes, facilitando a consulta e a padronização dos registros utilizados pela empresa.
+## Objetivo
 
-Atualmente, a criação manual desses códigos pode gerar problemas como:
+Desenvolver uma solução baseada em dados e inteligência de busca para identificar serviços potencialmente duplicados, melhorar a padronização das descrições e reduzir a criação de novos códigos desnecessários.
 
-* Cadastro de serviços que já existem;
-* Criação de vários códigos para serviços com descrições iguais ou semelhantes;
-* Diferenças na escrita das descrições;
-* Dificuldade para encontrar um serviço já cadastrado;
-* Descrições que ultrapassam o limite de 40 caracteres do SAP.
+A proposta é apoiar a identificação de serviços existentes antes do cadastro de novos itens, preservando diferenças legítimas entre serviços.
 
-A proposta é utilizar Python e técnicas de análise de dados para localizar serviços semelhantes e apresentar possíveis correspondências antes que um novo código seja criado.
+## Problema
 
-**Importante:** a ferramenta deve sugerir candidatos para análise, e não considerar automaticamente que duas descrições semelhantes representam o mesmo serviço.
+O cadastro manual de serviços pode gerar descrições inconsistentes, variações de formatação, múltiplos códigos associados a descrições iguais e dificuldades para localizar itens existentes.
 
-## 2. Objetivo
+Essas situações podem prejudicar a qualidade do catálogo e dificultar a consolidação e a análise dos dados.
 
-Desenvolver uma solução que ajude os compradores a encontrar serviços existentes e identificar possíveis duplicidades, considerando quatro componentes:
+## Tecnologias e ferramentas
 
-* **G.S. — Grupo de Serviço**
-* **C.F. — Código do Fornecedor**
-* **C.S. — Código do Serviço**
-* **U.M. — Unidade de medida**
+* **Python:** desenvolvimento das análises e regras de validação.
+* **Pandas:** manipulação, agrupamento e análise dos dados.
+* **Jupyter Notebook:** execução documentada das análises exploratórias.
+* **Git e GitHub:** controle de versão e organização do projeto.
 
-A descrição do item também será utilizada na busca. O limite de 40 caracteres do SAP será considerado na etapa de padronização das descrições.
+Tecnologias para a solução integrada serão definidas e validadas durante as próximas etapas.
 
-## 3. Tecnologias utilizadas
+## Estrutura dos dados
 
-* **Python:** desenvolvimento da lógica de análise e busca;
-* **Pandas:** manipulação e análise da base de dados;
-* **OpenPyXL:** leitura e processamento de arquivos Excel;
-* **RapidFuzz:** comparação de similaridade entre textos;
-* **Jupyter Notebook:** exploração dos dados e testes;
-* **Git e GitHub:** versionamento e organização do projeto.
+A base analisada contém **9.795 registros e 5 colunas**:
 
-## 4. Estrutura do projeto
+* `Grupo de Serviço`
+* `Código do Fornecedor`
+* `Código do Serviço`
+* `Descrição do Item`
+* `Unidade medida`
 
-```text
-.
-├── dados/
-│   ├── original/
-│   └── processada/
-├── notebooks/
-│   └── 01_analise_exploratoria.ipynb
-├── src/
-├── resultados/
-├── requirements.txt
-└── README.md
-```
+## Análise exploratória
 
-* `dados/original/`: arquivos originais, preservados sem alterações.
-* `dados/processada/`: dados preparados para análise, quando necessário.
-* `notebooks/`: análises exploratórias e experimentos.
-* `src/`: funções e módulos reutilizáveis da aplicação.
-* `resultados/`: relatórios e resultados gerados pelas análises.
-* `requirements.txt`: dependências Python do projeto.
+Foram realizadas análises para compreender a estrutura do catálogo e identificar padrões que possam indicar problemas de qualidade.
 
-## 5. Análise exploratória da base
+Principais resultados:
 
-A primeira análise foi realizada sobre uma base com **9.795 registros**.
+* **10.925 pares de descrições semelhantes** identificados na análise textual.
+* **410 pares prioritários** selecionados para investigação mais detalhada.
+* **375 descrições** associadas a mais de um código de serviço.
+* **320 combinações** de fornecedor, descrição e unidade associadas a múltiplos códigos.
+* Entre essas 320 combinações, **68 (21,25%) cruzam faixas numéricas de códigos**, enquanto 252 (78,75%) permanecem na mesma faixa.
+* Também foram identificados códigos compartilhados entre fornecedores com divergências de atributos, incluindo casos que precisam de validação adicional.
 
-| Indicador                                                                                            | Resultado |
-| ---------------------------------------------------------------------------------------------------- | --------: |
-| Registros analisados                                                                                 |     9.795 |
-| Descrições originais distintas                                                                       |     7.468 |
-| Descrições distintas após normalização                                                               |     7.431 |
-| Códigos de serviço distintos                                                                         |     7.937 |
-| Códigos presentes em mais de um registro                                                             |     1.234 |
-| Grupos com uma mesma descrição normalizada, mesmo grupo, fornecedor e unidade, mas múltiplos códigos |       341 |
+Esses resultados representam candidatos e padrões exploratórios. Não comprovam, isoladamente, a existência de duplicidades reais, pois códigos diferentes podem representar condições ou serviços legítimos.
 
-A base analisada não apresentou valores ausentes nas cinco colunas utilizadas.
+## Próxima etapa
 
-Esses indicadores ajudam a identificar situações que merecem investigação. Entretanto, registros repetidos não representam necessariamente erros: um mesmo código pode aparecer em vários registros, e descrições iguais com códigos diferentes precisam ser avaliadas conforme as regras do negócio.
+Construir a primeira versão de um **detector de possíveis duplicidades**, capaz de:
 
-## 6. O que já foi desenvolvido
+1. Identificar descrições iguais associadas a códigos diferentes.
+2. Comparar descrições semelhantes por similaridade textual.
+3. Preservar diferenças relevantes, como números, medidas, sinais e operadores.
+4. Considerar fornecedor, grupo de serviço e unidade de medida na análise.
+5. Gerar uma tabela de candidatos com os códigos envolvidos, o motivo do alerta e a prioridade de revisão.
 
-### Normalização de descrições
+A solução deverá apoiar a revisão humana, sem excluir ou unificar códigos automaticamente.
 
-Foi criada uma função para padronizar textos antes da comparação. Ela:
+## Status do projeto
 
-* Converte letras para minúsculas;
-* Remove acentos;
-* Elimina espaços excedentes;
-* Preserva pontuação, sinais e números.
+* [x] Preparação e exploração inicial da base.
+* [x] Análise de descrições iguais e códigos múltiplos.
+* [x] Análise de similaridade textual.
+* [x] Investigação de padrões de inconsistência.
+* [ ] Implementação do detector de possíveis duplicidades.
+* [ ] Validação dos alertas e revisão dos critérios.
+* [ ] Avaliação dos resultados e preparação da demonstração.
 
-A normalização reduziu de 7.468 para 7.431 a quantidade de descrições distintas. Isso indica que algumas diferenças de escrita eram apenas variações de acentuação, maiúsculas ou espaços.
+## Observação
 
-### Busca por similaridade
-
-Foi utilizada a biblioteca RapidFuzz para encontrar descrições textualmente semelhantes, mesmo quando a escrita não é idêntica.
-
-A busca pode considerar filtros de contexto, como grupo de serviço, fornecedor e unidade de medida, para tornar os resultados mais relevantes.
-
-### Comparação numérica
-
-Foi implementada uma análise dos números presentes nas descrições.
-
-Essa etapa é importante porque textos parecidos podem representar serviços diferentes. Por exemplo, um material de 0,5 mm não deve ser considerado equivalente a outro de 0,65 mm apenas porque as descrições são semelhantes.
-
-### Classificação inicial dos resultados
-
-Os candidatos encontrados são classificados para facilitar a revisão:
-
-* **Correspondência textual exata:** descrição normalizada e números correspondentes;
-* **Revisar diferenças numéricas:** existem diferenças nos números identificados;
-* **Candidato para revisão:** existe semelhança textual, mas é necessária uma avaliação adicional.
-
-Essas classificações são indicativas. Elas não comprovam que dois serviços sejam equivalentes ou diferentes em todos os aspectos técnicos.
-
-### Investigação de possíveis duplicidades
-
-A análise identificou 341 grupos com mais de um código de serviço para a mesma descrição normalizada, grupo, fornecedor e unidade de medida.
-
-Entre os casos encontrados, há um grupo com 13 códigos associados à descrição `SV - FURAÇÃO EM CONCRETO COM COROA DIAM`.
-
-Esses casos foram separados para investigação. A quantidade de códigos é utilizada como critério inicial de priorização, não como confirmação de erro.
-
-## 7. Testes iniciais da busca
-
-Foram realizados testes com descrições existentes na base, variações textuais e uma descrição sem correspondência aparente.
-
-Nos testes com dez descrições existentes selecionadas para avaliação, a busca encontrou pelo menos um dos códigos esperados em todas as dez consultas.
-
-Entretanto, também foram retornados candidatos adicionais. Isso demonstra a importância de avaliar a precisão dos resultados e reduzir sugestões irrelevantes.
-
-**Limitação atual:** os testes ainda são iniciais e não representam uma avaliação completa da qualidade da solução. Encontrar o código esperado não significa que todos os demais candidatos estejam incorretos, nem comprova a equivalência técnica dos serviços.
-
-## 8. Próximas etapas
-
-1. Avaliar diferentes limites de similaridade e a qualidade dos resultados;
-2. Organizar as funções validadas em módulos dentro de `src/`;
-3. Criar testes para os principais comportamentos da busca;
-4. Definir regras de negócio para tratar possíveis duplicidades;
-5. Desenvolver uma forma de disponibilizar a busca para a aplicação Java;
-6. Avaliar a integração entre Python e Java;
-7. Implementar a validação do limite de 40 caracteres do SAP;
-8. Preparar uma avaliação com casos representativos e resultados verificáveis.
-
-## 9. Execução do projeto
-
-Crie e ative um ambiente virtual no Windows PowerShell:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-Instale as dependências:
-
-```powershell
-python -m pip install -r requirements.txt
-```
-
-Abra o notebook `notebooks/01_analise_exploratoria.ipynb` no VS Code para acompanhar as análises já desenvolvidas.
-
-Os caminhos e nomes dos arquivos de dados devem ser ajustados conforme a organização local do repositório.
-
-## 10. Cuidados com os dados
-
-Não publique bases internas, informações confidenciais ou credenciais no GitHub. Mantenha os arquivos originais preservados e fora do versionamento quando contiverem informações restritas.
-
-Os resultados da análise devem ser tratados como indicadores para investigação, e não como confirmação automática de duplicidade.
+Os resultados são exploratórios e dependem de validação das regras de negócio. Os critérios de similaridade e prioridade ainda deverão ser testados antes de serem utilizados como regras definitivas.
