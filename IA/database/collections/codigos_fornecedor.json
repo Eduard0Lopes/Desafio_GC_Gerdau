@@ -1,0 +1,26 @@
+[
+  {
+    "_id": "001",
+    "nome": "Fornecedor de manutenção industrial",
+    "nomeNormalizado": "fornecedor manutencao industrial",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "002",
+    "nome": "Fornecedor de serviços prediais",
+    "nomeNormalizado": "fornecedor servicos prediais",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "003",
+    "nome": "Fornecedor de obras civis",
+    "nomeNormalizado": "fornecedor obras civis",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "004",
+    "nome": "Fornecedor de segurança patrimonial",
+    "nomeNormalizado": "fornecedor seguranca patrimonial",
+    "origem": "MIGRACAO"
+  }
+]
