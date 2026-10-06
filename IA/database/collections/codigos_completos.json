@@ -1,0 +1,67 @@
+[
+  {
+    "_id": "00100100000101",
+    "idCompleto": "00100100000101",
+    "gsId": "001",
+    "cfId": "001",
+    "csId": "000001",
+    "umId": "01",
+    "descricaoSnapshot": "Eletromecânica | Fornecedor de manutenção industrial | Manutenção mecânica normal | HR",
+    "usuarioCriacaoId": "user-prototipo-001",
+    "createdAt": "2026-10-05T19:30:00-03:00",
+    "origem": "APLICACAO",
+    "legacyIds": []
+  },
+  {
+    "_id": "00200200000402",
+    "idCompleto": "00200200000402",
+    "gsId": "002",
+    "cfId": "002",
+    "csId": "000004",
+    "umId": "02",
+    "descricaoSnapshot": "Facilities | Fornecedor de serviços prediais | Limpeza e manutenção predial | M",
+    "usuarioCriacaoId": "user-prototipo-001",
+    "createdAt": "2026-10-05T20:00:00-03:00",
+    "origem": "APLICACAO",
+    "legacyIds": []
+  },
+  {
+    "_id": "00300300000305",
+    "idCompleto": "00300300000305",
+    "gsId": "003",
+    "cfId": "003",
+    "csId": "000003",
+    "umId": "05",
+    "descricaoSnapshot": "Civil | Fornecedor de obras civis | Instalação elétrica industrial | SV",
+    "usuarioCriacaoId": "user-prototipo-001",
+    "createdAt": "2026-10-05T20:05:00-03:00",
+    "origem": "APLICACAO",
+    "legacyIds": []
+  },
+  {
+    "_id": "00400400000503",
+    "idCompleto": "00400400000503",
+    "gsId": "004",
+    "cfId": "004",
+    "csId": "000005",
+    "umId": "03",
+    "descricaoSnapshot": "Segurança | Fornecedor de segurança patrimonial | Serviço de segurança patrimonial | UN",
+    "usuarioCriacaoId": "user-prototipo-001",
+    "createdAt": "2026-10-05T20:10:00-03:00",
+    "origem": "APLICACAO",
+    "legacyIds": []
+  },
+  {
+    "_id": "00100100000201",
+    "idCompleto": "00100100000201",
+    "gsId": "001",
+    "cfId": "001",
+    "csId": "000002",
+    "umId": "01",
+    "descricaoSnapshot": "Eletromecânica | Fornecedor de manutenção industrial | Manutenção de motor elétrico | HR",
+    "usuarioCriacaoId": "user-prototipo-001",
+    "createdAt": "2026-10-05T20:15:00-03:00",
+    "origem": "APLICACAO",
+    "legacyIds": []
+  }
+]

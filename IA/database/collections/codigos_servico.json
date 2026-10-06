@@ -1,0 +1,53 @@
+[
+  {
+    "_id": "000001",
+    "descricao": "Manutenção mecânica normal",
+    "descricaoNormalizada": "manutencao mecanica normal",
+    "quantidadeCaracteres": 29,
+    "origem": "MIGRACAO",
+    "legacyIds": [
+      "4521",
+      "MEC.MANUT.NORM"
+    ]
+  },
+  {
+    "_id": "000002",
+    "descricao": "Manutenção de motor elétrico",
+    "descricaoNormalizada": "manutencao de motor eletrico",
+    "quantidadeCaracteres": 28,
+    "origem": "MIGRACAO",
+    "legacyIds": [
+      "4522"
+    ]
+  },
+  {
+    "_id": "000003",
+    "descricao": "Instalação elétrica industrial",
+    "descricaoNormalizada": "instalacao eletrica industrial",
+    "quantidadeCaracteres": 31,
+    "origem": "MIGRACAO",
+    "legacyIds": [
+      "4523"
+    ]
+  },
+  {
+    "_id": "000004",
+    "descricao": "Limpeza e manutenção predial",
+    "descricaoNormalizada": "limpeza e manutencao predial",
+    "quantidadeCaracteres": 29,
+    "origem": "MIGRACAO",
+    "legacyIds": [
+      "4524"
+    ]
+  },
+  {
+    "_id": "000005",
+    "descricao": "Serviço de segurança patrimonial",
+    "descricaoNormalizada": "servico de seguranca patrimonial",
+    "quantidadeCaracteres": 33,
+    "origem": "MIGRACAO",
+    "legacyIds": [
+      "4525"
+    ]
+  }
+]
