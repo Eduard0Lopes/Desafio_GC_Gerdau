@@ -1,53 +1,138 @@
 [
   {
     "_id": "000001",
-    "descricao": "Manutenção mecânica normal",
-    "descricaoNormalizada": "manutencao mecanica normal",
-    "quantidadeCaracteres": 29,
-    "origem": "MIGRACAO",
-    "legacyIds": [
-      "4521",
-      "MEC.MANUT.NORM"
-    ]
+    "codigoOriginal": "4010048",
+    "descricao": "Vigilante 24h (2ª a 2ª) .",
+    "descricaoNormalizada": "vigilante 24h 2a a 2a",
+    "quantidadeCaracteres": 25,
+    "origem": "MIGRACAO"
   },
   {
     "_id": "000002",
-    "descricao": "Manutenção de motor elétrico",
-    "descricaoNormalizada": "manutencao de motor eletrico",
-    "quantidadeCaracteres": 28,
-    "origem": "MIGRACAO",
-    "legacyIds": [
-      "4522"
-    ]
+    "codigoOriginal": "4012475",
+    "descricao": "DIARIA RESGATISTA NIVEL 3 ATE 8H .",
+    "descricaoNormalizada": "diaria resgatista nivel 3 ate 8h",
+    "quantidadeCaracteres": 34,
+    "origem": "MIGRACAO"
   },
   {
     "_id": "000003",
-    "descricao": "Instalação elétrica industrial",
-    "descricaoNormalizada": "instalacao eletrica industrial",
-    "quantidadeCaracteres": 31,
-    "origem": "MIGRACAO",
-    "legacyIds": [
-      "4523"
-    ]
+    "codigoOriginal": "4013407",
+    "descricao": "SV VIGILANTE 18H00 AS 06H00 12 X 36 SEG.",
+    "descricaoNormalizada": "sv vigilante 18h00 as 06h00 12 x 36 seg",
+    "quantidadeCaracteres": 40,
+    "origem": "MIGRACAO"
   },
   {
     "_id": "000004",
-    "descricao": "Limpeza e manutenção predial",
-    "descricaoNormalizada": "limpeza e manutencao predial",
-    "quantidadeCaracteres": 29,
-    "origem": "MIGRACAO",
-    "legacyIds": [
-      "4524"
-    ]
+    "codigoOriginal": "4017177",
+    "descricao": "Diaria resgatista turno de ate 8 horas .",
+    "descricaoNormalizada": "diaria resgatista turno de ate 8 horas",
+    "quantidadeCaracteres": 40,
+    "origem": "MIGRACAO"
   },
   {
     "_id": "000005",
-    "descricao": "Serviço de segurança patrimonial",
-    "descricaoNormalizada": "servico de seguranca patrimonial",
-    "quantidadeCaracteres": 33,
-    "origem": "MIGRACAO",
-    "legacyIds": [
-      "4525"
-    ]
+    "codigoOriginal": "4023627",
+    "descricao": "SV-HORA OFICIAL-HR NORMAL",
+    "descricaoNormalizada": "sv hora oficial hr normal",
+    "quantidadeCaracteres": 25,
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "000006",
+    "codigoOriginal": "4028312",
+    "descricao": "SV - FURAÇÃO EM CONCRETO COM COROA DIAM",
+    "descricaoNormalizada": "sv furacao em concreto com coroa diam",
+    "quantidadeCaracteres": 39,
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "000007",
+    "codigoOriginal": "4028313",
+    "descricao": "SV - FURAÇÃO EM CONCRETO COM COROA DIAM",
+    "descricaoNormalizada": "sv furacao em concreto com coroa diam",
+    "quantidadeCaracteres": 39,
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "000008",
+    "codigoOriginal": "4028314",
+    "descricao": "SV - FURAÇÃO EM CONCRETO COM COROA DIAM",
+    "descricaoNormalizada": "sv furacao em concreto com coroa diam",
+    "quantidadeCaracteres": 39,
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "000009",
+    "codigoOriginal": "4028570",
+    "descricao": "SV-HORA DE OFICIAL - HORA NOTURNA CHEIA",
+    "descricaoNormalizada": "sv hora de oficial hora noturna cheia",
+    "quantidadeCaracteres": 39,
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "000010",
+    "codigoOriginal": "4033776",
+    "descricao": "SV-EQUIPE TELHADO",
+    "descricaoNormalizada": "sv equipe telhado",
+    "quantidadeCaracteres": 17,
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "000011",
+    "codigoOriginal": "4035260",
+    "descricao": "SERV DE MANUT. ELET/AUTOM TEC 3 - SENIOR",
+    "descricaoNormalizada": "serv de manut elet autom tec 3 senior",
+    "quantidadeCaracteres": 40,
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "000012",
+    "codigoOriginal": "4048071",
+    "descricao": "CONTROLADOR DE ACESSO 24HS",
+    "descricaoNormalizada": "controlador de acesso 24hs",
+    "quantidadeCaracteres": 26,
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "000013",
+    "codigoOriginal": "4068219",
+    "descricao": "ELETRICISTA",
+    "descricaoNormalizada": "eletricista",
+    "quantidadeCaracteres": 11,
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "000014",
+    "codigoOriginal": "4096183",
+    "descricao": "ELETRICISTA - ROTINA",
+    "descricaoNormalizada": "eletricista rotina",
+    "quantidadeCaracteres": 20,
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "000015",
+    "codigoOriginal": "4097173",
+    "descricao": "Pavimentação a frio por kg",
+    "descricaoNormalizada": "pavimentacao a frio por kg",
+    "quantidadeCaracteres": 26,
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "000016",
+    "codigoOriginal": "4117542",
+    "descricao": "ELETRICISTA",
+    "descricaoNormalizada": "eletricista",
+    "quantidadeCaracteres": 11,
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "000017",
+    "codigoOriginal": "4121356",
+    "descricao": "ELETRICISTA",
+    "descricaoNormalizada": "eletricista",
+    "quantidadeCaracteres": 11,
+    "origem": "MIGRACAO"
   }
 ]

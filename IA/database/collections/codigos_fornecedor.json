@@ -1,26 +1,92 @@
 [
   {
     "_id": "001",
-    "nome": "Fornecedor de manutenção industrial",
-    "nomeNormalizado": "fornecedor manutencao industrial",
+    "codigoOriginal": "200303818",
+    "nomeNormalizado": "fornecedor 200303818",
     "origem": "MIGRACAO"
   },
   {
     "_id": "002",
-    "nome": "Fornecedor de serviços prediais",
-    "nomeNormalizado": "fornecedor servicos prediais",
+    "codigoOriginal": "200323568",
+    "nomeNormalizado": "fornecedor 200323568",
     "origem": "MIGRACAO"
   },
   {
     "_id": "003",
-    "nome": "Fornecedor de obras civis",
-    "nomeNormalizado": "fornecedor obras civis",
+    "codigoOriginal": "200344608",
+    "nomeNormalizado": "fornecedor 200344608",
     "origem": "MIGRACAO"
   },
   {
     "_id": "004",
-    "nome": "Fornecedor de segurança patrimonial",
-    "nomeNormalizado": "fornecedor seguranca patrimonial",
+    "codigoOriginal": "200364232",
+    "nomeNormalizado": "fornecedor 200364232",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "005",
+    "codigoOriginal": "200379772",
+    "nomeNormalizado": "fornecedor 200379772",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "006",
+    "codigoOriginal": "200954432",
+    "nomeNormalizado": "fornecedor 200954432",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "007",
+    "codigoOriginal": "200982674",
+    "nomeNormalizado": "fornecedor 200982674",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "008",
+    "codigoOriginal": "201332350",
+    "nomeNormalizado": "fornecedor 201332350",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "009",
+    "codigoOriginal": "201418204",
+    "nomeNormalizado": "fornecedor 201418204",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "010",
+    "codigoOriginal": "201464634",
+    "nomeNormalizado": "fornecedor 201464634",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "011",
+    "codigoOriginal": "201659350",
+    "nomeNormalizado": "fornecedor 201659350",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "012",
+    "codigoOriginal": "201879426",
+    "nomeNormalizado": "fornecedor 201879426",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "013",
+    "codigoOriginal": "300056198",
+    "nomeNormalizado": "fornecedor 300056198",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "014",
+    "codigoOriginal": "300623388",
+    "nomeNormalizado": "fornecedor 300623388",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "015",
+    "codigoOriginal": "300745236",
+    "nomeNormalizado": "fornecedor 300745236",
     "origem": "MIGRACAO"
   }
 ]
