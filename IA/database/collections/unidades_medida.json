@@ -1,37 +1,30 @@
 [
   {
     "_id": "01",
-    "nome": "Hora",
-    "sigla": "HR",
-    "nomeNormalizado": "hora",
-    "origem": "MIGRACAO"
+    "sigla": "CM",
+    "nomeNormalizado": "cm",
+    "origem": "MIGRACAO",
+    "codigoOriginal": "CM"
   },
   {
     "_id": "02",
-    "nome": "Metro",
-    "sigla": "M",
-    "nomeNormalizado": "metro",
-    "origem": "MIGRACAO"
+    "sigla": "H",
+    "nomeNormalizado": "h",
+    "origem": "MIGRACAO",
+    "codigoOriginal": "H"
   },
   {
     "_id": "03",
-    "nome": "Unidade",
-    "sigla": "UN",
-    "nomeNormalizado": "unidade",
-    "origem": "MIGRACAO"
+    "sigla": "KG",
+    "nomeNormalizado": "kg",
+    "origem": "MIGRACAO",
+    "codigoOriginal": "KG"
   },
   {
     "_id": "04",
-    "nome": "Quilograma",
-    "sigla": "KG",
-    "nomeNormalizado": "quilograma",
-    "origem": "MIGRACAO"
-  },
-  {
-    "_id": "05",
-    "nome": "Serviço",
     "sigla": "SV",
-    "nomeNormalizado": "servico",
-    "origem": "MIGRACAO"
+    "nomeNormalizado": "sv",
+    "origem": "MIGRACAO",
+    "codigoOriginal": "SV"
   }
 ]

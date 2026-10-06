@@ -1,26 +1,23 @@
 [
   {
     "_id": "001",
-    "nome": "Eletromecânica",
-    "nomeNormalizado": "eletromecanica",
-    "origem": "MIGRACAO"
+    "nome": "Civil",
+    "nomeNormalizado": "civil",
+    "origem": "MIGRACAO",
+    "codigoOriginal": "Civil"
   },
   {
     "_id": "002",
-    "nome": "Facilities",
-    "nomeNormalizado": "facilities",
-    "origem": "MIGRACAO"
+    "nome": "Eletromecânica",
+    "nomeNormalizado": "eletromecanica",
+    "origem": "MIGRACAO",
+    "codigoOriginal": "Eletromecânica"
   },
   {
     "_id": "003",
-    "nome": "Civil",
-    "nomeNormalizado": "civil",
-    "origem": "MIGRACAO"
-  },
-  {
-    "_id": "004",
-    "nome": "Segurança",
-    "nomeNormalizado": "seguranca",
-    "origem": "MIGRACAO"
+    "nome": "Facilities",
+    "nomeNormalizado": "facilities",
+    "origem": "MIGRACAO",
+    "codigoOriginal": "Facilities"
   }
 ]
