@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerdau Service Code Standardization System</title>
+    <style>
+        :root {
+            --bg-color: #121218;
+            --card-bg: #1E1E2A;
+            --card-border: #2D2D3F;
+            --accent-purple: #7E57C2;
+            --accent-purple-hover: #9575CD;
+            --accent-green: #10B981;
+            --text-main: #E0E0E0;
+            --text-muted: #9E9E9E;
+            --warning-amber: #D97706;
+            --warning-bg: rgba(217, 119, 6, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .window-container {
+            width: 100%;
+            max-width: 1200px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 24px;
+            position: relative;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 24px;
+        }
+
+        .user-info {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .app-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-purple);
+        }
+
+        .columns-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .columns-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .column-box {
+            background-color: rgba(255,255,255,0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: #161622;
+            border: 1px solid #3B3B4F;
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 13px;
+            margin-bottom: 8px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-purple);
+        }
+
+        .select-list {
+            background-color: #161622;
+            border: 1px solid #3B3B4F;
+            border-radius: 6px;
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .select-item {
+            padding: 10px 12px;
+            font-size: 12px;
+            border-bottom: 1px solid #232334;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .select-item:hover, .select-item.selected {
+            background-color: rgba(126, 87, 194, 0.2);
+            border-left: 3px solid var(--accent-purple);
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-purple);
+            color: #FFF;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-purple-hover);
+        }
+
+        .btn-secondary {
+            background-color: #2D2D3F;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background-color: #3B3B4F;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .badge-sap {
+            background-color: #D97706;
+            color: #FFF;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            float: right;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .warning-banner {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-amber);
+            border-radius: 6px;
+            padding: 12px;
+            color: #FBBF24;
+            font-size: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .match-card {
+            background-color: #161622;
+            border: 1px solid #3B3B4F;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 12px;
+        }
+
+        .match-badge {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            float: right;
+        }
+
+        textarea.search-input {
+            height: 80px;
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="window-container">
+    <div class="header-bar">
+        <div class="user-info">Usuário: 403921 | Data: 03/10/2026</div>
+        <div class="app-title">Gerdau Service Code Standardization System</div>
+    </div>
+
+    <div class="columns-grid">
+        <!-- Grupo de Serviço -->
+        <div class="column-box">
+            <div class="column-label">Grupo de Serviço</div>
+            <input type="text" class="search-input" id="searchGS" placeholder="Pesquisar..." oninput="filtrarGS()">
+            <div class="select-list" id="listGS"></div>
+        </div>
+
+        <!-- Código do Fornecedor -->
+        <div class="column-box">
+            <div class="column-label">Código de Fornecedor</div>
+            <input type="text" class="search-input" id="searchCF" placeholder="Pesquisar..." oninput="filtrarCF()">
+            <div class="select-list" id="listCF"></div>
+        </div>
+
+        <!-- Código de Serviço -->
+        <div class="column-box">
+            <div class="column-label">Código de Serviço</div>
+            <input type="text" class="search-input" id="searchCS" placeholder="Pesquisar..." oninput="filtrarCS()">
+            <div class="select-list" id="listCS"></div>
+        </div>
+
+        <!-- Unidade de Medida -->
+        <div class="column-box">
+            <div class="column-label">Unidade de Medida</div>
+            <input type="text" class="search-input" id="searchUM" placeholder="Pesquisar..." oninput="filtrarUM()">
+            <div class="select-list" id="listUM"></div>
+        </div>
+    </div>
+
+    <div class="actions-bar">
+        <button class="btn btn-primary" onclick="vincularServico()">Vincular Serviço</button>
+        <button class="btn btn-secondary" onclick="abrirModalCadastro()">Cadastrar Novo Item</button>
+        <button class="btn btn-secondary" onclick="limparSelecao()">Limpar</button>
+    </div>
+</div>
+
+<!-- Modal de Cadastro -->
+<div class="modal-overlay" id="modalCadastro">
+    <div class="modal-card">
+        <div class="modal-header">
+            Cadastrar Novo Item
+            <span class="badge-sap" id="sapCounter">0/40 Caracteres SAP</span>
+        </div>
+        <div class="form-group">
+            <label>Tipo de Componente</label>
+            <select class="search-input" id="cadTipo">
+                <option value="CS">Código do Serviço (C.S)</option>
+                <option value="GS">Grupo de Serviço (G.S)</option>
+                <option value="CF">Código do Fornecedor (C.F)</option>
+                <option value="UM">Unidade de Medida (U.M)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Descrição do Item</label>
+            <input type="text" class="search-input" id="cadDescricao" placeholder="Ex: MECANICO MANUTENCAO HORA NORMAL" oninput="atualizarContadorSAP()">
+        </div>
+        <div class="actions-bar">
+            <button class="btn btn-primary" onclick="submeterCadastro()">Salvar Cadastro</button>
+            <button class="btn btn-secondary" onclick="checarSimilaridade()">Verificar Similaridade</button>
+            <button class="btn btn-secondary" onclick="fecharModal('modalCadastro')">Voltar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Bloqueio por Duplicidade -->
+<div class="modal-overlay" id="modalBloqueio">
+    <div class="modal-card">
+        <div class="modal-header">Bloqueio de Duplicidade - Item Similar Detectado</div>
+        <div class="warning-banner">
+            <span>⚠️</span>
+            <span>Já existe um serviço semelhante entre os itens cadastrados.</span>
+        </div>
+        <div class="match-card" id="matchCardContent">
+            <!-- Conteúdo dinâmico via JS -->
+        </div>
+        <div class="actions-bar">
+            <button class="btn btn-primary" onclick="reutilizarCodigo()">Reutilizar Código Existente</button>
+            <button class="btn btn-secondary" onclick="abrirModalGovernanca()">Enviar para Governança</button>
+            <button class="btn btn-secondary" onclick="fecharModal('modalBloqueio')">Voltar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Governança -->
+<div class="modal-overlay" id="modalGovernanca">
+    <div class="modal-card">
+        <div class="modal-header">Envio para Governança</div>
+        <div class="warning-banner" style="background-color: rgba(126,87,194,0.15); border-color: var(--accent-purple); color: #D1C4E9;">
+            <span>ℹ️</span>
+            <span>Atenção: Este cadastro passará por validação humana pela Equipe de Governança de Dados</span>
+        </div>
+        <div class="form-group">
+            <label>Classe</label>
+            <input type="text" class="search-input" id="govClasse" readonly value="Código do Serviço (C.S)">
+        </div>
+        <div class="form-group">
+            <label>Descrição do Item</label>
+            <input type="text" class="search-input" id="govDescricao" readonly>
+        </div>
+        <div class="form-group">
+            <label>Justificativa da Solicitação</label>
+            <textarea class="search-input" id="govJustificativa" placeholder="Descreva o motivo da solicitação..."></textarea>
+        </div>
+        <div class="actions-bar">
+            <button class="btn btn-primary" onclick="confirmarGovernanca()">Confirmar Envio para Governança</button>
+            <button class="btn btn-secondary" onclick="fecharModal('modalGovernanca')">Voltar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedGS = null, selectedCF = null, selectedCS = null, selectedUM = null;
+    let itemSimilarEncontrado = null;
+
+    async function carregarDados() {
+        await Promise.all([filtrarGS(), filtrarCF(), filtrarCS(), filtrarUM()]);
+    }
+
+    async function filtrarGS() {
+        const q = document.getElementById('searchGS').value;
+        const res = await fetch(`/api/v1/grupos-servico?query=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        renderList('listGS', data, 'nome', id => selectedGS = id);
+    }
+
+    async function filtrarCF() {
+        const q = document.getElementById('searchCF').value;
+        const res = await fetch(`/api/v1/codigos-fornecedor?query=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        renderList('listCF', data, 'nome', id => selectedCF = id);
+    }
+
+    async function filtrarCS() {
+        const q = document.getElementById('searchCS').value;
+        const res = await fetch(`/api/v1/codigos-servico?query=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        renderList('listCS', data, 'descricao', id => selectedCS = id, true);
+    }
+
+    async function filtrarUM() {
+        const q = document.getElementById('searchUM').value;
+        const res = await fetch(`/api/v1/unidades-medida?query=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        renderList('listUM', data, 'nome', id => selectedUM = id, false, 'sigla');
+    }
+
+    function renderList(listId, items, displayField, onSelect, showSAP = false, extraField = null) {
+        const container = document.getElementById(listId);
+        container.innerHTML = '';
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'select-item';
+            let label = extraField ? `${item[extraField]} - ${item[displayField]}` : item[displayField];
+            if (showSAP) label += ` [${item.quantidadeCaracteres}/40 SAP]`;
+            div.innerHTML = `<span>${item._id} - ${label}</span>`;
+            div.onclick = () => {
+                document.querySelectorAll(`#${listId} .select-item`).forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                onSelect(item._id);
+            };
+            container.appendChild(div);
+        });
+    }
+
+    function atualizarContadorSAP() {
+        const txt = document.getElementById('cadDescricao').value;
+        document.getElementById('sapCounter').innerText = `${txt.length}/40 Caracteres SAP`;
+    }
+
+    function abrirModalCadastro() {
+        document.getElementById('modalCadastro').classList.add('active');
+    }
+
+    function fecharModal(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+
+    async function submeterCadastro() {
+        const desc = document.getElementById('cadDescricao').value;
+        if (!desc) return alert("Informe a descrição do item!");
+
+        const res = await fetch('/api/v1/codigos-servico', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({tipoComponente: 'CS', descricao: desc})
+        });
+
+        const data = await res.json();
+        if (data.bloqueado) {
+            itemSimilarEncontrado = data.itemSimilar;
+            document.getElementById('matchCardContent').innerHTML = `
+                <div><strong>ID: ${data.itemSimilar.id}</strong> | ${data.itemSimilar.descricao} <span class="match-badge">${data.itemSimilar.matchScore}% Match</span></div>
+            `;
+            fecharModal('modalCadastro');
+            document.getElementById('modalBloqueio').classList.add('active');
+        } else if (res.ok) {
+            alert(data.mensagem);
+            fecharModal('modalCadastro');
+            carregarDados();
+        } else {
+            alert(data.detail || "Erro ao cadastrar!");
+        }
+    }
+
+    async function checarSimilaridade() {
+        const desc = document.getElementById('cadDescricao').value;
+        if (!desc) return alert("Digite algo para checar similaridade!");
+
+        const res = await fetch('/api/v1/itens/similaridade', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({descricao: desc})
+        });
+        const data = await res.json();
+        if (data.similaresEncontrados.length > 0) {
+            const top = data.similaresEncontrados[0];
+            alert(`Similaridade encontrada: ${top.descricao} (${top.matchScore}% Match)`);
+        } else {
+            alert("Nenhum item similar encontrado. Pode cadastrar normalmente!");
+        }
+    }
+
+    function reutilizarCodigo() {
+        alert(`Código ${itemSimilarEncontrado.id} reutilizado com sucesso!`);
+        fecharModal('modalBloqueio');
+    }
+
+    function abrirModalGovernanca() {
+        document.getElementById('govDescricao').value = document.getElementById('cadDescricao').value;
+        fecharModal('modalBloqueio');
+        document.getElementById('modalGovernanca').classList.add('active');
+    }
+
+    async function confirmarGovernanca() {
+        const desc = document.getElementById('govDescricao').value;
+        const just = document.getElementById('govJustificativa').value;
+        if (!just) return alert("Informe a justificativa!");
+
+        const res = await fetch('/api/v1/governanca/solicitacoes', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({tipoComponente: 'Código do Serviço (C.S)', descricao: desc, justificativa: just})
+        });
+        const data = await res.json();
+        if (res.ok) {
+            alert("Solicitação enviada com sucesso para a Equipe de Governança de Dados!");
+            fecharModal('modalGovernanca');
+        } else {
+            alert(data.detail || "Erro ao enviar solicitação!");
+        }
+    }
+
+    async function vincularServico() {
+        if (!selectedGS || !selectedCF || !selectedCS || !selectedUM) {
+            return alert("Selecione os 4 componentes antes de vincular!");
+        }
+        const res = await fetch(`/api/v1/codigos-completos?gsId=${selectedGS}&cfId=${selectedCF}&csId=${selectedCS}&umId=${selectedUM}`, {
+            method: 'POST'
+        });
+        const data = await res.json();
+        if (res.ok) {
+            alert(`Código Completo ${data.item.idCompleto} vinculado com sucesso!`);
+        } else {
+            alert(data.detail || "Erro ao vincular!");
+        }
+    }
+
+    function limparSelecao() {
+        selectedGS = selectedCF = selectedCS = selectedUM = null;
+        document.querySelectorAll('.select-item').forEach(el => el.classList.remove('selected'));
+    }
+
+    carregarDados();
+</script>
+</body>
+</html>
