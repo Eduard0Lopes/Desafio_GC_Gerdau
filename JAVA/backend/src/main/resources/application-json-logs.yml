@@ -1,0 +1,5 @@
+# Ativado com SPRING_PROFILES_ACTIVE=json-logs  (logs estruturados em JSON, com requestId via MDC)
+logging:
+  structured:
+    format:
+      console: logstash

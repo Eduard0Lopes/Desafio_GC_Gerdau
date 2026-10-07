@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import br.com.gerdau.servicos.desktop.ui.SearchSelector?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="root-pane" spacing="16" fx:controller="br.com.gerdau.servicos.desktop.controller.MainController">
+    <padding>
+        <Insets top="16" right="24" bottom="16" left="24"/>
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label fx:id="userLabel" styleClass="muted"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Sair" styleClass="secondary" onAction="#onLogout"/>
+    </HBox>
+
+    <VBox styleClass="card" spacing="18">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+        <Label text="Vincular serviço — monte o código completo" styleClass="card-title"/>
+
+        <HBox spacing="16">
+            <SearchSelector fx:id="gsSelector" title="Grupo de Serviço (G.S.)" HBox.hgrow="ALWAYS" prefWidth="200" maxWidth="Infinity"/>
+            <SearchSelector fx:id="cfSelector" title="Código de Fornecedor (C.F.)" HBox.hgrow="ALWAYS" prefWidth="200" maxWidth="Infinity"/>
+            <SearchSelector fx:id="csSelector" title="Código de Serviço (C.S.)" HBox.hgrow="ALWAYS" prefWidth="200" maxWidth="Infinity"/>
+            <SearchSelector fx:id="umSelector" title="Unidade de Medida (U.M.)" HBox.hgrow="ALWAYS" prefWidth="200" maxWidth="Infinity"/>
+        </HBox>
+
+        <VBox fx:id="previewBox" styleClass="preview" spacing="6">
+            <padding>
+                <Insets top="12" right="14" bottom="12" left="14"/>
+            </padding>
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="Código completo:" styleClass="field-label"/>
+                <Label fx:id="previewId" styleClass="mono"/>
+                <ProgressIndicator fx:id="previewSpinner" prefWidth="16" prefHeight="16" maxWidth="16" maxHeight="16"/>
+            </HBox>
+            <Label fx:id="previewDesc" wrapText="true"/>
+            <Label fx:id="previewChars" styleClass="muted"/>
+            <Label fx:id="previewStatus" wrapText="true"/>
+            <Button fx:id="similarButton" text="Ver itens semelhantes" styleClass="secondary" onAction="#onVerSimilares"/>
+        </VBox>
+
+        <HBox spacing="12">
+            <Button fx:id="vincularButton" text="Vincular Serviço" styleClass="primary" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#onVincular"/>
+            <Button fx:id="cadastrarButton" text="Cadastrar Novo Item" styleClass="secondary" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#onCadastrar"/>
+            <Button text="Limpar" styleClass="secondary" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#onLimpar"/>
+        </HBox>
+    </VBox>
+</VBox>

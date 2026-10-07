@@ -1,27 +1,70 @@
-version: '3.8'
+# Uso rápido (veja docs/COMO-RODAR.md):
+#   cp .env.example .env   # preencha MONGODB_URI e APP_DEV_PASSWORD
+#   docker compose up --build                       # API + seu MongoDB (Atlas/outro)
+#   docker compose --profile local-db up --build    # API + MongoDB local de teste com dados de exemplo
+name: gerdau-servicos
 
 services:
-  mongodb:
-    image: mongo:latest
-    container_name: gerdau_mongodb
-    restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_DATABASE: gerdau_db
-    volumes:
-      - mongodb_data:/data/db
-
   backend:
-    build: .
-    container_name: gerdau_app_backend
-    restart: always
-    ports:
-      - "8000:8000"
+    build:
+      context: ./backend
+    image: gerdau-servicos-api:local
+    container_name: gerdau-servicos-api
+    restart: unless-stopped
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/gerdau_db
-    depends_on:
-      - mongodb
+      MONGODB_URI: ${MONGODB_URI:?Defina MONGODB_URI no arquivo .env (veja docs/CONECTAR-MONGODB.md)}
+      APP_DEV_PASSWORD: ${APP_DEV_PASSWORD:?Defina APP_DEV_PASSWORD no arquivo .env (mínimo 8 caracteres)}
+      SEARCH_ENGINE: ${SEARCH_ENGINE:-local}
+      SIMILARITY_ENFORCEMENT: ${SIMILARITY_ENFORCEMENT:-enforce}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-}
+      API_DOCS_ENABLED: ${API_DOCS_ENABLED:-true}
+      BACKFILL_NORMALIZED: ${BACKFILL_NORMALIZED:-false}
+      ENSURE_INDEXES: ${ENSURE_INDEXES:-true}
+      OIDC_ISSUER_URI: ${OIDC_ISSUER_URI:-}
+      OIDC_ROLES_CLAIM: ${OIDC_ROLES_CLAIM:-roles}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    # Permite usar MONGODB_URI=mongodb://host.docker.internal:27017/... também no Linux
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      # liveness não depende do banco: se o Mongo cair, o container não entra em loop de restart
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health/liveness"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  # MongoDB LOCAL de teste — só sobe com: docker compose --profile local-db up
+  mongo:
+    image: mongo:7.0
+    profiles: ["local-db"]
+    container_name: gerdau-servicos-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-root}
+      ## (o compose avalia todos os arquivos, mesmo com o perfil desligado; por isso sem ':?' aqui)
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-}
+      MONGO_INITDB_DATABASE: gerdau_servicos
+    volumes:
+      - mongo-data:/data/db
+      # Dados de exemplo: executados somente na PRIMEIRA criação do volume
+      - ./scripts/mongo/seed:/docker-entrypoint-initdb.d:ro
+    ports:
+      # apenas localhost: use o Compass/mongosh em mongodb://127.0.0.1:27017
+      - "127.0.0.1:27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
 volumes:
-  mongodb_data:
+  mongo-data:
