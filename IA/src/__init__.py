@@ -1,2 +1,3 @@
+from .detector.normalizacao import normalizar_texto
 
-from .normalizacao import normalizar_descricao, extrair_numeros
+__all__ = ["normalizar_texto"]
