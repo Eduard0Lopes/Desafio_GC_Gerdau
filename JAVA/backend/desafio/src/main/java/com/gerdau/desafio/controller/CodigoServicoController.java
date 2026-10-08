@@ -2,6 +2,7 @@ package com.gerdau.desafio.controller;
 
 import com.gerdau.desafio.model.CodigoServico;
 import com.gerdau.desafio.repository.CodigoServicoRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,22 +15,33 @@ public class CodigoServicoController {
 
     private final CodigoServicoRepository repository;
 
-    // Injeção de dependência via construtor
     public CodigoServicoController(CodigoServicoRepository repository) {
         this.repository = repository;
     }
 
-    // Endpoint para buscar todos os registros
     @GetMapping
     public List<CodigoServico> listarTodos() {
         return repository.findAll();
     }
 
-    // Endpoint para buscar por ID
     @GetMapping("/{id}")
     public ResponseEntity<CodigoServico> buscarPorId(@PathVariable String id) {
         return repository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public ResponseEntity<CodigoServico> salvar(@RequestBody CodigoServico codigoServico) {
+        if (codigoServico.getDescricao() != null && codigoServico.getDescricao().length() > 40) {
+            throw new IllegalArgumentException("A descrição do serviço excede o limite de 40 caracteres do SAP.");
+        }
+
+        if (codigoServico.getDescricao() != null) {
+            codigoServico.setQuantidadeCaracteres(codigoServico.getDescricao().length());
+        }
+
+        CodigoServico salvo = repository.save(codigoServico);
+        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 }
