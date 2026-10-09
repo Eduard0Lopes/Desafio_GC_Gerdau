@@ -3,7 +3,7 @@ import pandas as pd
 
 from rapidfuzz import fuzz, process
 
-from .normalizacao import normalizar_descricao, extrair_numeros
+from .detector.normalizacao import normalizar_descricao, extrair_numeros
 
 
 COLUNAS_RELATORIO = [
