@@ -2,7 +2,7 @@
 import pandas as pd
 from rapidfuzz import process, fuzz
 
-from .normalizacao import normalizar_descricao, extrair_numeros
+from .detector.normalizacao import normalizar_descricao, extrair_numeros
 
 
 COLUNAS_RESULTADO = [
