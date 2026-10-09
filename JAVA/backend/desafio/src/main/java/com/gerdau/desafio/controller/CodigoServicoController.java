@@ -41,6 +41,17 @@ public class CodigoServicoController {
             codigoServico.setQuantidadeCaracteres(codigoServico.getDescricao().length());
         }
 
+        if (codigoServico.getOrigem() == null || codigoServico.getOrigem().isBlank()) {
+            codigoServico.setOrigem("SISTEMA");
+        }
+
+        // Regra de geração sequencial do Código SAP original
+        if (codigoServico.getCodigoOriginal() == null || codigoServico.getCodigoOriginal().isBlank()) {
+            long total = repository.count();
+            String proximoCodigo = String.format("%06d", total + 1);
+            codigoServico.setCodigoOriginal(proximoCodigo);
+        }
+
         CodigoServico salvo = repository.save(codigoServico);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
