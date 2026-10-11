@@ -1,0 +1,20 @@
+﻿secao,verificacao,ok,bloqueante,detalhe
+16.5,Contagem: linhas de entrada = linhas no de-para,True,True,9795 x 9795
+16.5,Linhas legado preservadas nos itens (soma de qtdLinhasLegado),True,True,9795 x 9795
+16.5,Descricoes distintas = soma das variantes dos itens,True,True,7443 x 7443
+16.5,Catalogo nao tem mais itens que descricoes distintas,True,True,6940 <= 7443
+16.5,Quantidade de duplicatas encontradas (informativo),True,False,exatas=585 provaveis=31 pendentes=1107
+16.5,Todos os componentes referenciados pelos codigos completos existem,True,True,0 orfaos
+16.5,Todo newId do de-para existe no catalogo,True,True,
+9.3,Todo item citado em pendencias existe no catalogo,True,True,0 inexistentes
+16.5,Ausencia de codigos completos invalidos (14 digitos = gs+cf+cs+um),True,True,0 invalidos
+8.4,idCompleto unico,True,True,
+8.4,Combinacao dos quatro componentes unica,True,True,
+8.3,IDs de componentes com largura fixa,True,True,
+16.5,"Dados historicos preservados no de-para (linha a linha, texto original)",True,True,
+9.3,Nada foi apagado: todo codigo legado esta em legacyIds de algum item,True,True,0 sem destino
+9.5,Legado sem usuario/timestamp fabricados (nulos + origem MIGRACAO),True,True,
+9.5,legacyImportedAt e loteImportacaoId preenchidos,True,True,
+1.3,Descricoes canonicas <= 40 caracteres e quantidadeCaracteres correto,True,True,
+8.4,csId unico,True,True,
+8.2,Contadores de sequencia cobrem o maior ID usado (IDs nunca reutilizados),True,True,

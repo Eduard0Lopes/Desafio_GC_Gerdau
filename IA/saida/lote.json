@@ -1,0 +1,71 @@
+{
+  "_id": "L20261011T193640Z-7752b746",
+  "arquivoOrigem": "e589c97f85984f699530f36fec8c6123.xlsx",
+  "copiaImutavel": "origem/7752b746c7f6_e589c97f85984f699530f36fec8c6123.xlsx",
+  "tamanhoBytes": 387514,
+  "sha256": "7752b746c7f69007d835b7df9f51d696bb35c419bfe4a141dbc196ae78989301",
+  "dataImportacao": "2026-10-11T19:36:40+00:00",
+  "versaoAlgoritmoNormalizacao": "1.1.0",
+  "versaoDicionario": "1.1.0",
+  "usuarioProcesso": "pipeline:root",
+  "status": "LIBERADO",
+  "resultadoValidacao": {
+    "liberado": true,
+    "verificacoes": 19,
+    "falhas": []
+  },
+  "metricas": {
+    "linhasEntrada": 9795,
+    "linhasValidas": 9795,
+    "linhasRejeitadas": 0,
+    "descricoesDistintas": 7443,
+    "itensCatalogo": 6940,
+    "duplicidadesConsolidadas": 503,
+    "linhasConsolidadasExato": 585,
+    "linhasConsolidadasProvavel": 31,
+    "pendenciasPorTipo": {
+      "PROVAVEL_NAO_FUNDIDO_BAIXA_COESAO": 2,
+      "ALERTA": 1105,
+      "CANONICO_INCERTO": 5,
+      "INCOMPLETO": 767
+    },
+    "coberturaDePara": 1.0,
+    "volumeImportado": {
+      "grupos_servico": 3,
+      "codigos_fornecedor": 111,
+      "unidades_medida": 17,
+      "codigos_servico": 6940,
+      "codigos_completos": 9251,
+      "de_para": 9795
+    },
+    "limiares": {
+      "provavel": 0.9,
+      "alerta": 0.75,
+      "coesao_minima_cluster": 0.8
+    }
+  },
+  "layoutDetectado": {
+    "abas": [
+      "1. Base Anonimizada",
+      "2. Unidades de Medida",
+      "3. Mão de Obra"
+    ],
+    "abaBase": "1. Base Anonimizada",
+    "abaUnidades": "2. Unidades de Medida",
+    "abaMaoDeObra": "3. Mão de Obra",
+    "cabecalhosBase": [
+      "Grupo de Serviço",
+      "Código do Fornecedor",
+      "Código do Serviço",
+      "Descrição do Item",
+      "Unidade medida"
+    ],
+    "mapeamento": {
+      "gs": "Grupo de Serviço",
+      "cf": "Código do Fornecedor",
+      "cs": "Código do Serviço",
+      "desc": "Descrição do Item",
+      "um": "Unidade medida"
+    }
+  }
+}

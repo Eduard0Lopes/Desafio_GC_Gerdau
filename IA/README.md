@@ -1,75 +1,70 @@
-# Desafio GC 2026 — Padronização de Códigos de Serviço
+# Desafio GC - IA e Dados: padronizacao dos codigos de servico
 
-Projeto da trilha de **IA & Dados**, voltado à identificação de possíveis duplicidades e inconsistências no catálogo de códigos de serviço da Gerdau.
+Escopo: tudo que o documento atribui a **IA e Dados** (bloco verde da secao 4.1). API Spring Boot, telas Vue/JavaFX,
+autenticacao, perfis, auditoria de usuario e integracao SAP sao da equipe de Java; aqui ficam o modelo de dados, a
+migracao, a busca, a similaridade e os contratos que eles consomem. Materiais textuais/visuais (relatorio, mapa mental,
+diagramas, video) nao fazem parte desta entrega.
 
-## Objetivo
+## Rodar
+```bash
+pip install -r requirements.txt
+./ci.sh BASE.xlsx                     # compila, 58 testes, saneia a base, valida o lote (~30 s)
+python -m gc_dados.pipeline BASE.xlsx --saida saida --relatorio saida/relatorio_saneamento.xlsx
+python -m gc_dados.busca mec          # busca (autocomplete/fuzzy/stemming/ID) sobre saida/
+python -m gc_dados.servico "Eletricista HE 50%"     # avalia item novo (contrato para o Java)
+python -m gc_dados.avaliacao relatorio_saneamento.xlsx   # precisao/revocacao apos rotular a amostra
+MONGODB_URI=... python carga_mongo.py --db gerdau_servicos_hml
+```
 
-Desenvolver uma solução baseada em dados e inteligência de busca para identificar serviços potencialmente duplicados, melhorar a padronização das descrições e reduzir a criação de novos códigos desnecessários.
+## Matriz documento -> implementacao
+| Secao | Exigencia | Onde / como |
+|---|---|---|
+| 1.3, 10.4 | limite de 40 caracteres, validado | `entrada.py` (rejeita >40), `quantidadeCaracteres` calculado, validador Mongo `maxLength: 40` |
+| 2.2 | busca por ID, nome ou descricao; pesquisa aproximada | `busca.py` (ID, ID legado, texto, fuzzy) |
+| 2.2, 9 | duplicidades historicas, de-para, relacionamento antigo-novo | `pipeline.py`, colecao `de_para`, `legacyIds` |
+| 3 | legado importado sem usuario/timestamp | `usuarioCriacaoId`/`createdAt` nulos, `origem: MIGRACAO` (verificado em `validar_migracao`) |
+| 5 | MongoDB + Atlas Search; busca atras de uma abstracao | `mongo/`, `carga_mongo.py`, `BuscaMemoria`/`BuscaAtlas` (mesmo contrato) |
+| 6.1 | busca exata (IDs, codigos completos, HR/UN/M2) | tiers `ID_EXATO`, `ID_LEGADO_EXATO`, `VALOR_EXATO` |
+| 6.2 | prefix search e autocomplete | `PREFIXO_ID`, `TOKENS_PREFIXO`, `TOKENS_SUBSTRING`; Atlas `autocomplete` (nGram) |
+| 6.3 | fuzzy, ordem invertida, `unid medida` -> `unidade de medida` | `FUZZY`; tokens sem ordem; abreviacoes no dicionario |
+| 6.4 | stemming | `stemmer.py` (leve, sem dependencias); campo `descricaoStem`; analisador `lucene.portuguese` |
+| 6.5 | normalizacao + `descricaoOriginal`/`descricaoNormalizada` | `normalizador.py`; `descricao`, `descricaoNormalizada`, `descricaoExpandida` |
+| 6.6 | indices por ID e por texto, pesos | `mongo/indices_atlas.json` (idBusca / texto separados); boosts em `pipeline_atlas` |
+| 6.7 | ranking: ID exato, prefixo, texto exato, tokens, fuzzy, uso/ativo | `busca.py` (pesos em `dicionario.json > ranking`) |
+| 6.7 | limiares 0,90 / 0,75, calibrar com amostra rotulada | `dicionario.json > limiares` (ou `GC_LIMIAR_*`), `avaliacao.py`, aba "Amostra p rotular" |
+| 7 | cinco colecoes + `descricaoSnapshot`, `legacyIds` | `saida/*.jsonl`, `mongo/validadores.json` |
+| 8 | IDs estaveis, 3+3+6+2, unicos, nunca reutilizados | `ids.py`, colecao `contadores`, indice unico composto |
+| 9.1 | 14 etapas do saneamento | `pipeline.py` (docstring numera as etapas) |
+| 9.2 | copia de origem, data/lote, hash, versao do algoritmo, responsavel, resultado | `lote.py`, `saida/origem/` (somente leitura), `lote.json`, colecao `lotes_importacao` |
+| 9.3 | duplicata exata / provavel / pendente (nada e apagado) | `decision` no de-para; colecao `controle_excecoes` |
+| 9.4 | descricao canonica (<=40, legivel, sem prefixo sem valor); humano nos casos criticos | `escolher_canonico`; `CANONICO_INCERTO` |
+| 9.5-9.6 | dados ausentes e matriz de-para | idem; campos de revisao (`reviewedBy/At`) |
+| 10.2 | previa/similaridade (parte de dados) | `servico.avaliar_item` -> `PERMITIR/ALERTAR/REVISAR`, score, motivo |
+| 12.3 | registro de excecoes | colecao `excecoes` (validador); a escrita e da API |
+| 14.1-14.3 | resposta enxuta, paginacao, indices | `busca.py`, `mongo/indices_atlas.json` (sem indice em `createdAt`) |
+| 15.2 | metricas de sucesso (parte de dados) | `lote.json > metricas` (cobertura do de-para, duplicidades consolidadas, volume) |
+| 16.1 | unitarios: normalizacao, caracteres, ID, score, nulos, legado | `tests/` (58 testes) |
+| 16.3 | precisao, revocacao, falsos bloqueios | `avaliacao.py` (precisa de rotulos humanos) |
+| 16.5 | testes de migracao | `validar_migracao.py` (19 verificacoes; lote so e `LIBERADO` se passam) + aba "Amostra de-para" |
+| 17 | ambientes, config fora do codigo, pipeline | `GC_*` env, `--db`, `ci.sh` |
+| 20 | mitigacoes (calibrar, faixas, sinonimos, reindexacao, de-para) | idem; `dicionario.json > sinonimos` (vazio: definir com especialistas) |
 
-A proposta é apoiar a identificação de serviços existentes antes do cadastro de novos itens, preservando diferenças legítimas entre serviços.
+## Decisoes de leitura do documento
+- **Prefixo no ranking (6.7)**: lido como prefixo de **ID** (6.6). Prefixo de texto fica logo abaixo do texto exato.
+- **CS global**: o catalogo de servicos nao e separado por GS; o GS so entra no codigo completo.
+- **IDs tecnicos**: gs, cf, cs, um sequenciais (3+3+6+2); codigos legados em `legacyIds` / `codigoLegado`.
+- **Stemming so na busca**: nao funde itens (mecanica e mecanico sao itens diferentes).
 
-## Problema
+## Contrato para a equipe de Java
+`servico.avaliar_item` -> `{descricaoNormalizada, quantidadeCaracteres, limiteSapOk, especificidade, confiancaEspecificidade,
+descricaoSugerida, decisao, melhorScore, similares[{csId, descricao, score, motivo}]}`. Busca: `{total, resultados[{id, nome,
+descricao, score, tipoMatch}]}`. Colecoes e indices em `mongo/`. Candidatos reais virao do Atlas Search (`pipeline_atlas`) e
+devem ser reavaliados por `similaridade.pontuar`.
 
-O cadastro manual de serviços pode gerar descrições inconsistentes, variações de formatação, múltiplos códigos associados a descrições iguais e dificuldades para localizar itens existentes.
-
-Essas situações podem prejudicar a qualidade do catálogo e dificultar a consolidação e a análise dos dados.
-
-## Tecnologias e ferramentas
-
-* **Python:** desenvolvimento das análises e regras de validação.
-* **Pandas:** manipulação, agrupamento e análise dos dados.
-* **Jupyter Notebook:** execução documentada das análises exploratórias.
-* **Git e GitHub:** controle de versão e organização do projeto.
-
-Tecnologias para a solução integrada serão definidas e validadas durante as próximas etapas.
-
-## Estrutura dos dados
-
-A base analisada contém **9.795 registros e 5 colunas**:
-
-* `Grupo de Serviço`
-* `Código do Fornecedor`
-* `Código do Serviço`
-* `Descrição do Item`
-* `Unidade medida`
-
-## Análise exploratória
-
-Foram realizadas análises para compreender a estrutura do catálogo e identificar padrões que possam indicar problemas de qualidade.
-
-Principais resultados:
-
-* **10.925 pares de descrições semelhantes** identificados na análise textual.
-* **410 pares prioritários** selecionados para investigação mais detalhada.
-* **375 descrições** associadas a mais de um código de serviço.
-* **320 combinações** de fornecedor, descrição e unidade associadas a múltiplos códigos.
-* Entre essas 320 combinações, **68 (21,25%) cruzam faixas numéricas de códigos**, enquanto 252 (78,75%) permanecem na mesma faixa.
-* Também foram identificados códigos compartilhados entre fornecedores com divergências de atributos, incluindo casos que precisam de validação adicional.
-
-Esses resultados representam candidatos e padrões exploratórios. Não comprovam, isoladamente, a existência de duplicidades reais, pois códigos diferentes podem representar condições ou serviços legítimos.
-
-## Próxima etapa
-
-Construir a primeira versão de um **detector de possíveis duplicidades**, capaz de:
-
-1. Identificar descrições iguais associadas a códigos diferentes.
-2. Comparar descrições semelhantes por similaridade textual.
-3. Preservar diferenças relevantes, como números, medidas, sinais e operadores.
-4. Considerar fornecedor, grupo de serviço e unidade de medida na análise.
-5. Gerar uma tabela de candidatos com os códigos envolvidos, o motivo do alerta e a prioridade de revisão.
-
-A solução deverá apoiar a revisão humana, sem excluir ou unificar códigos automaticamente.
-
-## Status do projeto
-
-* [x] Preparação e exploração inicial da base.
-* [x] Análise de descrições iguais e códigos múltiplos.
-* [x] Análise de similaridade textual.
-* [x] Investigação de padrões de inconsistência.
-* [ ] Implementação do detector de possíveis duplicidades.
-* [ ] Validação dos alertas e revisão dos critérios.
-* [ ] Avaliação dos resultados e preparação da demonstração.
-
-## Observação
-
-Os resultados são exploratórios e dependem de validação das regras de negócio. Os critérios de similaridade e prioridade ainda deverão ser testados antes de serem utilizados como regras definitivas.
+## Limites conhecidos
+- **Nao testado em Atlas/MongoDB reais** (sem acesso aqui): `carga_mongo.py`, validadores, indices e `pipeline_atlas`. A
+  carga confere contagens contra o lote ao final; rode em homologacao antes de producao.
+- Limiares 0,90/0,75 **nao calibrados**: dependem da rotulagem humana. Sinonimos de negocio: vazio.
+- `dicionario.json > a_confirmar`: abreviacoes deduzidas (SS, DF, PER, EV, H.Oc...).
+- Stemmer proprio e leve (RSLP/NLTK indisponiveis offline); o Atlas usa o seu analisador portugues.
+- Itens fora da secao de dados (perfis, OAuth, endpoints, observabilidade de runtime, integracao SAP) sao da equipe de Java.
