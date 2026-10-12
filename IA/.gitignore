@@ -1,20 +1,23 @@
-
-# Arquivos temporários do Python
-__pycache__/
-*.py[cod]
-
-# Ambientes virtuais
-.venv/
+# Ambientes virtuais e interpretadores
 venv/
 env/
+.env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
 
-# Variáveis de ambiente e credenciais
-.env
-.env.*
-
-# Configurações locais de editores
-.vscode/
-
-# Arquivos de sistema
+# Arquivos de Sistema e IDEs
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
+
+# Dados brutos sensíveis ou originais (boas práticas de segurança/LGPD)
+base_original.xlsx
+downloads/
+
+# Logs e arquivos temporários de execução
+*.log
+tmp/
