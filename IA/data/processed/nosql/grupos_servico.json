@@ -1,0 +1,20 @@
+[
+  {
+    "_id": "001",
+    "nome": "Civil",
+    "nomeNormalizado": "civil",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "002",
+    "nome": "Eletromecânica",
+    "nomeNormalizado": "eletromecânica",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "003",
+    "nome": "Facilities",
+    "nomeNormalizado": "facilities",
+    "origem": "MIGRACAO"
+  }
+]

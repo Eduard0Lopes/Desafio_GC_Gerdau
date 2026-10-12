@@ -1,0 +1,121 @@
+[
+  {
+    "_id": "01",
+    "sigla": "CM",
+    "nome": "Centímetro",
+    "nomeNormalizado": "centímetro",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "02",
+    "sigla": "CDM",
+    "nome": "Centímetro cúbico",
+    "nomeNormalizado": "centímetro cúbico",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "03",
+    "sigla": "ZCJ",
+    "nome": "Conjunto",
+    "nomeNormalizado": "conjunto",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "04",
+    "sigla": "TAG",
+    "nome": "Dia",
+    "nomeNormalizado": "dia",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "05",
+    "sigla": "H",
+    "nome": "Hora",
+    "nomeNormalizado": "hora",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "06",
+    "sigla": "L",
+    "nome": "Litro",
+    "nomeNormalizado": "litro",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "07",
+    "sigla": "MON",
+    "nome": "Mês",
+    "nomeNormalizado": "mês",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "08",
+    "sigla": "M",
+    "nome": "Metro",
+    "nomeNormalizado": "metro",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "09",
+    "sigla": "M3",
+    "nome": "Metro cúbico",
+    "nomeNormalizado": "metro cúbico",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "10",
+    "sigla": "M2",
+    "nome": "Metro quadrado",
+    "nomeNormalizado": "metro quadrado",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "11",
+    "sigla": "ML",
+    "nome": "Mililitro",
+    "nomeNormalizado": "mililitro",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "12",
+    "sigla": "MM",
+    "nome": "Milímetro",
+    "nomeNormalizado": "milímetro",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "13",
+    "sigla": "KG",
+    "nome": "Quilograma",
+    "nomeNormalizado": "quilograma",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "14",
+    "sigla": "KM",
+    "nome": "Quilômetro",
+    "nomeNormalizado": "quilômetro",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "15",
+    "sigla": "SV",
+    "nome": "Serviço",
+    "nomeNormalizado": "serviço",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "16",
+    "sigla": "TO",
+    "nome": "Tonelada",
+    "nomeNormalizado": "tonelada",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "17",
+    "sigla": "ST",
+    "nome": "Unidade (peça)",
+    "nomeNormalizado": "unidade (peça)",
+    "origem": "MIGRACAO"
+  }
+]
