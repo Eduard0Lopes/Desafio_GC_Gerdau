@@ -1,7 +1,9 @@
 package com.gerdau.desafio.controller;
 
-import com.gerdau.desafio.model.CodigoServico;
-import com.gerdau.desafio.repository.CodigoServicoRepository;
+import com.gerdau.desafio.dto.request.CodigoServicoRequest;
+import com.gerdau.desafio.dto.response.CodigoServicoResponse;
+import com.gerdau.desafio.service.CodigoServicoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,62 +12,28 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/codigo-servico")
-@CrossOrigin(origins = "*")
 public class CodigoServicoController {
 
-    private final CodigoServicoRepository repository;
+    private final CodigoServicoService service;
 
-    public CodigoServicoController(CodigoServicoRepository repository) {
-        this.repository = repository;
+    public CodigoServicoController(CodigoServicoService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<CodigoServico> listarTodos() {
-        return repository.findAll();
+    public ResponseEntity<List<CodigoServicoResponse>> listarTodos() {
+        return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CodigoServico> buscarPorId(@PathVariable String id) {
-        return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/similaridade")
-    public ResponseEntity<List<CodigoServico>> buscarSemelhantes(@RequestParam String termo) {
-        if (termo == null || termo.isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        String termoNormalizado = termo.toLowerCase().trim();
-        List<CodigoServico> candidatos = repository.findByDescricaoNormalizadaRegex(termoNormalizado);
-
-        return ResponseEntity.ok(candidatos);
+    public ResponseEntity<CodigoServicoResponse> buscarPorId(@PathVariable String id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<CodigoServico> salvar(@RequestBody CodigoServico codigoServico) {
-        if (codigoServico.getDescricao() != null && codigoServico.getDescricao().length() > 40) {
-            throw new IllegalArgumentException("A descrição do serviço excede o limite de 40 caracteres do SAP.");
-        }
-
-        if (codigoServico.getDescricao() != null) {
-            codigoServico.setQuantidadeCaracteres(codigoServico.getDescricao().length());
-        }
-
-        if (codigoServico.getOrigem() == null || codigoServico.getOrigem().isBlank()) {
-            codigoServico.setOrigem("SISTEMA");
-        }
-
-        // Regra de geração sequencial do Código SAP original
-        if (codigoServico.getCodigoOriginal() == null || codigoServico.getCodigoOriginal().isBlank()) {
-            long total = repository.count();
-            String proximoCodigo = String.format("%06d", total + 1);
-            codigoServico.setCodigoOriginal(proximoCodigo);
-        }
-
-        CodigoServico salvo = repository.save(codigoServico);
+    public ResponseEntity<CodigoServicoResponse> salvar(
+            @Valid @RequestBody CodigoServicoRequest request) {
+        CodigoServicoResponse salvo = service.criar(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
-
-        }
     }
+}

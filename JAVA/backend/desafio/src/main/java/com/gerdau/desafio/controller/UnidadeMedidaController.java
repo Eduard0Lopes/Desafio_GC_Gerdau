@@ -1,7 +1,9 @@
 package com.gerdau.desafio.controller;
 
-import com.gerdau.desafio.model.UnidadeMedida;
-import com.gerdau.desafio.repository.UnidadeMedidaRepository;
+import com.gerdau.desafio.dto.request.UnidadeMedidaRequest;
+import com.gerdau.desafio.dto.response.UnidadeMedidaResponse;
+import com.gerdau.desafio.service.UnidadeMedidaService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,34 +12,28 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/unidades-medida")
-@CrossOrigin(origins = "*")
 public class UnidadeMedidaController {
 
-    private final UnidadeMedidaRepository repository;
+    private final UnidadeMedidaService service;
 
-    public UnidadeMedidaController(UnidadeMedidaRepository repository) {
-        this.repository = repository;
+    public UnidadeMedidaController(UnidadeMedidaService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<UnidadeMedida> listarTodos() {
-        return repository.findAll();
+    public ResponseEntity<List<UnidadeMedidaResponse>> listarTodos() {
+        return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UnidadeMedida> buscarPorId(@PathVariable String id) {
-        return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UnidadeMedidaResponse> buscarPorId(@PathVariable String id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<UnidadeMedida> salvar(@RequestBody UnidadeMedida unidadeMedida) {
-        if (unidadeMedida.getSigla() == null || unidadeMedida.getSigla().trim().isEmpty()) {
-            throw new IllegalArgumentException("A sigla da unidade de medida é obrigatória.");
-        }
-
-        UnidadeMedida salvo = repository.save(unidadeMedida);
+    public ResponseEntity<UnidadeMedidaResponse> salvar(
+            @Valid @RequestBody UnidadeMedidaRequest request) {
+        UnidadeMedidaResponse salvo = service.criar(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 }

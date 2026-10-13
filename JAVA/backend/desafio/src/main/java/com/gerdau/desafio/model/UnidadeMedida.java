@@ -15,6 +15,9 @@ public class UnidadeMedida {
     @Field("sigla")
     private String sigla;
 
+    @Field("nome")
+    private String nome;
+
     @Field("nomeNormalizado")
     private String nomeNormalizado;
 

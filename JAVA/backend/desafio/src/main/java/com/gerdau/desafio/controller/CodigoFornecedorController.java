@@ -1,7 +1,9 @@
 package com.gerdau.desafio.controller;
 
-import com.gerdau.desafio.model.CodigoFornecedor;
-import com.gerdau.desafio.repository.CodigoFornecedorRepository;
+import com.gerdau.desafio.dto.request.CodigoFornecedorRequest;
+import com.gerdau.desafio.dto.response.CodigoFornecedorResponse;
+import com.gerdau.desafio.service.CodigoFornecedorService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,34 +12,28 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/codigos-fornecedor")
-@CrossOrigin(origins = "*")
 public class CodigoFornecedorController {
 
-    private final CodigoFornecedorRepository repository;
+    private final CodigoFornecedorService service;
 
-    public CodigoFornecedorController(CodigoFornecedorRepository repository) {
-        this.repository = repository;
+    public CodigoFornecedorController(CodigoFornecedorService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<CodigoFornecedor> listarTodos() {
-        return repository.findAll();
+    public ResponseEntity<List<CodigoFornecedorResponse>> listarTodos() {
+        return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CodigoFornecedor> buscarPorId(@PathVariable String id) {
-        return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<CodigoFornecedorResponse> buscarPorId(@PathVariable String id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<CodigoFornecedor> salvar(@RequestBody CodigoFornecedor codigoFornecedor) {
-        if (codigoFornecedor.getNomeNormalizado() == null || codigoFornecedor.getNomeNormalizado().trim().isEmpty()) {
-            throw new IllegalArgumentException("O nome do grupo de serviço é obrigatório.");
-        }
-
-        CodigoFornecedor salvo = repository.save(codigoFornecedor);
+    public ResponseEntity<CodigoFornecedorResponse> salvar(
+            @Valid @RequestBody CodigoFornecedorRequest request) {
+        CodigoFornecedorResponse salvo = service.criar(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 }

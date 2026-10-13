@@ -1,7 +1,9 @@
 package com.gerdau.desafio.controller;
 
-import com.gerdau.desafio.model.CodigoCompleto;
-import com.gerdau.desafio.repository.CodigoCompletoRepository;
+import com.gerdau.desafio.dto.request.CodigoCompletoRequest;
+import com.gerdau.desafio.dto.response.CodigoCompletoResponse;
+import com.gerdau.desafio.service.CodigoCompletoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,34 +12,28 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/codigos-completo")
-@CrossOrigin(origins = "*")
 public class CodigoCompletoController {
 
-    private final CodigoCompletoRepository repository;
+    private final CodigoCompletoService service;
 
-    public CodigoCompletoController(CodigoCompletoRepository repository) {
-        this.repository = repository;
+    public CodigoCompletoController(CodigoCompletoService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<CodigoCompleto> listarTodos() {
-        return repository.findAll();
+    public ResponseEntity<List<CodigoCompletoResponse>> listarTodos() {
+        return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CodigoCompleto> buscarPorId(@PathVariable String id) {
-        return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<CodigoCompletoResponse> buscarPorId(@PathVariable String id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<CodigoCompleto> salvar(@RequestBody CodigoCompleto codigoCompleto) {
-        if (codigoCompleto.getDescricaoSnapshot() == null || codigoCompleto.getDescricaoSnapshot().trim().isEmpty()) {
-            throw new IllegalArgumentException("O nome do grupo de serviço é obrigatório.");
-        }
-
-        CodigoCompleto salvo = repository.save(codigoCompleto);
+    public ResponseEntity<CodigoCompletoResponse> salvar(
+            @Valid @RequestBody CodigoCompletoRequest request) {
+        CodigoCompletoResponse salvo = service.criar(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 }
