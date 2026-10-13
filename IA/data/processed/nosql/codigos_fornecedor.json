@@ -1,0 +1,779 @@
+[
+  {
+    "_id": "001",
+    "codigoFornecedorSAP": 200982674,
+    "nome": "Fornecedor ID 200982674",
+    "nomeNormalizado": "fornecedor id 200982674",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "002",
+    "codigoFornecedorSAP": 201464634,
+    "nome": "Fornecedor ID 201464634",
+    "nomeNormalizado": "fornecedor id 201464634",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "003",
+    "codigoFornecedorSAP": 200772986,
+    "nome": "Fornecedor ID 200772986",
+    "nomeNormalizado": "fornecedor id 200772986",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "004",
+    "codigoFornecedorSAP": 300623388,
+    "nome": "Fornecedor ID 300623388",
+    "nomeNormalizado": "fornecedor id 300623388",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "005",
+    "codigoFornecedorSAP": 201332350,
+    "nome": "Fornecedor ID 201332350",
+    "nomeNormalizado": "fornecedor id 201332350",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "006",
+    "codigoFornecedorSAP": 300056198,
+    "nome": "Fornecedor ID 300056198",
+    "nomeNormalizado": "fornecedor id 300056198",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "007",
+    "codigoFornecedorSAP": 201813190,
+    "nome": "Fornecedor ID 201813190",
+    "nomeNormalizado": "fornecedor id 201813190",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "008",
+    "codigoFornecedorSAP": 200775708,
+    "nome": "Fornecedor ID 200775708",
+    "nomeNormalizado": "fornecedor id 200775708",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "009",
+    "codigoFornecedorSAP": 200339034,
+    "nome": "Fornecedor ID 200339034",
+    "nomeNormalizado": "fornecedor id 200339034",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "010",
+    "codigoFornecedorSAP": 200490010,
+    "nome": "Fornecedor ID 200490010",
+    "nomeNormalizado": "fornecedor id 200490010",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "011",
+    "codigoFornecedorSAP": 200364590,
+    "nome": "Fornecedor ID 200364590",
+    "nomeNormalizado": "fornecedor id 200364590",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "012",
+    "codigoFornecedorSAP": 200303818,
+    "nome": "Fornecedor ID 200303818",
+    "nomeNormalizado": "fornecedor id 200303818",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "013",
+    "codigoFornecedorSAP": 300343622,
+    "nome": "Fornecedor ID 300343622",
+    "nomeNormalizado": "fornecedor id 300343622",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "014",
+    "codigoFornecedorSAP": 300424730,
+    "nome": "Fornecedor ID 300424730",
+    "nomeNormalizado": "fornecedor id 300424730",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "015",
+    "codigoFornecedorSAP": 201341488,
+    "nome": "Fornecedor ID 201341488",
+    "nomeNormalizado": "fornecedor id 201341488",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "016",
+    "codigoFornecedorSAP": 200491752,
+    "nome": "Fornecedor ID 200491752",
+    "nomeNormalizado": "fornecedor id 200491752",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "017",
+    "codigoFornecedorSAP": 200394538,
+    "nome": "Fornecedor ID 200394538",
+    "nomeNormalizado": "fornecedor id 200394538",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "018",
+    "codigoFornecedorSAP": 200346506,
+    "nome": "Fornecedor ID 200346506",
+    "nomeNormalizado": "fornecedor id 200346506",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "019",
+    "codigoFornecedorSAP": 200380154,
+    "nome": "Fornecedor ID 200380154",
+    "nomeNormalizado": "fornecedor id 200380154",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "020",
+    "codigoFornecedorSAP": 300780238,
+    "nome": "Fornecedor ID 300780238",
+    "nomeNormalizado": "fornecedor id 300780238",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "021",
+    "codigoFornecedorSAP": 201418204,
+    "nome": "Fornecedor ID 201418204",
+    "nomeNormalizado": "fornecedor id 201418204",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "022",
+    "codigoFornecedorSAP": 300353618,
+    "nome": "Fornecedor ID 300353618",
+    "nomeNormalizado": "fornecedor id 300353618",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "023",
+    "codigoFornecedorSAP": 200572646,
+    "nome": "Fornecedor ID 200572646",
+    "nomeNormalizado": "fornecedor id 200572646",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "024",
+    "codigoFornecedorSAP": 201574182,
+    "nome": "Fornecedor ID 201574182",
+    "nomeNormalizado": "fornecedor id 201574182",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "025",
+    "codigoFornecedorSAP": 300745236,
+    "nome": "Fornecedor ID 300745236",
+    "nomeNormalizado": "fornecedor id 300745236",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "026",
+    "codigoFornecedorSAP": 200379772,
+    "nome": "Fornecedor ID 200379772",
+    "nomeNormalizado": "fornecedor id 200379772",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "027",
+    "codigoFornecedorSAP": 200876404,
+    "nome": "Fornecedor ID 200876404",
+    "nomeNormalizado": "fornecedor id 200876404",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "028",
+    "codigoFornecedorSAP": 300805670,
+    "nome": "Fornecedor ID 300805670",
+    "nomeNormalizado": "fornecedor id 300805670",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "029",
+    "codigoFornecedorSAP": 300425006,
+    "nome": "Fornecedor ID 300425006",
+    "nomeNormalizado": "fornecedor id 300425006",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "030",
+    "codigoFornecedorSAP": 201536318,
+    "nome": "Fornecedor ID 201536318",
+    "nomeNormalizado": "fornecedor id 201536318",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "031",
+    "codigoFornecedorSAP": 200484440,
+    "nome": "Fornecedor ID 200484440",
+    "nomeNormalizado": "fornecedor id 200484440",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "032",
+    "codigoFornecedorSAP": 200789692,
+    "nome": "Fornecedor ID 200789692",
+    "nomeNormalizado": "fornecedor id 200789692",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "033",
+    "codigoFornecedorSAP": 200301748,
+    "nome": "Fornecedor ID 200301748",
+    "nomeNormalizado": "fornecedor id 200301748",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "034",
+    "codigoFornecedorSAP": 300139484,
+    "nome": "Fornecedor ID 300139484",
+    "nomeNormalizado": "fornecedor id 300139484",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "035",
+    "codigoFornecedorSAP": 201696666,
+    "nome": "Fornecedor ID 201696666",
+    "nomeNormalizado": "fornecedor id 201696666",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "036",
+    "codigoFornecedorSAP": 200488746,
+    "nome": "Fornecedor ID 200488746",
+    "nomeNormalizado": "fornecedor id 200488746",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "037",
+    "codigoFornecedorSAP": 200488284,
+    "nome": "Fornecedor ID 200488284",
+    "nomeNormalizado": "fornecedor id 200488284",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "038",
+    "codigoFornecedorSAP": 200485888,
+    "nome": "Fornecedor ID 200485888",
+    "nomeNormalizado": "fornecedor id 200485888",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "039",
+    "codigoFornecedorSAP": 201665700,
+    "nome": "Fornecedor ID 201665700",
+    "nomeNormalizado": "fornecedor id 201665700",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "040",
+    "codigoFornecedorSAP": 201963030,
+    "nome": "Fornecedor ID 201963030",
+    "nomeNormalizado": "fornecedor id 201963030",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "041",
+    "codigoFornecedorSAP": 200484414,
+    "nome": "Fornecedor ID 200484414",
+    "nomeNormalizado": "fornecedor id 200484414",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "042",
+    "codigoFornecedorSAP": 200488812,
+    "nome": "Fornecedor ID 200488812",
+    "nomeNormalizado": "fornecedor id 200488812",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "043",
+    "codigoFornecedorSAP": 300534992,
+    "nome": "Fornecedor ID 300534992",
+    "nomeNormalizado": "fornecedor id 300534992",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "044",
+    "codigoFornecedorSAP": 200580006,
+    "nome": "Fornecedor ID 200580006",
+    "nomeNormalizado": "fornecedor id 200580006",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "045",
+    "codigoFornecedorSAP": 201897290,
+    "nome": "Fornecedor ID 201897290",
+    "nomeNormalizado": "fornecedor id 201897290",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "046",
+    "codigoFornecedorSAP": 201788980,
+    "nome": "Fornecedor ID 201788980",
+    "nomeNormalizado": "fornecedor id 201788980",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "047",
+    "codigoFornecedorSAP": 300034784,
+    "nome": "Fornecedor ID 300034784",
+    "nomeNormalizado": "fornecedor id 300034784",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "048",
+    "codigoFornecedorSAP": 300733820,
+    "nome": "Fornecedor ID 300733820",
+    "nomeNormalizado": "fornecedor id 300733820",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "049",
+    "codigoFornecedorSAP": 201050620,
+    "nome": "Fornecedor ID 201050620",
+    "nomeNormalizado": "fornecedor id 201050620",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "050",
+    "codigoFornecedorSAP": 300586172,
+    "nome": "Fornecedor ID 300586172",
+    "nomeNormalizado": "fornecedor id 300586172",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "051",
+    "codigoFornecedorSAP": 200329822,
+    "nome": "Fornecedor ID 200329822",
+    "nomeNormalizado": "fornecedor id 200329822",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "052",
+    "codigoFornecedorSAP": 300015652,
+    "nome": "Fornecedor ID 300015652",
+    "nomeNormalizado": "fornecedor id 300015652",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "053",
+    "codigoFornecedorSAP": 201659350,
+    "nome": "Fornecedor ID 201659350",
+    "nomeNormalizado": "fornecedor id 201659350",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "054",
+    "codigoFornecedorSAP": 201879426,
+    "nome": "Fornecedor ID 201879426",
+    "nomeNormalizado": "fornecedor id 201879426",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "055",
+    "codigoFornecedorSAP": 200361752,
+    "nome": "Fornecedor ID 200361752",
+    "nomeNormalizado": "fornecedor id 200361752",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "056",
+    "codigoFornecedorSAP": 200346880,
+    "nome": "Fornecedor ID 200346880",
+    "nomeNormalizado": "fornecedor id 200346880",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "057",
+    "codigoFornecedorSAP": 200323568,
+    "nome": "Fornecedor ID 200323568",
+    "nomeNormalizado": "fornecedor id 200323568",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "058",
+    "codigoFornecedorSAP": 200367382,
+    "nome": "Fornecedor ID 200367382",
+    "nomeNormalizado": "fornecedor id 200367382",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "059",
+    "codigoFornecedorSAP": 200880612,
+    "nome": "Fornecedor ID 200880612",
+    "nomeNormalizado": "fornecedor id 200880612",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "060",
+    "codigoFornecedorSAP": 201398744,
+    "nome": "Fornecedor ID 201398744",
+    "nomeNormalizado": "fornecedor id 201398744",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "061",
+    "codigoFornecedorSAP": 200318342,
+    "nome": "Fornecedor ID 200318342",
+    "nomeNormalizado": "fornecedor id 200318342",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "062",
+    "codigoFornecedorSAP": 201850032,
+    "nome": "Fornecedor ID 201850032",
+    "nomeNormalizado": "fornecedor id 201850032",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "063",
+    "codigoFornecedorSAP": 200344608,
+    "nome": "Fornecedor ID 200344608",
+    "nomeNormalizado": "fornecedor id 200344608",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "064",
+    "codigoFornecedorSAP": 200954432,
+    "nome": "Fornecedor ID 200954432",
+    "nomeNormalizado": "fornecedor id 200954432",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "065",
+    "codigoFornecedorSAP": 201954780,
+    "nome": "Fornecedor ID 201954780",
+    "nomeNormalizado": "fornecedor id 201954780",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "066",
+    "codigoFornecedorSAP": 202024942,
+    "nome": "Fornecedor ID 202024942",
+    "nomeNormalizado": "fornecedor id 202024942",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "067",
+    "codigoFornecedorSAP": 201322188,
+    "nome": "Fornecedor ID 201322188",
+    "nomeNormalizado": "fornecedor id 201322188",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "068",
+    "codigoFornecedorSAP": 200352886,
+    "nome": "Fornecedor ID 200352886",
+    "nomeNormalizado": "fornecedor id 200352886",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "069",
+    "codigoFornecedorSAP": 200978680,
+    "nome": "Fornecedor ID 200978680",
+    "nomeNormalizado": "fornecedor id 200978680",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "070",
+    "codigoFornecedorSAP": 300029964,
+    "nome": "Fornecedor ID 300029964",
+    "nomeNormalizado": "fornecedor id 300029964",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "071",
+    "codigoFornecedorSAP": 200353660,
+    "nome": "Fornecedor ID 200353660",
+    "nomeNormalizado": "fornecedor id 200353660",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "072",
+    "codigoFornecedorSAP": 200346246,
+    "nome": "Fornecedor ID 200346246",
+    "nomeNormalizado": "fornecedor id 200346246",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "073",
+    "codigoFornecedorSAP": 201755846,
+    "nome": "Fornecedor ID 201755846",
+    "nomeNormalizado": "fornecedor id 201755846",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "074",
+    "codigoFornecedorSAP": 300170396,
+    "nome": "Fornecedor ID 300170396",
+    "nomeNormalizado": "fornecedor id 300170396",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "075",
+    "codigoFornecedorSAP": 300380700,
+    "nome": "Fornecedor ID 300380700",
+    "nomeNormalizado": "fornecedor id 300380700",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "076",
+    "codigoFornecedorSAP": 300405624,
+    "nome": "Fornecedor ID 300405624",
+    "nomeNormalizado": "fornecedor id 300405624",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "077",
+    "codigoFornecedorSAP": 300415420,
+    "nome": "Fornecedor ID 300415420",
+    "nomeNormalizado": "fornecedor id 300415420",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "078",
+    "codigoFornecedorSAP": 201590300,
+    "nome": "Fornecedor ID 201590300",
+    "nomeNormalizado": "fornecedor id 201590300",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "079",
+    "codigoFornecedorSAP": 200345844,
+    "nome": "Fornecedor ID 200345844",
+    "nomeNormalizado": "fornecedor id 200345844",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "080",
+    "codigoFornecedorSAP": 200903532,
+    "nome": "Fornecedor ID 200903532",
+    "nomeNormalizado": "fornecedor id 200903532",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "081",
+    "codigoFornecedorSAP": 200733106,
+    "nome": "Fornecedor ID 200733106",
+    "nomeNormalizado": "fornecedor id 200733106",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "082",
+    "codigoFornecedorSAP": 201951052,
+    "nome": "Fornecedor ID 201951052",
+    "nomeNormalizado": "fornecedor id 201951052",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "083",
+    "codigoFornecedorSAP": 200364916,
+    "nome": "Fornecedor ID 200364916",
+    "nomeNormalizado": "fornecedor id 200364916",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "084",
+    "codigoFornecedorSAP": 300678820,
+    "nome": "Fornecedor ID 300678820",
+    "nomeNormalizado": "fornecedor id 300678820",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "085",
+    "codigoFornecedorSAP": 201402710,
+    "nome": "Fornecedor ID 201402710",
+    "nomeNormalizado": "fornecedor id 201402710",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "086",
+    "codigoFornecedorSAP": 200379568,
+    "nome": "Fornecedor ID 200379568",
+    "nomeNormalizado": "fornecedor id 200379568",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "087",
+    "codigoFornecedorSAP": 200292072,
+    "nome": "Fornecedor ID 200292072",
+    "nomeNormalizado": "fornecedor id 200292072",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "088",
+    "codigoFornecedorSAP": 200873356,
+    "nome": "Fornecedor ID 200873356",
+    "nomeNormalizado": "fornecedor id 200873356",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "089",
+    "codigoFornecedorSAP": 200344890,
+    "nome": "Fornecedor ID 200344890",
+    "nomeNormalizado": "fornecedor id 200344890",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "090",
+    "codigoFornecedorSAP": 201384752,
+    "nome": "Fornecedor ID 201384752",
+    "nomeNormalizado": "fornecedor id 201384752",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "091",
+    "codigoFornecedorSAP": 200293670,
+    "nome": "Fornecedor ID 200293670",
+    "nomeNormalizado": "fornecedor id 200293670",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "092",
+    "codigoFornecedorSAP": 200355548,
+    "nome": "Fornecedor ID 200355548",
+    "nomeNormalizado": "fornecedor id 200355548",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "093",
+    "codigoFornecedorSAP": 200334840,
+    "nome": "Fornecedor ID 200334840",
+    "nomeNormalizado": "fornecedor id 200334840",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "094",
+    "codigoFornecedorSAP": 202043178,
+    "nome": "Fornecedor ID 202043178",
+    "nomeNormalizado": "fornecedor id 202043178",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "095",
+    "codigoFornecedorSAP": 200363898,
+    "nome": "Fornecedor ID 200363898",
+    "nomeNormalizado": "fornecedor id 200363898",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "096",
+    "codigoFornecedorSAP": 300178928,
+    "nome": "Fornecedor ID 300178928",
+    "nomeNormalizado": "fornecedor id 300178928",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "097",
+    "codigoFornecedorSAP": 300168208,
+    "nome": "Fornecedor ID 300168208",
+    "nomeNormalizado": "fornecedor id 300168208",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "098",
+    "codigoFornecedorSAP": 200335092,
+    "nome": "Fornecedor ID 200335092",
+    "nomeNormalizado": "fornecedor id 200335092",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "099",
+    "codigoFornecedorSAP": 200378820,
+    "nome": "Fornecedor ID 200378820",
+    "nomeNormalizado": "fornecedor id 200378820",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "100",
+    "codigoFornecedorSAP": 300580398,
+    "nome": "Fornecedor ID 300580398",
+    "nomeNormalizado": "fornecedor id 300580398",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "101",
+    "codigoFornecedorSAP": 300521358,
+    "nome": "Fornecedor ID 300521358",
+    "nomeNormalizado": "fornecedor id 300521358",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "102",
+    "codigoFornecedorSAP": 201498560,
+    "nome": "Fornecedor ID 201498560",
+    "nomeNormalizado": "fornecedor id 201498560",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "103",
+    "codigoFornecedorSAP": 300629524,
+    "nome": "Fornecedor ID 300629524",
+    "nomeNormalizado": "fornecedor id 300629524",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "104",
+    "codigoFornecedorSAP": 200510324,
+    "nome": "Fornecedor ID 200510324",
+    "nomeNormalizado": "fornecedor id 200510324",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "105",
+    "codigoFornecedorSAP": 200364232,
+    "nome": "Fornecedor ID 200364232",
+    "nomeNormalizado": "fornecedor id 200364232",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "106",
+    "codigoFornecedorSAP": 202111552,
+    "nome": "Fornecedor ID 202111552",
+    "nomeNormalizado": "fornecedor id 202111552",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "107",
+    "codigoFornecedorSAP": 300616532,
+    "nome": "Fornecedor ID 300616532",
+    "nomeNormalizado": "fornecedor id 300616532",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "108",
+    "codigoFornecedorSAP": 200296730,
+    "nome": "Fornecedor ID 200296730",
+    "nomeNormalizado": "fornecedor id 200296730",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "109",
+    "codigoFornecedorSAP": 300889684,
+    "nome": "Fornecedor ID 300889684",
+    "nomeNormalizado": "fornecedor id 300889684",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "110",
+    "codigoFornecedorSAP": 201586344,
+    "nome": "Fornecedor ID 201586344",
+    "nomeNormalizado": "fornecedor id 201586344",
+    "origem": "MIGRACAO"
+  },
+  {
+    "_id": "111",
+    "codigoFornecedorSAP": 300689942,
+    "nome": "Fornecedor ID 300689942",
+    "nomeNormalizado": "fornecedor id 300689942",
+    "origem": "MIGRACAO"
+  }
+]
