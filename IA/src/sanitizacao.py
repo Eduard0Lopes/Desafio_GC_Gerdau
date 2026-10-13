@@ -35,13 +35,13 @@ def carregar_e_sanear_base(caminho_excel):
     df['DescricaoNormalizada'] = [r['normalizada'] for r in resultados]
     df['QuantidadeCaracteres'] = [r['tamanho'] for r in resultados]
     
-    # 3. Validar limite de 40 caracteres do SAP
-    df['AlertaSAP'] = df['QuantidadeCaracteres'] > 40
+    # 3. Validar limite de 40 caracteres do SAP (Ajustado para >= 40 para capturar itens no limite/truncados)
+    df['AlertaSAP'] = df['QuantidadeCaracteres'] >= 40
     
     # 4. Identificar duplicidades exatas na base normalizada
     df['DuplicadaExata'] = df.duplicated(subset=['DescricaoNormalizada'], keep=False)
     
-    print(f"Itens com alerta de limite do SAP (> 40 caracteres): {df['AlertaSAP'].sum()}")
+    print(f"Itens com alerta de limite do SAP (>= 40 caracteres): {df['AlertaSAP'].sum()}")
     print(f"Itens identificados como duplicados exatos: {df['DuplicadaExata'].sum()}")
     
     return df
@@ -55,6 +55,7 @@ if __name__ == "__main__":
     
     df_saneado = carregar_e_sanear_base(caminho_excel)
     
-    # Salvar com utf-8-sig para o Excel abrir os acentos e o cabeçalho perfeitamente
-    df_saneado.to_csv('data/processed/base_saneada.csv', index=False, encoding='utf-8-sig')
-    print("Base saneada salva com sucesso em data/processed/base_saneada.csv com encoding utf-8-sig!")
+    # Salvar em formato Excel (.xlsx) de forma organizada
+    output_path = 'data/processed/base_saneada.xlsx'
+    df_saneado.to_excel(output_path, index=False)
+    print(f"Base saneada ajustada e salva com sucesso em {output_path}!")
