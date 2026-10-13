@@ -31,6 +31,18 @@ public class CodigoServicoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/similaridade")
+    public ResponseEntity<List<CodigoServico>> buscarSemelhantes(@RequestParam String termo) {
+        if (termo == null || termo.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String termoNormalizado = termo.toLowerCase().trim();
+        List<CodigoServico> candidatos = repository.findByDescricaoNormalizadaRegex(termoNormalizado);
+
+        return ResponseEntity.ok(candidatos);
+    }
+
     @PostMapping
     public ResponseEntity<CodigoServico> salvar(@RequestBody CodigoServico codigoServico) {
         if (codigoServico.getDescricao() != null && codigoServico.getDescricao().length() > 40) {
@@ -54,5 +66,6 @@ public class CodigoServicoController {
 
         CodigoServico salvo = repository.save(codigoServico);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+
+        }
     }
-}
