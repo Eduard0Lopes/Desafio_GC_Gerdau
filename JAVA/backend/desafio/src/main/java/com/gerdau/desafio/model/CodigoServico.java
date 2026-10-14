@@ -8,23 +8,12 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Data
 @Document(collection = "codigos_servico")
 public class CodigoServico {
-
-    @Id
-    private String id;
-
-    @Field("codigoOriginal")
-    private String codigoOriginal;
-
-    @Field("descricao")
-    private String descricao;
-
-    @Field("descricaoNormalizada")
-    private String descricaoNormalizada;
-
-    @Field("quantidadeCaracteres")
-    private int quantidadeCaracteres;
-
-    @Field("origem")
-    private String origem;
-
+    @Id private String id;
+    @Field("codigoOriginal") private String codigoOriginal;
+    @Field("descricao") private String descricao;
+    @Field("descricaoNormalizada") private String descricaoNormalizada;
+    @Field("quantidadeCaracteres") private int quantidadeCaracteres;
+    @Field("origem") private String origem;
+    @Field("grupoServicoId") private String grupoServicoId;
+    @Field("unidadeMedidaId") private String unidadeMedidaId;
 }
