@@ -1,0 +1,50 @@
+[
+  {
+    "a": "manutencao mecanica",
+    "b": "mecanica manutencao",
+    "score": 0.7157894736842105,
+    "status": "ALERTA"
+  },
+  {
+    "a": "sv equipe telhado",
+    "b": "sv equipe de telhado",
+    "score": 0.8513513513513514,
+    "status": "ALERTA"
+  },
+  {
+    "a": "diaria resgatista nivel 3 ate 8h",
+    "b": "diaria resgatista nivel 2 ate 8h",
+    "score": 0.8669642857142856,
+    "status": "ALERTA"
+  },
+  {
+    "a": "sv oficial mensal",
+    "b": "sv oficial mensal",
+    "score": 1.0,
+    "status": "DUPLICIDADE"
+  },
+  {
+    "a": "pintura predial",
+    "b": "locacao de guindaste",
+    "score": 0.13714285714285712,
+    "status": "ORIGINAL"
+  },
+  {
+    "a": "sv pedreiro",
+    "b": "sv pedreira",
+    "score": 0.6787878787878787,
+    "status": "ORIGINAL"
+  },
+  {
+    "a": "abcabcabc",
+    "b": "cbacbacba",
+    "score": 0.26666666666666666,
+    "status": "ORIGINAL"
+  },
+  {
+    "a": "hora tecnica eletricista",
+    "b": "eletricista hora tecnica noturna",
+    "score": 0.6428571428571428,
+    "status": "ORIGINAL"
+  }
+]

@@ -5,7 +5,6 @@ import com.gerdau.desafio.dto.response.GrupoServicoResponse;
 import com.gerdau.desafio.service.GrupoServicoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,19 +20,29 @@ public class GrupoServicoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GrupoServicoResponse>> listarTodos() {
-        return ResponseEntity.ok(service.listarTodos());
+    public List<GrupoServicoResponse> listar(@RequestParam(required = false) String q) {
+        return service.listar(q);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GrupoServicoResponse> buscarPorId(@PathVariable String id) {
-        return ResponseEntity.ok(service.buscarPorId(id));
+    public GrupoServicoResponse buscarPorId(@PathVariable String id) {
+        return service.buscarPorId(id);
     }
 
     @PostMapping
-    public ResponseEntity<GrupoServicoResponse> salvar(
-            @Valid @RequestBody GrupoServicoRequest request) {
-        GrupoServicoResponse salvo = service.criar(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+    @ResponseStatus(HttpStatus.CREATED)
+    public GrupoServicoResponse criar(@Valid @RequestBody GrupoServicoRequest request) {
+        return service.criar(request);
+    }
+
+    @PutMapping("/{id}")
+    public GrupoServicoResponse atualizar(@PathVariable String id, @Valid @RequestBody GrupoServicoRequest request) {
+        return service.atualizar(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluir(@PathVariable String id) {
+        service.excluir(id);
     }
 }

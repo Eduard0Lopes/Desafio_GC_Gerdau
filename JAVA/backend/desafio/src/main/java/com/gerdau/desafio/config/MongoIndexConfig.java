@@ -1,20 +1,25 @@
 package com.gerdau.desafio.config;
 
 import com.gerdau.desafio.model.CodigoCompleto;
+import com.gerdau.desafio.model.CodigoFornecedor;
 import com.gerdau.desafio.model.CodigoServico;
-import jakarta.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
+import com.gerdau.desafio.model.GrupoServico;
+import com.gerdau.desafio.model.UnidadeMedida;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.Index;
-import org.springframework.data.mongodb.core.index.IndexOperations;
+import org.springframework.stereotype.Component;
 
-@Configuration
-public class MongoIndexConfig {
-
-    private static final Logger log = LoggerFactory.getLogger(MongoIndexConfig.class);
+/**
+ * Cria os índices usados pelas consultas e pelas validações de unicidade.
+ * Os índices não são únicos para tolerar dados legados importados com repetições.
+ */
+@Component
+@Order(1)
+public class MongoIndexConfig implements ApplicationRunner {
 
     private final MongoTemplate mongoTemplate;
 
@@ -22,21 +27,19 @@ public class MongoIndexConfig {
         this.mongoTemplate = mongoTemplate;
     }
 
-    @PostConstruct
-    public void criarIndices() {
-        log.info("[MONGO] Criando índices...");
+    @Override
+    public void run(ApplicationArguments args) {
+        indexar(GrupoServico.COLECAO, "nomeNormalizado");
+        indexar(UnidadeMedida.COLECAO, "sigla");
+        indexar(CodigoFornecedor.COLECAO, "codigoFornecedorSAP");
+        indexar(CodigoServico.COLECAO, "descricaoNormalizada");
+        indexar(CodigoServico.COLECAO, "legacyIds");
+        for (String campo : new String[]{"gsId", "cfId", "csId", "umId", "legacyIds"}) {
+            indexar(CodigoCompleto.COLECAO, campo);
+        }
+    }
 
-        IndexOperations idxCodigoCompleto = mongoTemplate.indexOps(CodigoCompleto.class);
-        idxCodigoCompleto.createIndex(new Index().on("gsId", Sort.Direction.ASC));
-        idxCodigoCompleto.createIndex(new Index().on("cfId", Sort.Direction.ASC));
-        idxCodigoCompleto.createIndex(new Index().on("csId", Sort.Direction.ASC));
-        idxCodigoCompleto.createIndex(new Index().on("origem", Sort.Direction.ASC));
-
-        IndexOperations idxCodigoServico = mongoTemplate.indexOps(CodigoServico.class);
-        idxCodigoServico.createIndex(new Index().on("descricaoNormalizada", Sort.Direction.ASC));
-        idxCodigoServico.createIndex(new Index().on("codigoOriginal", Sort.Direction.ASC));
-        idxCodigoServico.createIndex(new Index().on("origem", Sort.Direction.ASC));
-
-        log.info("[MONGO] Índices criados com sucesso.");
+    private void indexar(String colecao, String campo) {
+        mongoTemplate.indexOps(colecao).createIndex(new Index().on(campo, Sort.Direction.ASC));
     }
 }

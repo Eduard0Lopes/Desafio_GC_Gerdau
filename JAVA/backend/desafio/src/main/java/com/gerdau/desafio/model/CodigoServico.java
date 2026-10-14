@@ -3,28 +3,23 @@ package com.gerdau.desafio.model;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
-@Document(collection = "codigos_servico")
+@Document(collection = CodigoServico.COLECAO)
 public class CodigoServico {
+
+    public static final String COLECAO = "codigos_servico";
+    public static final int TAMANHO_ID = 6;
 
     @Id
     private String id;
-
-    @Field("codigoOriginal")
-    private String codigoOriginal;
-
-    @Field("descricao")
     private String descricao;
-
-    @Field("descricaoNormalizada")
     private String descricaoNormalizada;
-
-    @Field("quantidadeCaracteres")
     private int quantidadeCaracteres;
-
-    @Field("origem")
-    private String origem;
-
+    private Origem origem;
+    private String justificativa;
+    private List<String> legacyIds = new ArrayList<>();
 }

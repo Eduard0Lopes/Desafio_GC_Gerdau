@@ -1,0 +1,27 @@
+# IDEs e sistema
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Java / Maven
+target/
+
+# Node / Vite
+node_modules/
+dist/
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+venv/
+.venv/
+
+# Dados brutos (LGPD) e logs
+IA/data/raw/
+*.log
+IA/data/processed/db_simulado.json

@@ -1,10 +1,6 @@
 package com.gerdau.desafio.dto.response;
 
-public record GrupoServicoResponse(
-        String id,
-        String nome,
-        String nomeNormalizado,
-        String codigoOriginal,
-        String origem
-) {
+import com.gerdau.desafio.model.Origem;
+
+public record GrupoServicoResponse(String id, String nome, String nomeNormalizado, Origem origem) {
 }

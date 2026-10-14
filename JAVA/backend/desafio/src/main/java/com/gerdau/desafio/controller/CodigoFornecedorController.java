@@ -5,7 +5,6 @@ import com.gerdau.desafio.dto.response.CodigoFornecedorResponse;
 import com.gerdau.desafio.service.CodigoFornecedorService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,19 +20,30 @@ public class CodigoFornecedorController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CodigoFornecedorResponse>> listarTodos() {
-        return ResponseEntity.ok(service.listarTodos());
+    public List<CodigoFornecedorResponse> listar(@RequestParam(required = false) String q) {
+        return service.listar(q);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CodigoFornecedorResponse> buscarPorId(@PathVariable String id) {
-        return ResponseEntity.ok(service.buscarPorId(id));
+    public CodigoFornecedorResponse buscarPorId(@PathVariable String id) {
+        return service.buscarPorId(id);
     }
 
     @PostMapping
-    public ResponseEntity<CodigoFornecedorResponse> salvar(
-            @Valid @RequestBody CodigoFornecedorRequest request) {
-        CodigoFornecedorResponse salvo = service.criar(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CodigoFornecedorResponse criar(@Valid @RequestBody CodigoFornecedorRequest request) {
+        return service.criar(request);
+    }
+
+    @PutMapping("/{id}")
+    public CodigoFornecedorResponse atualizar(@PathVariable String id,
+                                              @Valid @RequestBody CodigoFornecedorRequest request) {
+        return service.atualizar(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluir(@PathVariable String id) {
+        service.excluir(id);
     }
 }

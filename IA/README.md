@@ -1,43 +1,29 @@
-# Projeto Gerdau — Saneamento de Dados e Catálogo Padronizado de Serviços
+# IA & Dados — Saneamento e catálogo de serviços
 
-Este repositório contém a solução desenvolvida para a trilha de **IA & Dados** do Desafio Gerdau, focada no saneamento, padronização e estruturação dos códigos de serviço contratuais.
+Pipeline Python que saneia a base SAP anonimizada e gera os artefatos consumidos pela API Java.
 
-## 📋 Visão Geral do Problema
-O cadastro descentralizado de serviços no SAP gerou milhares de registros redundantes, divergentes e com o limite de 40 caracteres mal aproveitado. A ausência de um padrão unificava serviços idênticos sob descrições e códigos diferentes, dificultando a análise de gastos (*Spend Analysis*) e a negociação por volume.
+```bash
+pip install -r requirements.txt pytest
+python src/pipeline.py          # roda todas as etapas (a partir de IA/)
+python -m pytest tests
+python src/motor_busca.py "SV EQUIPE DE TELHADO" --top 5
+```
 
-## 🛠️ Solução Implementada
-1. **Saneamento Textual:** Normalização de descrições (remoção de acentos, padronização de maiúsculas/minúsculas e pontuações).
-2. **Matriz De-Para:** Mapeamento unívoco entre os códigos legados e os novos identificadores canônicos (`CS-000001`).
-3. **Deduplicação Inteligente:** Separação entre registros exclusivos (`ORIGINAL`) e duplicidades exatas tratadas (`CONSOLIDADO`).
-4. **Catálogo Padronizado XLSX:** Exportação de uma planilha corporativa estruturada, estilizada e pronta para consumo.
-5. **Modelagem NoSQL:** Estruturação em coleções JSON para integração futura com API e motores de busca (*Fuzzy Search*).
+| Etapa | Script | Saída |
+|---|---|---|
+| 1. Saneamento (só se `data/raw/base_original.xlsx` existir) | `sanitizacao.py` | `data/processed/base_saneada.xlsx` |
+| 2. Coleções NoSQL | `migration.py` | `data/processed/nosql/*.json` (importadas pelo `DadosIaSeeder`) |
+| 3. Matriz De-Para com score real | `gerar_matriz_depara.py` | `matriz_de_para_gerdau.{xlsx,csv}` |
+| 4. Catálogo padronizado | `gerar_catalogo.py` | `catalogo_padronizado_servicos.xlsx` |
+| 5. Banco simulado offline | `testar_banco.py` | `db_simulado.json` |
+| 6. Auditoria | `validar_prova.py` | falha (exit 1) se alguma verificação não passar |
 
----
+Módulos compartilhados: `config.py` (caminhos), `normalizacao.py`, `fuzzy_engine.py`, `ranking_policy.py`,
+`dados.py` (IDs canônicos). A base original não é versionada (LGPD); sem ela, as unidades de medida vêm de
+`data/reference/unidades_medida.csv`.
 
-## 📁 Estrutura de Arquivos
-- `gerar_catalogo_xlsx.py` — Script principal em Python que executa todo o pipeline de saneamento, agrupamento e formatação da planilha.
-- `requirements.txt` — Lista de dependências e bibliotecas necessárias.
-- `.gitignore` — Configuração para exclusão de dados brutos sensíveis e arquivos temporários.
-- `data/processed/catalogo_padronizado_servicos.xlsx` — Catálogo final gerado e formatado.
-
----
-
-## 🚀 Como Executar o Projeto
-
-1. **Pré-requisitos:**
-   Certifique-se de ter o Python 3.8+ instalado em sua máquina.
-
-2. **Instalar Dependências:**
-   No terminal integrado do VS Code, execute:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Executar o Pipeline:**
-   Certifique-se de que a base original (`base_original.xlsx`) está na raiz do projeto e execute:
-   ```bash
-   python gerar_catalogo_xlsx.py
-   ```
-
-4. **Resultado:**
-   O script gerará a planilha formatada em `data/processed/catalogo_padronizado_servicos.xlsx` e os arquivos de suporte na pasta de processados.
+**IDs canônicos**: o código de serviço (`000001`) é o mesmo na matriz, no catálogo e no `_id` do MongoDB
+(ordem da primeira ocorrência da descrição normalizada). A matriz traz, por linha legada: `newId`,
+`decision` (`ORIGINAL`/`CONSOLIDADO`), o serviço canônico mais parecido (`similarId`, `score`) e o status da
+política de ranking (≥ 0,88 duplicidade, ≥ 0,70 alerta). O motor e a normalização são idênticos aos da API
+(ver [docs/ARQUITETURA.md](../docs/ARQUITETURA.md)).

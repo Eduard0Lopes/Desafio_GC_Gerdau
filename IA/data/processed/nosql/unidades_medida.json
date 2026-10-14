@@ -3,14 +3,14 @@
     "_id": "01",
     "sigla": "CM",
     "nome": "Centímetro",
-    "nomeNormalizado": "centímetro",
+    "nomeNormalizado": "centimetro",
     "origem": "MIGRACAO"
   },
   {
     "_id": "02",
     "sigla": "CDM",
     "nome": "Centímetro cúbico",
-    "nomeNormalizado": "centímetro cúbico",
+    "nomeNormalizado": "centimetro cubico",
     "origem": "MIGRACAO"
   },
   {
@@ -45,7 +45,7 @@
     "_id": "07",
     "sigla": "MON",
     "nome": "Mês",
-    "nomeNormalizado": "mês",
+    "nomeNormalizado": "mes",
     "origem": "MIGRACAO"
   },
   {
@@ -59,7 +59,7 @@
     "_id": "09",
     "sigla": "M3",
     "nome": "Metro cúbico",
-    "nomeNormalizado": "metro cúbico",
+    "nomeNormalizado": "metro cubico",
     "origem": "MIGRACAO"
   },
   {
@@ -80,7 +80,7 @@
     "_id": "12",
     "sigla": "MM",
     "nome": "Milímetro",
-    "nomeNormalizado": "milímetro",
+    "nomeNormalizado": "milimetro",
     "origem": "MIGRACAO"
   },
   {
@@ -94,14 +94,14 @@
     "_id": "14",
     "sigla": "KM",
     "nome": "Quilômetro",
-    "nomeNormalizado": "quilômetro",
+    "nomeNormalizado": "quilometro",
     "origem": "MIGRACAO"
   },
   {
     "_id": "15",
     "sigla": "SV",
     "nome": "Serviço",
-    "nomeNormalizado": "serviço",
+    "nomeNormalizado": "servico",
     "origem": "MIGRACAO"
   },
   {
@@ -115,7 +115,7 @@
     "_id": "17",
     "sigla": "ST",
     "nome": "Unidade (peça)",
-    "nomeNormalizado": "unidade (peça)",
+    "nomeNormalizado": "unidade peca",
     "origem": "MIGRACAO"
   }
 ]

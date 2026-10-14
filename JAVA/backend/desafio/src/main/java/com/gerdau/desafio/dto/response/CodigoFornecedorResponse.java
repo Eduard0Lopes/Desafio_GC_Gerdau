@@ -1,9 +1,7 @@
 package com.gerdau.desafio.dto.response;
 
-public record CodigoFornecedorResponse(
-        String id,
-        String codigoOriginal,
-        String nomeNormalizado,
-        String origem
-) {
+import com.gerdau.desafio.model.Origem;
+
+public record CodigoFornecedorResponse(String id, Long codigoFornecedorSAP, String nome, String nomeNormalizado,
+                                       Origem origem) {
 }

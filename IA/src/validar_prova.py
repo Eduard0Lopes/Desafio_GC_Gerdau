@@ -1,57 +1,88 @@
-import pandas as pd
+"""Auditoria dos artefatos gerados: volume, integridade referencial e contrato com a API Java.
+
+Encerra com código 1 se alguma verificação falhar.
+"""
 import json
-import os
+import re
+import sys
 
-def prova_incontestavel():
-    print("=" * 60)
-    print("INICIANDO AUDITORIA DE PROVA INCONTESTÁVEL - GERDAU IA/DADOS")
-    print("=" * 60)
+import pandas as pd
 
-    # 1. Carregar originais e processados
-    caminho_excel = os.path.abspath('data/raw/base_original.xlsx')    
-    df_original = pd.read_excel(caminho_excel, sheet_name='1. Base Anonimizada')
-    df_saneado = pd.read_csv('data/processed/base_saneada.csv', encoding='utf-8-sig')
+import config
+from dados import carregar_base_saneada
+from normalizacao import normalizar_texto
 
-    total_original = len(df_original)
-    total_saneado = len(df_saneado)
+FORMATO_ID = {
+    "grupos_servico": r"\d{3}",
+    "unidades_medida": r"\d{2}",
+    "codigos_fornecedor": r"\d{3}",
+    "codigos_servico": r"\d{6}",
+    "codigos_completos": r"\d{14}",
+}
 
-    print(f"\n[TESTE 1] Integridade de Volume de Dados:")
-    print(f"   - Linhas na base original: {total_original}")
-    print(f"   - Linhas na base saneada:  {total_saneado}")
-    assert total_original == total_saneado, "[FALHA] Divergência no número de registros!"
-    print("   [APROVADO] 100% dos registros foram preservados (zero perda de dados).")
 
-    # 2. Validar se o tratamento de acentos e encoding está perfeito
-    print(f"\n[TESTE 2] Auditoria de Codificação e Caracteres Especiais:")
-    amostra = df_saneado[df_saneado['DescricaoOriginal'].str.contains('Pavimentação|Segurança', na=False)]
-    for idx, row in amostra.head(2).iterrows():
-        print(f"   - Original: {row['DescricaoOriginal']} ---> Normalizada: {row['DescricaoNormalizada']}")
-    print("   [APROVADO] Caracteres especiais e acentos tratados com sucesso no padrão UTF-8-SIG.")
+def carregar_colecoes() -> dict[str, list[dict]]:
+    colecoes = {}
+    for nome in config.COLECOES:
+        with open(config.NOSQL / f"{nome}.json", encoding="utf-8") as f:
+            colecoes[nome] = json.load(f)
+    return colecoes
 
-    # 3. Validar Regra SAP (40 caracteres)
-    print(f"\n[TESTE 3] Validação da Restrição SAP (Máximo 40 caracteres):")
-    alertas_sap = df_saneado['AlertaSAP'].sum()
-    print(f"   - Total de itens que excedem 40 caracteres identificados: {alertas_sap}")
-    print("   [APROVADO] O motor mapeou com precisão cirúrgica os itens que exigem atenção contratual no SAP.")
 
-    # 4. Validar Consistência dos Documentos NoSQL
-    print(f"\n[TESTE 4] Integridade do Modelo NoSQL:")
-    with open('data/processed/nosql/codigos_completos.json', 'r', encoding='utf-8') as f:
-        docs_completos = json.load(f)
-    
-    print(f"   - Total de documentos NoSQL gerados em 'codigos_completos.json': {len(docs_completos)}")
-    assert len(docs_completos) == total_original, "[FALHA] Quantidade de documentos NoSQL difere da base!"
-    
-    # Amostra de ID Composto
-    exemplo_doc = docs_completos[0]
-    print(f"   - Amostra de ID Composto NoSQL gerado: {exemplo_doc['_id']}")
-    print(f"   - Amostra de Snapshot Descritivo: {exemplo_doc['descricaoSnapshot']}")
-    print("   [APROVADO] Estrutura NoSQL validada e pronta para consumo por qualquer banco de dados de documentos.")
+def verificar(base: pd.DataFrame, colecoes: dict[str, list[dict]]) -> list[str]:
+    falhas = []
 
-    print("\n" + "=" * 60)
-    print("RESULTADO FINAL: TODAS AS PROVAS FORAM APROVADAS COM SUCESSO!")
-    print("O pipeline de IA e Dados está íntegro, auditado e blindado.")
-    print("=" * 60)
+    def checar(condicao, mensagem):
+        print(f"  [{'OK' if condicao else 'FALHA'}] {mensagem}")
+        if not condicao:
+            falhas.append(mensagem)
+
+    if config.BASE_ORIGINAL.exists():
+        original = pd.read_excel(config.BASE_ORIGINAL, sheet_name=config.ABA_BASE)
+        checar(len(original) == len(base), f"Base saneada preserva os {len(original)} registros da original")
+
+    checar((base["DescricaoNormalizada"].fillna("") == base["DescricaoOriginal"].map(normalizar_texto)).all(),
+           "DescricaoNormalizada da base saneada segue normalizacao.normalizar_texto")
+
+    for nome, docs in colecoes.items():
+        ids = [d["_id"] for d in docs]
+        checar(len(ids) == len(set(ids)), f"{nome}: {len(ids)} documentos com _id único")
+        checar(all(re.fullmatch(FORMATO_ID[nome], i) for i in ids), f"{nome}: _id no formato {FORMATO_ID[nome]}")
+
+    for nome, campo in [("grupos_servico", "nome"), ("unidades_medida", "nome")]:
+        checar(all(d["nomeNormalizado"] == normalizar_texto(d[campo]) for d in colecoes[nome]),
+               f"{nome}: nomeNormalizado consistente com a normalização")
+
+    servicos = colecoes["codigos_servico"]
+    checar(len(servicos) == base["DescricaoNormalizada"].nunique(),
+           "codigos_servico: um documento por descrição normalizada única")
+    checar(all(d["quantidadeCaracteres"] == len(d["descricao"]) for d in servicos),
+           "codigos_servico: quantidadeCaracteres == len(descricao)")
+
+    ids = {nome: {d["_id"] for d in docs} for nome, docs in colecoes.items()}
+    completos = colecoes["codigos_completos"]
+    referencias_ok = all(
+        c["gsId"] in ids["grupos_servico"] and c["cfId"] in ids["codigos_fornecedor"]
+        and c["csId"] in ids["codigos_servico"] and c["umId"] in ids["unidades_medida"]
+        for c in completos
+    )
+    checar(referencias_ok, "codigos_completos: todas as referências GS/CF/CS/UM existem")
+    checar(all(c["_id"] == c["gsId"] + c["cfId"] + c["csId"] + c["umId"] == c["idCompleto"] for c in completos),
+           "codigos_completos: _id == idCompleto == GS+CF+CS+UM")
+
+    checar(len({l for c in completos for l in c["legacyIds"]}) == base["Código do Serviço"].astype(str).nunique(),
+           "codigos_completos: todo código legado da base está rastreável via legacyIds")
+    return falhas
+
+
+def main():
+    print("Auditoria dos artefatos do pipeline IA/Dados")
+    falhas = verificar(carregar_base_saneada(), carregar_colecoes())
+    if falhas:
+        print(f"\n{len(falhas)} verificação(ões) falharam.")
+        sys.exit(1)
+    print("\nTodas as verificações passaram.")
+
 
 if __name__ == "__main__":
-    prova_incontestavel()
+    main()

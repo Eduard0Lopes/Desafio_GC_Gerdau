@@ -56,7 +56,8 @@
     "quantidadeCaracteres": 21,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4050928"
+      "4050928",
+      "4079961"
     ]
   },
   {
@@ -176,7 +177,8 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4050931"
+      "4050931",
+      "4082305"
     ]
   },
   {
@@ -231,9 +233,9 @@
   },
   {
     "_id": "000024",
-    "descricao": "MOTONIVELADORA  c MO",
+    "descricao": "MOTONIVELADORA c MO",
     "descricaoNormalizada": "motoniveladora c mo",
-    "quantidadeCaracteres": 20,
+    "quantidadeCaracteres": 19,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4092935"
@@ -246,7 +248,10 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4079111"
+      "4079111",
+      "4079113",
+      "4079112",
+      "4079114"
     ]
   },
   {
@@ -301,9 +306,9 @@
   },
   {
     "_id": "000031",
-    "descricao": "SV- JATEAMENTO ABRASIVO Sa 2 1/2  COM AB",
+    "descricao": "SV- JATEAMENTO ABRASIVO Sa 2 1/2 COM AB",
     "descricaoNormalizada": "sv jateamento abrasivo sa 2 1 2 com ab",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4027658"
@@ -311,9 +316,9 @@
   },
   {
     "_id": "000032",
-    "descricao": "SV- JATEAMENTO ABRASIVO Sa 3  COM ABRASI",
+    "descricao": "SV- JATEAMENTO ABRASIVO Sa 3 COM ABRASI",
     "descricaoNormalizada": "sv jateamento abrasivo sa 3 com abrasi",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4027659"
@@ -356,7 +361,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4027767"
+      "4027767",
+      "4028600"
     ]
   },
   {
@@ -401,9 +407,9 @@
   },
   {
     "_id": "000041",
-    "descricao": "ROLO COMPACTADOR  c MO",
+    "descricao": "ROLO COMPACTADOR c MO",
     "descricaoNormalizada": "rolo compactador c mo",
-    "quantidadeCaracteres": 22,
+    "quantidadeCaracteres": 21,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4092934"
@@ -501,9 +507,9 @@
   },
   {
     "_id": "000051",
-    "descricao": "SV-APLICAÇÃO DE PRIMER PARA ADERÊNCIA  (",
+    "descricao": "SV-APLICAÇÃO DE PRIMER PARA ADERÊNCIA (",
     "descricaoNormalizada": "sv aplicacao de primer para aderencia",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4027779"
@@ -591,9 +597,9 @@
   },
   {
     "_id": "000060",
-    "descricao": "SV-PINTURA COM TINTA  POLIURETANO  (ABNT",
+    "descricao": "SV-PINTURA COM TINTA POLIURETANO (ABNT",
     "descricaoNormalizada": "sv pintura com tinta poliuretano abnt",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4027784"
@@ -606,7 +612,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4027786"
+      "4027786",
+      "4027787"
     ]
   },
   {
@@ -616,7 +623,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4054914"
+      "4054914",
+      "4054913"
     ]
   },
   {
@@ -691,12 +699,13 @@
   },
   {
     "_id": "000070",
-    "descricao": "SV-LIMPEZA  MECÂNICA / MANUAL EM SUPERFÍ",
+    "descricao": "SV-LIMPEZA MECÂNICA / MANUAL EM SUPERFÍ",
     "descricaoNormalizada": "sv limpeza mecanica manual em superfi",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4027794"
+      "4027794",
+      "4046490"
     ]
   },
   {
@@ -716,7 +725,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4027795"
+      "4027795",
+      "4058073"
     ]
   },
   {
@@ -751,9 +761,9 @@
   },
   {
     "_id": "000076",
-    "descricao": "SV-REPARO EM ALVENARIA  REBÔCO, CIMENTO",
+    "descricao": "SV-REPARO EM ALVENARIA REBÔCO, CIMENTO",
     "descricaoNormalizada": "sv reparo em alvenaria reboco cimento",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4027799"
@@ -771,9 +781,9 @@
   },
   {
     "_id": "000078",
-    "descricao": "SV - JATEAMENTO ABRASIVO  Sa 1  COM ABRA",
+    "descricao": "SV - JATEAMENTO ABRASIVO Sa 1 COM ABRA",
     "descricaoNormalizada": "sv jateamento abrasivo sa 1 com abra",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4027800"
@@ -806,7 +816,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4028310"
+      "4028310",
+      "4028315"
     ]
   },
   {
@@ -966,7 +977,19 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4028312"
+      "4028312",
+      "4028313",
+      "4028314",
+      "4028316",
+      "4028317",
+      "4028318",
+      "4028319",
+      "4028320",
+      "4028321",
+      "4028322",
+      "4028323",
+      "4028326",
+      "4028515"
     ]
   },
   {
@@ -981,9 +1004,9 @@
   },
   {
     "_id": "000099",
-    "descricao": "SV-RETROESCAVADEIRA  (DIARIA)",
+    "descricao": "SV-RETROESCAVADEIRA (DIARIA)",
     "descricaoNormalizada": "sv retroescavadeira diaria",
-    "quantidadeCaracteres": 29,
+    "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4012645"
@@ -1066,7 +1089,8 @@
     "quantidadeCaracteres": 18,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4050930"
+      "4050930",
+      "4035890"
     ]
   },
   {
@@ -1126,7 +1150,8 @@
     "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4100162"
+      "4100162",
+      "4096420"
     ]
   },
   {
@@ -1276,7 +1301,9 @@
     "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4100182"
+      "4100182",
+      "4086448",
+      "4096444"
     ]
   },
   {
@@ -1426,7 +1453,8 @@
     "quantidadeCaracteres": 21,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4050929"
+      "4050929",
+      "4068761"
     ]
   },
   {
@@ -1461,12 +1489,13 @@
   },
   {
     "_id": "000147",
-    "descricao": "SV- DEM CONCRETO ARMADO CONSID SERV  BAI",
+    "descricao": "SV- DEM CONCRETO ARMADO CONSID SERV BAI",
     "descricaoNormalizada": "sv dem concreto armado consid serv bai",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023813"
+      "4023813",
+      "4023812"
     ]
   },
   {
@@ -1596,7 +1625,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4028324"
+      "4028324",
+      "4028325"
     ]
   },
   {
@@ -1686,7 +1716,13 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4028327"
+      "4028327",
+      "4028328",
+      "4028329",
+      "4028330",
+      "4028331",
+      "4028332",
+      "4028333"
     ]
   },
   {
@@ -1861,9 +1897,9 @@
   },
   {
     "_id": "000187",
-    "descricao": "RETRO ESCAVADEIRA  - eventual",
+    "descricao": "RETRO ESCAVADEIRA - eventual",
     "descricaoNormalizada": "retro escavadeira eventual",
-    "quantidadeCaracteres": 29,
+    "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4093379"
@@ -1906,7 +1942,8 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096422"
+      "4096422",
+      "4100164"
     ]
   },
   {
@@ -1946,7 +1983,19 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4028334"
+      "4028334",
+      "4028335",
+      "4028336",
+      "4028337",
+      "4028338",
+      "4028339",
+      "4028340",
+      "4028341",
+      "4028342",
+      "4028343",
+      "4028344",
+      "4028345",
+      "4028347"
     ]
   },
   {
@@ -2036,7 +2085,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096423"
+      "4096423",
+      "4100165"
     ]
   },
   {
@@ -2156,7 +2206,9 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023986"
+      "4023986",
+      "4023987",
+      "4023988"
     ]
   },
   {
@@ -2326,7 +2378,8 @@
     "quantidadeCaracteres": 9,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023696"
+      "4023696",
+      "4050771"
     ]
   },
   {
@@ -2776,7 +2829,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4028346"
+      "4028346",
+      "4028348"
     ]
   },
   {
@@ -2951,9 +3005,9 @@
   },
   {
     "_id": "000296",
-    "descricao": "SV -MEIO FIO  INCLUSO MATERIAL",
+    "descricao": "SV -MEIO FIO INCLUSO MATERIAL",
     "descricaoNormalizada": "sv meio fio incluso material",
-    "quantidadeCaracteres": 30,
+    "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4050310"
@@ -2966,7 +3020,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4028352"
+      "4028352",
+      "4028361"
     ]
   },
   {
@@ -3016,7 +3071,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4028353"
+      "4028353",
+      "4028360"
     ]
   },
   {
@@ -3066,7 +3122,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096447"
+      "4096447",
+      "4100185"
     ]
   },
   {
@@ -3106,7 +3163,10 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4028354"
+      "4028354",
+      "4028359",
+      "4028363",
+      "4028367"
     ]
   },
   {
@@ -3176,7 +3236,8 @@
     "quantidadeCaracteres": 9,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023590"
+      "4023590",
+      "4050770"
     ]
   },
   {
@@ -3206,7 +3267,8 @@
     "quantidadeCaracteres": 18,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4059544"
+      "4059544",
+      "4121457"
     ]
   },
   {
@@ -3216,7 +3278,8 @@
     "quantidadeCaracteres": 21,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4059546"
+      "4059546",
+      "4123126"
     ]
   },
   {
@@ -3226,7 +3289,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4028355"
+      "4028355",
+      "4028362"
     ]
   },
   {
@@ -3246,7 +3310,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096446"
+      "4096446",
+      "4100184"
     ]
   },
   {
@@ -3306,7 +3371,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023784"
+      "4023784",
+      "4050321"
     ]
   },
   {
@@ -3506,7 +3572,8 @@
     "quantidadeCaracteres": 11,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023514"
+      "4023514",
+      "4050769"
     ]
   },
   {
@@ -3726,7 +3793,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023826"
+      "4023826",
+      "4023827"
     ]
   },
   {
@@ -3736,7 +3804,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023857"
+      "4023857",
+      "4023856"
     ]
   },
   {
@@ -4166,7 +4235,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4024010"
+      "4024010",
+      "4023973"
     ]
   },
   {
@@ -4221,9 +4291,9 @@
   },
   {
     "_id": "000423",
-    "descricao": "SV - HORA DE AJUDANTE  HORA NORMAL CHEIA",
+    "descricao": "SV - HORA DE AJUDANTE HORA NORMAL CHEIA",
     "descricaoNormalizada": "sv hora de ajudante hora normal cheia",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4028369"
@@ -4251,9 +4321,9 @@
   },
   {
     "_id": "000426",
-    "descricao": "SV - HORA DE ENCARREG  HORA NORMAL CHEIA",
+    "descricao": "SV - HORA DE ENCARREG HORA NORMAL CHEIA",
     "descricaoNormalizada": "sv hora de encarreg hora normal cheia",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4028370"
@@ -4406,7 +4476,8 @@
     "quantidadeCaracteres": 20,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023510"
+      "4023510",
+      "4051172"
     ]
   },
   {
@@ -4446,7 +4517,8 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4084132"
+      "4084132",
+      "4079249"
     ]
   },
   {
@@ -4596,7 +4668,11 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023941"
+      "4023941",
+      "4023938",
+      "4023939",
+      "4023942",
+      "4023943"
     ]
   },
   {
@@ -4721,9 +4797,9 @@
   },
   {
     "_id": "000473",
-    "descricao": "SV-FORNEC APL GRAUTE PARA ENCH NICHOS  A",
+    "descricao": "SV-FORNEC APL GRAUTE PARA ENCH NICHOS A",
     "descricaoNormalizada": "sv fornec apl graute para ench nichos a",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4023900"
@@ -4741,9 +4817,9 @@
   },
   {
     "_id": "000475",
-    "descricao": "SV -HORA TÉCNICO SEGUR  H NOTURNA CHEIA",
+    "descricao": "SV -HORA TÉCNICO SEGUR H NOTURNA CHEIA",
     "descricaoNormalizada": "sv hora tecnico segur h noturna cheia",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4028375"
@@ -4766,7 +4842,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023569"
+      "4023569",
+      "4050873"
     ]
   },
   {
@@ -4796,7 +4873,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023552"
+      "4023552",
+      "4051085"
     ]
   },
   {
@@ -4841,9 +4919,9 @@
   },
   {
     "_id": "000485",
-    "descricao": "SV -HORA  OPERADOR H EXTRAORDINÁRIA CHEI",
+    "descricao": "SV -HORA OPERADOR H EXTRAORDINÁRIA CHEI",
     "descricaoNormalizada": "sv hora operador h extraordinaria chei",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4028376"
@@ -4921,9 +4999,9 @@
   },
   {
     "_id": "000493",
-    "descricao": "SV - HORA  AJUDANTE  HORA EXTRAORD CHEIA",
+    "descricao": "SV - HORA AJUDANTE HORA EXTRAORD CHEIA",
     "descricaoNormalizada": "sv hora ajudante hora extraord cheia",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4028377"
@@ -5036,7 +5114,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086374"
+      "4086374",
+      "4086376"
     ]
   },
   {
@@ -5076,7 +5155,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096425"
+      "4096425",
+      "4100167"
     ]
   },
   {
@@ -5096,7 +5176,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023589"
+      "4023589",
+      "4050371"
     ]
   },
   {
@@ -5166,7 +5247,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023787"
+      "4023787",
+      "4050324"
     ]
   },
   {
@@ -5376,7 +5458,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023549"
+      "4023549",
+      "4051150"
     ]
   },
   {
@@ -5406,7 +5489,9 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023821"
+      "4023821",
+      "4023817",
+      "4023818"
     ]
   },
   {
@@ -5506,7 +5591,8 @@
     "quantidadeCaracteres": 19,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023511"
+      "4023511",
+      "4051170"
     ]
   },
   {
@@ -5546,7 +5632,8 @@
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023596"
+      "4023596",
+      "4051000"
     ]
   },
   {
@@ -5736,7 +5823,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023850"
+      "4023850",
+      "4023851"
     ]
   },
   {
@@ -5756,7 +5844,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023555"
+      "4023555",
+      "4051088"
     ]
   },
   {
@@ -5906,7 +5995,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023993"
+      "4023993",
+      "4023994"
     ]
   },
   {
@@ -5916,7 +6006,8 @@
     "quantidadeCaracteres": 10,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023736"
+      "4023736",
+      "4050953"
     ]
   },
   {
@@ -5971,9 +6062,9 @@
   },
   {
     "_id": "000598",
-    "descricao": "SV-TORNEIRA PVC  PRETA 3/4\" P/JARDIM",
+    "descricao": "SV-TORNEIRA PVC PRETA 3/4\" P/JARDIM",
     "descricaoNormalizada": "sv torneira pvc preta 3 4 p jardim",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4041073"
@@ -5996,7 +6087,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023783"
+      "4023783",
+      "4050320"
     ]
   },
   {
@@ -6456,7 +6548,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4066853"
+      "4066853",
+      "4067872"
     ]
   },
   {
@@ -6676,7 +6769,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4124025"
+      "4124025",
+      "4124026"
     ]
   },
   {
@@ -6761,9 +6855,9 @@
   },
   {
     "_id": "000677",
-    "descricao": "SV-MOTORISTA  (DESMOB ACIMA DE 90 DIAS)",
+    "descricao": "SV-MOTORISTA (DESMOB ACIMA DE 90 DIAS)",
     "descricaoNormalizada": "sv motorista desmob acima de 90 dias",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4124035"
@@ -6791,12 +6885,15 @@
   },
   {
     "_id": "000680",
-    "descricao": "SV-FUR CHAPA MET APOIADA  CONCR/REFRAT,",
+    "descricao": "SV-FUR CHAPA MET APOIADA CONCR/REFRAT,",
     "descricaoNormalizada": "sv fur chapa met apoiada concr refrat",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4033193"
+      "4033193",
+      "4033194",
+      "4033195",
+      "4033196"
     ]
   },
   {
@@ -7021,9 +7118,9 @@
   },
   {
     "_id": "000703",
-    "descricao": "H/E  (Diurno)",
+    "descricao": "H/E (Diurno)",
     "descricaoNormalizada": "h e diurno",
-    "quantidadeCaracteres": 13,
+    "quantidadeCaracteres": 12,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4046234"
@@ -7031,9 +7128,9 @@
   },
   {
     "_id": "000704",
-    "descricao": "H/E  (FSD/Noturno)",
+    "descricao": "H/E (FSD/Noturno)",
     "descricaoNormalizada": "h e fsd noturno",
-    "quantidadeCaracteres": 18,
+    "quantidadeCaracteres": 17,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4046235"
@@ -7041,9 +7138,9 @@
   },
   {
     "_id": "000705",
-    "descricao": "H/E  nivel 3(Diurno)",
+    "descricao": "H/E nivel 3(Diurno)",
     "descricaoNormalizada": "h e nivel 3 diurno",
-    "quantidadeCaracteres": 20,
+    "quantidadeCaracteres": 19,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4046236"
@@ -7051,9 +7148,9 @@
   },
   {
     "_id": "000706",
-    "descricao": "H/E nivel 3  (FSD/Noturno)",
+    "descricao": "H/E nivel 3 (FSD/Noturno)",
     "descricaoNormalizada": "h e nivel 3 fsd noturno",
-    "quantidadeCaracteres": 26,
+    "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4046237"
@@ -7121,9 +7218,9 @@
   },
   {
     "_id": "000713",
-    "descricao": "SV-APLICAÇÃO DE  SELADOR ACRILICO",
+    "descricao": "SV-APLICAÇÃO DE SELADOR ACRILICO",
     "descricaoNormalizada": "sv aplicacao de selador acrilico",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4046485"
@@ -7206,7 +7303,8 @@
     "quantidadeCaracteres": 16,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4049807"
+      "4049807",
+      "4050592"
     ]
   },
   {
@@ -7281,9 +7379,9 @@
   },
   {
     "_id": "000729",
-    "descricao": "SV - Caldeireiro Alpinista N1/N2 AN  HE",
+    "descricao": "SV - Caldeireiro Alpinista N1/N2 AN HE",
     "descricaoNormalizada": "sv caldeireiro alpinista n1 n2 an he",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4049826"
@@ -7291,7 +7389,7 @@
   },
   {
     "_id": "000730",
-    "descricao": "SV-Caldeireiro Alpinista N1/N2 AN HE 100",
+    "descricao": "SV-Caldeireiro Alpinista N1/N2 AN HE 100",
     "descricaoNormalizada": "sv caldeireiro alpinista n1 n2 an he 100",
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
@@ -7466,7 +7564,9 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023880"
+      "4023880",
+      "4023881",
+      "4023882"
     ]
   },
   {
@@ -7481,9 +7581,9 @@
   },
   {
     "_id": "000749",
-    "descricao": "SV-DEM CONCRETO ARMADO CONSID SERV  BAIX",
+    "descricao": "SV-DEM CONCRETO ARMADO CONSID SERV BAIX",
     "descricaoNormalizada": "sv dem concreto armado consid serv baix",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4023883"
@@ -7881,9 +7981,9 @@
   },
   {
     "_id": "000789",
-    "descricao": "SV-FORN APLICAÇÃO GRAUTE  ASSENTAMENTO D",
+    "descricao": "SV-FORN APLICAÇÃO GRAUTE ASSENTAMENTO D",
     "descricaoNormalizada": "sv forn aplicacao graute assentamento d",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4023899"
@@ -8056,7 +8156,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023838"
+      "4023838",
+      "4023839"
     ]
   },
   {
@@ -8066,7 +8167,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023840"
+      "4023840",
+      "4023841"
     ]
   },
   {
@@ -8096,7 +8198,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023911"
+      "4023911",
+      "4050318"
     ]
   },
   {
@@ -8346,7 +8449,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023974"
+      "4023974",
+      "4023978"
     ]
   },
   {
@@ -8366,7 +8470,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023976"
+      "4023976",
+      "4050428"
     ]
   },
   {
@@ -8516,7 +8621,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023723"
+      "4023723",
+      "4050317"
     ]
   },
   {
@@ -8576,7 +8682,8 @@
     "quantidadeCaracteres": 10,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023737"
+      "4023737",
+      "4050955"
     ]
   },
   {
@@ -8586,7 +8693,8 @@
     "quantidadeCaracteres": 8,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023735"
+      "4023735",
+      "4050956"
     ]
   },
   {
@@ -8596,7 +8704,8 @@
     "quantidadeCaracteres": 15,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023527"
+      "4023527",
+      "4050963"
     ]
   },
   {
@@ -8606,7 +8715,8 @@
     "quantidadeCaracteres": 15,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023528"
+      "4023528",
+      "4050964"
     ]
   },
   {
@@ -8616,7 +8726,8 @@
     "quantidadeCaracteres": 13,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023526"
+      "4023526",
+      "4050965"
     ]
   },
   {
@@ -8776,7 +8887,8 @@
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023597"
+      "4023597",
+      "4051001"
     ]
   },
   {
@@ -8846,7 +8958,8 @@
     "quantidadeCaracteres": 17,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023524"
+      "4023524",
+      "4050054"
     ]
   },
   {
@@ -8856,7 +8969,8 @@
     "quantidadeCaracteres": 17,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023525"
+      "4023525",
+      "4050055"
     ]
   },
   {
@@ -8866,7 +8980,8 @@
     "quantidadeCaracteres": 15,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023523"
+      "4023523",
+      "4050056"
     ]
   },
   {
@@ -9006,7 +9121,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023551"
+      "4023551",
+      "4051084"
     ]
   },
   {
@@ -9016,7 +9132,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023553"
+      "4023553",
+      "4051086"
     ]
   },
   {
@@ -9026,17 +9143,19 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023554"
+      "4023554",
+      "4051087"
     ]
   },
   {
     "_id": "000904",
-    "descricao": "SV-ADAPTADOR SOLDAVEL COM FLANGE  P/CX.",
+    "descricao": "SV-ADAPTADOR SOLDAVEL COM FLANGE P/CX.",
     "descricaoNormalizada": "sv adaptador soldavel com flange p cx",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023819"
+      "4023819",
+      "4023820"
     ]
   },
   {
@@ -9046,7 +9165,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023556"
+      "4023556",
+      "4051090"
     ]
   },
   {
@@ -9176,7 +9296,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023925"
+      "4023925",
+      "4023926"
     ]
   },
   {
@@ -9186,7 +9307,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023931"
+      "4023931",
+      "4023932"
     ]
   },
   {
@@ -9206,7 +9328,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023785"
+      "4023785",
+      "4050322"
     ]
   },
   {
@@ -9216,7 +9339,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023786"
+      "4023786",
+      "4050323"
     ]
   },
   {
@@ -9226,7 +9350,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023788"
+      "4023788",
+      "4050325"
     ]
   },
   {
@@ -9346,7 +9471,8 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023872"
+      "4023872",
+      "4051144"
     ]
   },
   {
@@ -9396,7 +9522,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023550"
+      "4023550",
+      "4051151"
     ]
   },
   {
@@ -9406,7 +9533,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023547"
+      "4023547",
+      "4051152"
     ]
   },
   {
@@ -9581,9 +9709,9 @@
   },
   {
     "_id": "000959",
-    "descricao": "SV-BUCHA DE REDUÇÃO EXCÊNTRICA PVC  75 X",
+    "descricao": "SV-BUCHA DE REDUÇÃO EXCÊNTRICA PVC 75 X",
     "descricaoNormalizada": "sv bucha de reducao excentrica pvc 75 x",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4023847"
@@ -9596,7 +9724,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023848"
+      "4023848",
+      "4023849"
     ]
   },
   {
@@ -9716,7 +9845,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023767"
+      "4023767",
+      "4050337"
     ]
   },
   {
@@ -9726,7 +9856,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023768"
+      "4023768",
+      "4050338"
     ]
   },
   {
@@ -9756,7 +9887,8 @@
     "quantidadeCaracteres": 19,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023512"
+      "4023512",
+      "4051171"
     ]
   },
   {
@@ -9796,7 +9928,8 @@
     "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023980"
+      "4023980",
+      "4023687"
     ]
   },
   {
@@ -10206,7 +10339,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023675"
+      "4023675",
+      "4050340"
     ]
   },
   {
@@ -10226,7 +10360,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023587"
+      "4023587",
+      "4050365"
     ]
   },
   {
@@ -10326,7 +10461,8 @@
     "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023522"
+      "4023522",
+      "4051322"
     ]
   },
   {
@@ -10336,7 +10472,8 @@
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023730"
+      "4023730",
+      "4051323"
     ]
   },
   {
@@ -10346,7 +10483,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023588"
+      "4023588",
+      "4050364"
     ]
   },
   {
@@ -10681,9 +10819,9 @@
   },
   {
     "_id": "001069",
-    "descricao": "SV-REFLETOR  DE ILUMINAÇÃO COMPLETO COM",
+    "descricao": "SV-REFLETOR DE ILUMINAÇÃO COMPLETO COM",
     "descricaoNormalizada": "sv refletor de iluminacao completo com",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4023984"
@@ -10696,7 +10834,8 @@
     "quantidadeCaracteres": 23,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023468"
+      "4023468",
+      "4051371"
     ]
   },
   {
@@ -10706,7 +10845,8 @@
     "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023707"
+      "4023707",
+      "4051372"
     ]
   },
   {
@@ -10796,14 +10936,15 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023957"
+      "4023957",
+      "4023958"
     ]
   },
   {
     "_id": "001081",
-    "descricao": "SV-PINTURA ESMALTE EM ELET  TUBOS DIÂMET",
+    "descricao": "SV-PINTURA ESMALTE EM ELET TUBOS DIÂMET",
     "descricaoNormalizada": "sv pintura esmalte em elet tubos diamet",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4023959"
@@ -10896,7 +11037,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023451"
+      "4023451",
+      "4050856"
     ]
   },
   {
@@ -10966,7 +11108,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4023962"
+      "4023962",
+      "4023963"
     ]
   },
   {
@@ -11041,9 +11184,9 @@
   },
   {
     "_id": "001105",
-    "descricao": "SV-FORN APL  SIKAFLEX T 68 NAS DIMENSÕES",
+    "descricao": "SV-FORN APL SIKAFLEX T 68 NAS DIMENSÕES",
     "descricaoNormalizada": "sv forn apl sikaflex t 68 nas dimensoes",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4023910"
@@ -11101,9 +11244,9 @@
   },
   {
     "_id": "001111",
-    "descricao": "SV-ASSENT  TRILHOS TR57  BASE CONCRETO A",
+    "descricao": "SV-ASSENT TRILHOS TR57 BASE CONCRETO A",
     "descricaoNormalizada": "sv assent trilhos tr57 base concreto a",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4023843"
@@ -11446,7 +11589,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4049920"
+      "4049920",
+      "4049921"
     ]
   },
   {
@@ -12001,9 +12145,9 @@
   },
   {
     "_id": "001201",
-    "descricao": "Apli de arga reparo estrut  concr vigas",
+    "descricao": "Apli de arga reparo estrut concr vigas",
     "descricaoNormalizada": "apli de arga reparo estrut concr vigas",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4075909"
@@ -12016,7 +12160,9 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4075910"
+      "4075910",
+      "4075914",
+      "4076468"
     ]
   },
   {
@@ -12026,7 +12172,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4075911"
+      "4075911",
+      "4076469"
     ]
   },
   {
@@ -12036,7 +12183,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4075912"
+      "4075912",
+      "4076490"
     ]
   },
   {
@@ -13086,7 +13234,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4056672"
+      "4056672",
+      "4056670"
     ]
   },
   {
@@ -13571,9 +13720,9 @@
   },
   {
     "_id": "001358",
-    "descricao": "SV - FORNEC  MONTAGEM DE INSERTS METÁLIC",
+    "descricao": "SV - FORNEC MONTAGEM DE INSERTS METÁLIC",
     "descricaoNormalizada": "sv fornec montagem de inserts metalic",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4050709"
@@ -13816,7 +13965,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4061105"
+      "4061105",
+      "4062573"
     ]
   },
   {
@@ -14281,9 +14431,9 @@
   },
   {
     "_id": "001429",
-    "descricao": "SV AZULEJOS 32 X 44,5  cm",
+    "descricao": "SV AZULEJOS 32 X 44,5 cm",
     "descricaoNormalizada": "sv azulejos 32 x 44 5 cm",
-    "quantidadeCaracteres": 25,
+    "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4050772"
@@ -15091,9 +15241,9 @@
   },
   {
     "_id": "001510",
-    "descricao": "SV RESINA ACRÍLICA - BASE ÁGUA  -1 DEMÃO",
+    "descricao": "SV RESINA ACRÍLICA - BASE ÁGUA -1 DEMÃO",
     "descricaoNormalizada": "sv resina acrilica base agua 1 demao",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4050824"
@@ -15226,7 +15376,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4050908"
+      "4050908",
+      "4095293"
     ]
   },
   {
@@ -15386,7 +15537,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4050987"
+      "4050987",
+      "4050983"
     ]
   },
   {
@@ -15666,7 +15818,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4050984"
+      "4050984",
+      "4050988"
     ]
   },
   {
@@ -15676,7 +15829,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4050985"
+      "4050985",
+      "4050989"
     ]
   },
   {
@@ -17086,7 +17240,8 @@
     "quantidadeCaracteres": 14,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4050520"
+      "4050520",
+      "4071587"
     ]
   },
   {
@@ -18051,9 +18206,9 @@
   },
   {
     "_id": "001806",
-    "descricao": "SV JUNÇÃO SIMPLES  75 X 75 MM",
+    "descricao": "SV JUNÇÃO SIMPLES 75 X 75 MM",
     "descricaoNormalizada": "sv juncao simples 75 x 75 mm",
-    "quantidadeCaracteres": 29,
+    "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4051155"
@@ -18141,9 +18296,9 @@
   },
   {
     "_id": "001815",
-    "descricao": "SV JUNÇÃO SIMPLES  100 X 75 OU 100 MM",
+    "descricao": "SV JUNÇÃO SIMPLES 100 X 75 OU 100 MM",
     "descricaoNormalizada": "sv juncao simples 100 x 75 ou 100 mm",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4051156"
@@ -18316,7 +18471,8 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4079220"
+      "4079220",
+      "4079221"
     ]
   },
   {
@@ -18326,7 +18482,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4079222"
+      "4079222",
+      "4079223"
     ]
   },
   {
@@ -18471,9 +18628,9 @@
   },
   {
     "_id": "001848",
-    "descricao": "SV - MARTELETEIRO  - HORA NORMAL",
+    "descricao": "SV - MARTELETEIRO - HORA NORMAL",
     "descricaoNormalizada": "sv marteleteiro hora normal",
-    "quantidadeCaracteres": 32,
+    "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082306"
@@ -18481,9 +18638,9 @@
   },
   {
     "_id": "001849",
-    "descricao": "SV - MARTELETEIRO  - HORA NORMAL A DISP",
+    "descricao": "SV - MARTELETEIRO - HORA NORMAL A DISP",
     "descricaoNormalizada": "sv marteleteiro hora normal a disp",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082307"
@@ -18491,9 +18648,9 @@
   },
   {
     "_id": "001850",
-    "descricao": "SV - MARTELETEIRO  - HORA EXTRA RESIDUA",
+    "descricao": "SV - MARTELETEIRO - HORA EXTRA RESIDUA",
     "descricaoNormalizada": "sv marteleteiro hora extra residua",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082308"
@@ -18501,9 +18658,9 @@
   },
   {
     "_id": "001851",
-    "descricao": "SV - MARTELETEIRO  - HORA EXTRA CHEIA",
+    "descricao": "SV - MARTELETEIRO - HORA EXTRA CHEIA",
     "descricaoNormalizada": "sv marteleteiro hora extra cheia",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082309"
@@ -18511,9 +18668,9 @@
   },
   {
     "_id": "001852",
-    "descricao": "SV - MARTELETEIRO  - HORA EXTRA A DISPO",
+    "descricao": "SV - MARTELETEIRO - HORA EXTRA A DISPO",
     "descricaoNormalizada": "sv marteleteiro hora extra a dispo",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082370"
@@ -18521,9 +18678,9 @@
   },
   {
     "_id": "001853",
-    "descricao": "SV - MARTELETEIRO  - HORA NOTURNA CHEIA",
+    "descricao": "SV - MARTELETEIRO - HORA NOTURNA CHEIA",
     "descricaoNormalizada": "sv marteleteiro hora noturna cheia",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082371"
@@ -18531,9 +18688,9 @@
   },
   {
     "_id": "001854",
-    "descricao": "SV - MARTELETEIRO  - HORA NOTURNA RESID",
+    "descricao": "SV - MARTELETEIRO - HORA NOTURNA RESID",
     "descricaoNormalizada": "sv marteleteiro hora noturna resid",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082372"
@@ -18541,9 +18698,9 @@
   },
   {
     "_id": "001855",
-    "descricao": "SV - MARTELETEIRO  - HORA NOTURNA A DIS",
+    "descricao": "SV - MARTELETEIRO - HORA NOTURNA A DIS",
     "descricaoNormalizada": "sv marteleteiro hora noturna a dis",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082373"
@@ -18551,9 +18708,9 @@
   },
   {
     "_id": "001856",
-    "descricao": "SV - MARTELETEIRO  - HORA EXTRA NOTURNA",
+    "descricao": "SV - MARTELETEIRO - HORA EXTRA NOTURNA",
     "descricaoNormalizada": "sv marteleteiro hora extra noturna",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082374"
@@ -18561,9 +18718,9 @@
   },
   {
     "_id": "001857",
-    "descricao": "SV - MARTELETEIRO  HE NOTURNA RESIDUAL",
+    "descricao": "SV - MARTELETEIRO HE NOTURNA RESIDUAL",
     "descricaoNormalizada": "sv marteleteiro he noturna residual",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082375"
@@ -18571,9 +18728,9 @@
   },
   {
     "_id": "001858",
-    "descricao": "SV - MARTELETEIRO  - HE NOTURNA A DISP",
+    "descricao": "SV - MARTELETEIRO - HE NOTURNA A DISP",
     "descricaoNormalizada": "sv marteleteiro he noturna a disp",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082376"
@@ -18581,9 +18738,9 @@
   },
   {
     "_id": "001859",
-    "descricao": "SV - MARTELETEIRO  - HE PERICLOSA CHEIA",
+    "descricao": "SV - MARTELETEIRO - HE PERICLOSA CHEIA",
     "descricaoNormalizada": "sv marteleteiro he periclosa cheia",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082377"
@@ -18591,9 +18748,9 @@
   },
   {
     "_id": "001860",
-    "descricao": "SV - MARTELETEIRO  - HORA PERICULOSA RES",
+    "descricao": "SV - MARTELETEIRO - HORA PERICULOSA RES",
     "descricaoNormalizada": "sv marteleteiro hora periculosa res",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082378"
@@ -18611,9 +18768,9 @@
   },
   {
     "_id": "001862",
-    "descricao": "SV - MARTELETEIRO  - HORA INSALUBRE RESI",
+    "descricao": "SV - MARTELETEIRO - HORA INSALUBRE RESI",
     "descricaoNormalizada": "sv marteleteiro hora insalubre resi",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4082380"
@@ -18736,7 +18893,8 @@
     "quantidadeCaracteres": 23,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086383"
+      "4086383",
+      "4080395"
     ]
   },
   {
@@ -18961,9 +19119,9 @@
   },
   {
     "_id": "001897",
-    "descricao": "TÉC. MEDIÇÃO  - HORA EXTRA NOTURNA",
+    "descricao": "TÉC. MEDIÇÃO - HORA EXTRA NOTURNA",
     "descricaoNormalizada": "tec medicao hora extra noturna",
-    "quantidadeCaracteres": 34,
+    "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4084136"
@@ -19266,7 +19424,9 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086449"
+      "4086449",
+      "4096445",
+      "4100183"
     ]
   },
   {
@@ -19396,7 +19556,8 @@
     "quantidadeCaracteres": 21,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086465"
+      "4086465",
+      "4096456"
     ]
   },
   {
@@ -19406,7 +19567,8 @@
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086466"
+      "4086466",
+      "4096457"
     ]
   },
   {
@@ -19836,7 +19998,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4088224"
+      "4088224",
+      "4088225"
     ]
   },
   {
@@ -20026,7 +20189,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4095390"
+      "4095390",
+      "4095392"
     ]
   },
   {
@@ -24576,7 +24740,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4051391"
+      "4051391",
+      "4051395"
     ]
   },
   {
@@ -24586,7 +24751,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4051392"
+      "4051392",
+      "4051396"
     ]
   },
   {
@@ -24606,7 +24772,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4051394"
+      "4051394",
+      "4051397"
     ]
   },
   {
@@ -24921,9 +25088,9 @@
   },
   {
     "_id": "002493",
-    "descricao": "SV-TORNEIRA BOIA P/CX DESCARGA  PVC 1/2",
+    "descricao": "SV-TORNEIRA BOIA P/CX DESCARGA PVC 1/2",
     "descricaoNormalizada": "sv torneira boia p cx descarga pvc 1 2",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4041071"
@@ -25156,7 +25323,8 @@
     "quantidadeCaracteres": 15,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4123128"
+      "4123128",
+      "4121449"
     ]
   },
   {
@@ -25296,7 +25464,8 @@
     "quantidadeCaracteres": 13,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4123548"
+      "4123548",
+      "4121459"
     ]
   },
   {
@@ -25581,9 +25750,9 @@
   },
   {
     "_id": "002559",
-    "descricao": "SV-APLICAÇÃO DE  VERNIZ SINTÉTICO BASE",
+    "descricao": "SV-APLICAÇÃO DE VERNIZ SINTÉTICO BASE",
     "descricaoNormalizada": "sv aplicacao de verniz sintetico base",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4058068"
@@ -25726,7 +25895,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096421"
+      "4096421",
+      "4100163"
     ]
   },
   {
@@ -25736,7 +25906,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096424"
+      "4096424",
+      "4100166"
     ]
   },
   {
@@ -25746,7 +25917,8 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096426"
+      "4096426",
+      "4100168"
     ]
   },
   {
@@ -25756,7 +25928,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096427"
+      "4096427",
+      "4100169"
     ]
   },
   {
@@ -25786,7 +25959,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096430"
+      "4096430",
+      "4100180"
     ]
   },
   {
@@ -25796,7 +25970,8 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096431"
+      "4096431",
+      "4100181"
     ]
   },
   {
@@ -25906,7 +26081,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096448"
+      "4096448",
+      "4100186"
     ]
   },
   {
@@ -25916,7 +26092,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096449"
+      "4096449",
+      "4100187"
     ]
   },
   {
@@ -25926,7 +26103,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096450"
+      "4096450",
+      "4100188"
     ]
   },
   {
@@ -25936,7 +26114,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096451"
+      "4096451",
+      "4100189"
     ]
   },
   {
@@ -25966,7 +26145,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096454"
+      "4096454",
+      "4100190"
     ]
   },
   {
@@ -25976,7 +26156,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096455"
+      "4096455",
+      "4100191"
     ]
   },
   {
@@ -26081,9 +26262,9 @@
   },
   {
     "_id": "002609",
-    "descricao": "MOBILIZAÇÃO INICIAL  p/ pessoa",
+    "descricao": "MOBILIZAÇÃO INICIAL p/ pessoa",
     "descricaoNormalizada": "mobilizacao inicial p pessoa",
-    "quantidadeCaracteres": 30,
+    "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4098064"
@@ -26231,9 +26412,9 @@
   },
   {
     "_id": "002624",
-    "descricao": " SV-GRAUTEAMENTO BASE EQUIP PEGA RÁPIDA",
+    "descricao": "SV-GRAUTEAMENTO BASE EQUIP PEGA RÁPIDA",
     "descricaoNormalizada": "sv grauteamento base equip pega rapida",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4060387"
@@ -26436,7 +26617,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4060407"
+      "4060407",
+      "4060420"
     ]
   },
   {
@@ -26811,9 +26993,9 @@
   },
   {
     "_id": "002682",
-    "descricao": " PLATAFORMA MÓVEL MODELO 600 AJ MENSAL",
+    "descricao": "PLATAFORMA MÓVEL MODELO 600 AJ MENSAL",
     "descricaoNormalizada": "plataforma movel modelo 600 aj mensal",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4060674"
@@ -27291,9 +27473,9 @@
   },
   {
     "_id": "002730",
-    "descricao": "CONCRETO 30 MPA  USINADO CP-V 03 DIAS",
+    "descricao": "CONCRETO 30 MPA USINADO CP-V 03 DIAS",
     "descricaoNormalizada": "concreto 30 mpa usinado cp v 03 dias",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4065171"
@@ -27676,7 +27858,8 @@
     "quantidadeCaracteres": 19,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4123266"
+      "4123266",
+      "4121455"
     ]
   },
   {
@@ -27901,9 +28084,9 @@
   },
   {
     "_id": "002791",
-    "descricao": "MOB/DESMOB Equipe  (p/ colab.)",
+    "descricao": "MOB/DESMOB Equipe (p/ colab.)",
     "descricaoNormalizada": "mob desmob equipe p colab",
-    "quantidadeCaracteres": 30,
+    "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4074384"
@@ -27996,7 +28179,8 @@
     "quantidadeCaracteres": 9,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076666"
+      "4076666",
+      "4121049"
     ]
   },
   {
@@ -28006,7 +28190,9 @@
     "quantidadeCaracteres": 20,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4077899"
+      "4077899",
+      "4068215",
+      "4090816"
     ]
   },
   {
@@ -28271,9 +28457,9 @@
   },
   {
     "_id": "002828",
-    "descricao": " SV - Ajudante AN HE 100 H-HORA OCIOSA",
+    "descricao": "SV - Ajudante AN HE 100 H-HORA OCIOSA",
     "descricaoNormalizada": "sv ajudante an he 100 h hora ociosa",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4079291"
@@ -28661,9 +28847,9 @@
   },
   {
     "_id": "002867",
-    "descricao": "Pintura Sinalização horiz  retro reflex",
+    "descricao": "Pintura Sinalização horiz retro reflex",
     "descricaoNormalizada": "pintura sinalizacao horiz retro reflex",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4080773"
@@ -29456,7 +29642,9 @@
     "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096257"
+      "4096257",
+      "4089071",
+      "4076411"
     ]
   },
   {
@@ -29936,7 +30124,8 @@
     "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096305"
+      "4096305",
+      "4095367"
     ]
   },
   {
@@ -30296,7 +30485,11 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096341"
+      "4096341",
+      "4076400",
+      "4079553",
+      "4089050",
+      "4101770"
     ]
   },
   {
@@ -30416,7 +30609,8 @@
     "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096353"
+      "4096353",
+      "4122068"
     ]
   },
   {
@@ -30536,7 +30730,10 @@
     "quantidadeCaracteres": 20,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096365"
+      "4096365",
+      "4090117",
+      "4101462",
+      "4095359"
     ]
   },
   {
@@ -31111,9 +31308,9 @@
   },
   {
     "_id": "003112",
-    "descricao": " PINTOR AIRLESS (H. EXTRA DOM E FER)",
+    "descricao": "PINTOR AIRLESS (H. EXTRA DOM E FER)",
     "descricaoNormalizada": "pintor airless h extra dom e fer",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4097738"
@@ -31181,9 +31378,9 @@
   },
   {
     "_id": "003119",
-    "descricao": " SUPERVISOR DE HIDROJATO (PERICULOSIDADE",
+    "descricao": "SUPERVISOR DE HIDROJATO (PERICULOSIDADE",
     "descricaoNormalizada": "supervisor de hidrojato periculosidade",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4097745"
@@ -31191,9 +31388,9 @@
   },
   {
     "_id": "003120",
-    "descricao": " PINTOR AIRLESS (MOB)",
+    "descricao": "PINTOR AIRLESS (MOB)",
     "descricaoNormalizada": "pintor airless mob",
-    "quantidadeCaracteres": 21,
+    "quantidadeCaracteres": 20,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4097746"
@@ -31361,9 +31558,9 @@
   },
   {
     "_id": "003137",
-    "descricao": "SV - CALD Alpin N1/N2 AN  HE EVENTUAL",
+    "descricao": "SV - CALD Alpin N1/N2 AN HE EVENTUAL",
     "descricaoNormalizada": "sv cald alpin n1 n2 an he eventual",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4097764"
@@ -31371,7 +31568,7 @@
   },
   {
     "_id": "003138",
-    "descricao": "SV-CALD Alpin N1/N2 AN HE 100 EVENTUAL",
+    "descricao": "SV-CALD Alpin N1/N2 AN HE 100 EVENTUAL",
     "descricaoNormalizada": "sv cald alpin n1 n2 an he 100 eventual",
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
@@ -32106,7 +32303,8 @@
     "quantidadeCaracteres": 20,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099572"
+      "4099572",
+      "4093449"
     ]
   },
   {
@@ -32391,7 +32589,7 @@
   },
   {
     "_id": "003240",
-    "descricao": "Líder de Resgate - (Seg A Sex H/E Diurno",
+    "descricao": "Líder de Resgate - (Seg A Sex H/E Diurno",
     "descricaoNormalizada": "lider de resgate seg a sex h e diurno",
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
@@ -32746,7 +32944,9 @@
     "quantidadeCaracteres": 11,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4123485"
+      "4123485",
+      "4100962",
+      "4095342"
     ]
   },
   {
@@ -32786,7 +32986,9 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4035261"
+      "4035261",
+      "4035262",
+      "4035263"
     ]
   },
   {
@@ -32816,7 +33018,9 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4035266"
+      "4035266",
+      "4035267",
+      "4035268"
     ]
   },
   {
@@ -32846,7 +33050,9 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4035271"
+      "4035271",
+      "4035272",
+      "4035273"
     ]
   },
   {
@@ -33156,7 +33362,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4051714"
+      "4051714",
+      "4051743"
     ]
   },
   {
@@ -34396,7 +34603,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4054260"
+      "4054260",
+      "4093139"
     ]
   },
   {
@@ -34406,7 +34614,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4054261"
+      "4054261",
+      "4093210"
     ]
   },
   {
@@ -34416,7 +34625,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4054262"
+      "4054262",
+      "4093211"
     ]
   },
   {
@@ -34426,7 +34636,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4054263"
+      "4054263",
+      "4093212"
     ]
   },
   {
@@ -34436,7 +34647,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4054264"
+      "4054264",
+      "4093213"
     ]
   },
   {
@@ -34446,7 +34658,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4054265"
+      "4054265",
+      "4093214"
     ]
   },
   {
@@ -34456,7 +34669,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4054266"
+      "4054266",
+      "4093215"
     ]
   },
   {
@@ -34466,7 +34680,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4054267"
+      "4054267",
+      "4093216"
     ]
   },
   {
@@ -34476,7 +34691,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4054268"
+      "4054268",
+      "4093217"
     ]
   },
   {
@@ -34816,7 +35032,8 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097022"
+      "4097022",
+      "4097055"
     ]
   },
   {
@@ -34916,7 +35133,8 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097023"
+      "4097023",
+      "4097056"
     ]
   },
   {
@@ -35051,9 +35269,9 @@
   },
   {
     "_id": "003506",
-    "descricao": "Subst.Até 50 curvas-Até 2500mm  AçoCarbo",
+    "descricao": "Subst.Até 50 curvas-Até 2500mm AçoCarbo",
     "descricaoNormalizada": "subst ate 50 curvas ate 2500mm acocarbo",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4095742"
@@ -35116,7 +35334,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097020"
+      "4097020",
+      "4097057"
     ]
   },
   {
@@ -35256,7 +35475,8 @@
     "quantidadeCaracteres": 20,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4102118"
+      "4102118",
+      "4076921"
     ]
   },
   {
@@ -35316,7 +35536,8 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089057"
+      "4089057",
+      "4076405"
     ]
   },
   {
@@ -35466,7 +35687,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089796"
+      "4089796",
+      "4083595"
     ]
   },
   {
@@ -35701,9 +35923,9 @@
   },
   {
     "_id": "003571",
-    "descricao": "MOBILIZAÇÃO E  DESMOBILIZACAO",
+    "descricao": "MOBILIZAÇÃO E DESMOBILIZACAO",
     "descricaoNormalizada": "mobilizacao e desmobilizacao",
-    "quantidadeCaracteres": 29,
+    "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4093490"
@@ -35816,7 +36038,8 @@
     "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4102193"
+      "4102193",
+      "4097713"
     ]
   },
   {
@@ -35936,7 +36159,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089772"
+      "4089772",
+      "4083571"
     ]
   },
   {
@@ -35946,7 +36170,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089766"
+      "4089766",
+      "4083565"
     ]
   },
   {
@@ -36156,7 +36381,10 @@
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089078"
+      "4089078",
+      "4089824",
+      "4076416",
+      "4083623"
     ]
   },
   {
@@ -36176,7 +36404,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089760"
+      "4089760",
+      "4083559"
     ]
   },
   {
@@ -36256,7 +36485,8 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089784"
+      "4089784",
+      "4083583"
     ]
   },
   {
@@ -36346,14 +36576,15 @@
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097131"
+      "4097131",
+      "4097134"
     ]
   },
   {
     "_id": "003636",
-    "descricao": "MOBILIZAÇÃO E  DESMOBILIZACAO MAT",
+    "descricao": "MOBILIZAÇÃO E DESMOBILIZACAO MAT",
     "descricaoNormalizada": "mobilizacao e desmobilizacao mat",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4095400"
@@ -36566,7 +36797,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097030"
+      "4097030",
+      "4097060"
     ]
   },
   {
@@ -36611,9 +36843,9 @@
   },
   {
     "_id": "003662",
-    "descricao": "H - Encarregado Elétrica -  HE (seg/sab)",
+    "descricao": "H - Encarregado Elétrica - HE (seg/sab)",
     "descricaoNormalizada": "h encarregado eletrica he seg sab",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4068780"
@@ -36826,7 +37058,8 @@
     "quantidadeCaracteres": 19,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076392"
+      "4076392",
+      "4089058"
     ]
   },
   {
@@ -36891,7 +37124,7 @@
   },
   {
     "_id": "003690",
-    "descricao": "EV - MONTADOR (HE NOT DOM.FER)",
+    "descricao": "EV - MONTADOR (HE NOT DOM.FER)",
     "descricaoNormalizada": "ev montador he not dom fer",
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
@@ -36926,7 +37159,8 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076393"
+      "4076393",
+      "4089061"
     ]
   },
   {
@@ -36956,14 +37190,15 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076394"
+      "4076394",
+      "4089062"
     ]
   },
   {
     "_id": "003697",
-    "descricao": "H - Encarregado Elétrica -  HE (dom/fer)",
+    "descricao": "H - Encarregado Elétrica - HE (dom/fer)",
     "descricaoNormalizada": "h encarregado eletrica he dom fer",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4068781"
@@ -37016,7 +37251,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076395"
+      "4076395",
+      "4089063"
     ]
   },
   {
@@ -37046,7 +37282,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097031"
+      "4097031",
+      "4097061"
     ]
   },
   {
@@ -37076,7 +37313,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076396"
+      "4076396",
+      "4089064"
     ]
   },
   {
@@ -37116,7 +37354,8 @@
     "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076397"
+      "4076397",
+      "4089065"
     ]
   },
   {
@@ -37166,7 +37405,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097038"
+      "4097038",
+      "4097065"
     ]
   },
   {
@@ -37186,7 +37426,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076398"
+      "4076398",
+      "4089068"
     ]
   },
   {
@@ -37226,7 +37467,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076399"
+      "4076399",
+      "4089069"
     ]
   },
   {
@@ -37306,7 +37548,8 @@
     "quantidadeCaracteres": 19,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076401"
+      "4076401",
+      "4089051"
     ]
   },
   {
@@ -37376,7 +37619,8 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076402"
+      "4076402",
+      "4089054"
     ]
   },
   {
@@ -37396,12 +37640,13 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4067000"
+      "4067000",
+      "4066999"
     ]
   },
   {
     "_id": "003741",
-    "descricao": "MECÂNICO ESPECIALIZADO HE NOT SEG A SAB",
+    "descricao": "MECÂNICO ESPECIALIZADO HE NOT SEG A SAB",
     "descricaoNormalizada": "mecanico especializado he not seg a sab",
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
@@ -37436,7 +37681,8 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076403"
+      "4076403",
+      "4089055"
     ]
   },
   {
@@ -37456,7 +37702,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089075"
+      "4089075",
+      "4076413"
     ]
   },
   {
@@ -37476,7 +37723,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076404"
+      "4076404",
+      "4089056"
     ]
   },
   {
@@ -37516,7 +37764,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076410"
+      "4076410",
+      "4089070"
     ]
   },
   {
@@ -37546,7 +37795,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097039"
+      "4097039",
+      "4097066"
     ]
   },
   {
@@ -37621,7 +37871,7 @@
   },
   {
     "_id": "003763",
-    "descricao": "EV - ENCARREGADO (HE NOT DOM.FER)",
+    "descricao": "EV - ENCARREGADO (HE NOT DOM.FER)",
     "descricaoNormalizada": "ev encarregado he not dom fer",
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
@@ -37656,7 +37906,8 @@
     "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076412"
+      "4076412",
+      "4089072"
     ]
   },
   {
@@ -37736,7 +37987,8 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076414"
+      "4076414",
+      "4089076"
     ]
   },
   {
@@ -37796,7 +38048,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076415"
+      "4076415",
+      "4089077"
     ]
   },
   {
@@ -37866,7 +38119,10 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076417"
+      "4076417",
+      "4089825",
+      "4083624",
+      "4089079"
     ]
   },
   {
@@ -37876,7 +38132,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089827"
+      "4089827",
+      "4083626"
     ]
   },
   {
@@ -37916,7 +38173,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076418"
+      "4076418",
+      "4089082"
     ]
   },
   {
@@ -37941,7 +38199,7 @@
   },
   {
     "_id": "003795",
-    "descricao": "ENCARREGADO MECÂNICA (HE NOT SEG A SAB)",
+    "descricao": "ENCARREGADO MECÂNICA (HE NOT SEG A SAB)",
     "descricaoNormalizada": "encarregado mecanica he not seg a sab",
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
@@ -37951,7 +38209,7 @@
   },
   {
     "_id": "003796",
-    "descricao": "EV - MONTADOR (HE NOT SEG A SAB)",
+    "descricao": "EV - MONTADOR (HE NOT SEG A SAB)",
     "descricaoNormalizada": "ev montador he not seg a sab",
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
@@ -37971,7 +38229,7 @@
   },
   {
     "_id": "003798",
-    "descricao": "MECÂNICO MANUTENÇÃO (HE NOT SEG A SAB)",
+    "descricao": "MECÂNICO MANUTENÇÃO (HE NOT SEG A SAB)",
     "descricaoNormalizada": "mecanico manutencao he not seg a sab",
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
@@ -37996,14 +38254,15 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076419"
+      "4076419",
+      "4089083"
     ]
   },
   {
     "_id": "003801",
-    "descricao": "EPI Adicional AN cinto pqd  4 pontos",
+    "descricao": "EPI Adicional AN cinto pqd 4 pontos",
     "descricaoNormalizada": "epi adicional an cinto pqd 4 pontos",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099617"
@@ -38046,7 +38305,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076420"
+      "4076420",
+      "4089084"
     ]
   },
   {
@@ -38061,7 +38321,7 @@
   },
   {
     "_id": "003807",
-    "descricao": "SOLDADOR 6G (HE NOT SEG A SAB)",
+    "descricao": "SOLDADOR 6G (HE NOT SEG A SAB)",
     "descricaoNormalizada": "soldador 6g he not seg a sab",
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
@@ -38081,12 +38341,13 @@
   },
   {
     "_id": "003809",
-    "descricao": "AJUDANTE (HORA EXTRA NOTURNA SEG A SAB)",
+    "descricao": "AJUDANTE (HORA EXTRA NOTURNA SEG A SAB)",
     "descricaoNormalizada": "ajudante hora extra noturna seg a sab",
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076680"
+      "4076680",
+      "4089052"
     ]
   },
   {
@@ -38126,17 +38387,19 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089778"
+      "4089778",
+      "4083577"
     ]
   },
   {
     "_id": "003814",
-    "descricao": "AJUDANTE (HORA EXTRA NOTURNA DOM.FER)",
+    "descricao": "AJUDANTE (HORA EXTRA NOTURNA DOM.FER)",
     "descricaoNormalizada": "ajudante hora extra noturna dom fer",
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076681"
+      "4076681",
+      "4089053"
     ]
   },
   {
@@ -38151,12 +38414,13 @@
   },
   {
     "_id": "003816",
-    "descricao": "MONTADOR (HORA EXTRA NOTURNA SEG A SAB)",
+    "descricao": "MONTADOR (HORA EXTRA NOTURNA SEG A SAB)",
     "descricaoNormalizada": "montador hora extra noturna seg a sab",
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076682"
+      "4076682",
+      "4089059"
     ]
   },
   {
@@ -38196,7 +38460,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089826"
+      "4089826",
+      "4083625"
     ]
   },
   {
@@ -38211,7 +38476,7 @@
   },
   {
     "_id": "003822",
-    "descricao": "EV - MONTADOR LIDER(HE NOT DOM.FER)",
+    "descricao": "EV - MONTADOR LIDER(HE NOT DOM.FER)",
     "descricaoNormalizada": "ev montador lider he not dom fer",
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
@@ -38241,12 +38506,13 @@
   },
   {
     "_id": "003825",
-    "descricao": "MONTADOR (HORA EXTRA NOTURNA DOM.FER)",
+    "descricao": "MONTADOR (HORA EXTRA NOTURNA DOM.FER)",
     "descricaoNormalizada": "montador hora extra noturna dom fer",
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076683"
+      "4076683",
+      "4089060"
     ]
   },
   {
@@ -38301,12 +38567,13 @@
   },
   {
     "_id": "003831",
-    "descricao": "MONTADOR LIDER(HORA EXTRA NOT SEG A SAB)",
+    "descricao": "MONTADOR LIDER(HORA EXTRA NOT SEG A SAB)",
     "descricaoNormalizada": "montador lider hora extra not seg a sab",
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076684"
+      "4076684",
+      "4089066"
     ]
   },
   {
@@ -38321,12 +38588,13 @@
   },
   {
     "_id": "003833",
-    "descricao": "MONTADOR LIDER(HORA EXTRA NOT DOM.FER)",
+    "descricao": "MONTADOR LIDER(HORA EXTRA NOT DOM.FER)",
     "descricaoNormalizada": "montador lider hora extra not dom fer",
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076685"
+      "4076685",
+      "4089067"
     ]
   },
   {
@@ -38341,7 +38609,7 @@
   },
   {
     "_id": "003835",
-    "descricao": "EV - ENCARREGADO (HE NOT SEG.SAB)",
+    "descricao": "EV - ENCARREGADO (HE NOT SEG.SAB)",
     "descricaoNormalizada": "ev encarregado he not seg sab",
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
@@ -38356,17 +38624,19 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089762"
+      "4089762",
+      "4083561"
     ]
   },
   {
     "_id": "003837",
-    "descricao": "ENCARREGADO (HORA EXTRA NOTURNA SEG.SAB)",
+    "descricao": "ENCARREGADO (HORA EXTRA NOTURNA SEG.SAB)",
     "descricaoNormalizada": "encarregado hora extra noturna seg sab",
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076686"
+      "4076686",
+      "4089073"
     ]
   },
   {
@@ -38391,17 +38661,18 @@
   },
   {
     "_id": "003840",
-    "descricao": "ENCARREGADO (HORA EXTRA NOTURNA DOM.FER)",
+    "descricao": "ENCARREGADO (HORA EXTRA NOTURNA DOM.FER)",
     "descricaoNormalizada": "encarregado hora extra noturna dom fer",
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076687"
+      "4076687",
+      "4089074"
     ]
   },
   {
     "_id": "003841",
-    "descricao": "SOLDADOR (HORA EXTRA NOTURNA SEG A SAB)",
+    "descricao": "SOLDADOR (HORA EXTRA NOTURNA SEG A SAB)",
     "descricaoNormalizada": "soldador hora extra noturna seg a sab",
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
@@ -38436,7 +38707,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076688"
+      "4076688",
+      "4089080"
     ]
   },
   {
@@ -38456,7 +38728,8 @@
     "quantidadeCaracteres": 19,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089785"
+      "4089785",
+      "4083584"
     ]
   },
   {
@@ -38466,7 +38739,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076689"
+      "4076689",
+      "4089081"
     ]
   },
   {
@@ -38631,9 +38905,9 @@
   },
   {
     "_id": "003864",
-    "descricao": "H - Téc  C/ Ad Not (Dom e Fer)",
+    "descricao": "H - Téc C/ Ad Not (Dom e Fer)",
     "descricaoNormalizada": "h tec c ad not dom e fer",
-    "quantidadeCaracteres": 30,
+    "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4075939"
@@ -38661,7 +38935,7 @@
   },
   {
     "_id": "003867",
-    "descricao": "MECÂNICO CALDEREIRO (HE NOT SEG A SAB)",
+    "descricao": "MECÂNICO CALDEREIRO (HE NOT SEG A SAB)",
     "descricaoNormalizada": "mecanico caldereiro he not seg a sab",
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
@@ -38706,7 +38980,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4077226"
+      "4077226",
+      "4093218"
     ]
   },
   {
@@ -38736,7 +39011,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089767"
+      "4089767",
+      "4083566"
     ]
   },
   {
@@ -38761,7 +39037,7 @@
   },
   {
     "_id": "003877",
-    "descricao": "EV - MONTADOR LIDER(HE NOT SEG A SAB)",
+    "descricao": "EV - MONTADOR LIDER(HE NOT SEG A SAB)",
     "descricaoNormalizada": "ev montador lider he not seg a sab",
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
@@ -38781,7 +39057,7 @@
   },
   {
     "_id": "003879",
-    "descricao": "EV - AJUDANTE (HE NOT DOM.FER)",
+    "descricao": "EV - AJUDANTE (HE NOT DOM.FER)",
     "descricaoNormalizada": "ev ajudante he not dom fer",
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
@@ -38796,7 +39072,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097046"
+      "4097046",
+      "4097070"
     ]
   },
   {
@@ -38946,7 +39223,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089780"
+      "4089780",
+      "4083579"
     ]
   },
   {
@@ -38996,7 +39274,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089768"
+      "4089768",
+      "4083567"
     ]
   },
   {
@@ -39046,12 +39325,13 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089761"
+      "4089761",
+      "4083560"
     ]
   },
   {
     "_id": "003906",
-    "descricao": "ENCARREGADO ELÉTRICA (HE NOT SEG A SAB)",
+    "descricao": "ENCARREGADO ELÉTRICA (HE NOT SEG A SAB)",
     "descricaoNormalizada": "encarregado eletrica he not seg a sab",
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
@@ -39071,7 +39351,7 @@
   },
   {
     "_id": "003908",
-    "descricao": "TÉCNICO DE SEGURANÇA (HE NOT SEG A SAB)",
+    "descricao": "TÉCNICO DE SEGURANÇA (HE NOT SEG A SAB)",
     "descricaoNormalizada": "tecnico de seguranca he not seg a sab",
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
@@ -39111,7 +39391,7 @@
   },
   {
     "_id": "003912",
-    "descricao": "ELETRICISTA MANUTENÇÃO (HE NOT SEG A SAB",
+    "descricao": "ELETRICISTA MANUTENÇÃO (HE NOT SEG A SAB",
     "descricaoNormalizada": "eletricista manutencao he not seg a sab",
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
@@ -39126,7 +39406,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089798"
+      "4089798",
+      "4083597"
     ]
   },
   {
@@ -39136,7 +39417,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089773"
+      "4089773",
+      "4083572"
     ]
   },
   {
@@ -39156,7 +39438,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4089804"
+      "4089804",
+      "4083603"
     ]
   },
   {
@@ -39166,7 +39449,8 @@
     "quantidadeCaracteres": 17,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4090118"
+      "4090118",
+      "4101463"
     ]
   },
   {
@@ -39226,7 +39510,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097047"
+      "4097047",
+      "4097071"
     ]
   },
   {
@@ -39241,7 +39526,7 @@
   },
   {
     "_id": "003925",
-    "descricao": "SUPERVISOR DE MECÂNICA (HE NOT SEG A SAB",
+    "descricao": "SUPERVISOR DE MECÂNICA (HE NOT SEG A SAB",
     "descricaoNormalizada": "supervisor de mecanica he not seg a sab",
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
@@ -39326,7 +39611,8 @@
     "quantidadeCaracteres": 13,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4079930"
+      "4079930",
+      "4052153"
     ]
   },
   {
@@ -39606,7 +39892,8 @@
     "quantidadeCaracteres": 14,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4068512"
+      "4068512",
+      "4090387"
     ]
   },
   {
@@ -39616,7 +39903,8 @@
     "quantidadeCaracteres": 17,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071550"
+      "4071550",
+      "4071577"
     ]
   },
   {
@@ -39626,7 +39914,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071551"
+      "4071551",
+      "4071578"
     ]
   },
   {
@@ -39636,7 +39925,8 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071552"
+      "4071552",
+      "4071579"
     ]
   },
   {
@@ -39646,7 +39936,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071553"
+      "4071553",
+      "4071580"
     ]
   },
   {
@@ -39656,7 +39947,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071554"
+      "4071554",
+      "4071581"
     ]
   },
   {
@@ -39666,7 +39958,8 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071555"
+      "4071555",
+      "4071583"
     ]
   },
   {
@@ -39676,7 +39969,8 @@
     "quantidadeCaracteres": 23,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071556"
+      "4071556",
+      "4071584"
     ]
   },
   {
@@ -39686,7 +39980,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071557"
+      "4071557",
+      "4071585"
     ]
   },
   {
@@ -39696,7 +39991,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071558"
+      "4071558",
+      "4071586"
     ]
   },
   {
@@ -39706,7 +40002,8 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071559"
+      "4071559",
+      "4071588"
     ]
   },
   {
@@ -39716,7 +40013,8 @@
     "quantidadeCaracteres": 23,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071560"
+      "4071560",
+      "4071589"
     ]
   },
   {
@@ -39726,7 +40024,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071561"
+      "4071561",
+      "4071590"
     ]
   },
   {
@@ -39736,7 +40035,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071562"
+      "4071562",
+      "4071591"
     ]
   },
   {
@@ -39746,7 +40046,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071563"
+      "4071563",
+      "4071573"
     ]
   },
   {
@@ -39756,7 +40057,8 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071564"
+      "4071564",
+      "4071574"
     ]
   },
   {
@@ -39766,7 +40068,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071565"
+      "4071565",
+      "4071575"
     ]
   },
   {
@@ -39776,7 +40079,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071566"
+      "4071566",
+      "4071576"
     ]
   },
   {
@@ -39916,7 +40220,9 @@
     "quantidadeCaracteres": 10,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4068214"
+      "4068214",
+      "4065167",
+      "4101490"
     ]
   },
   {
@@ -40026,7 +40332,9 @@
     "quantidadeCaracteres": 11,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4068219"
+      "4068219",
+      "4117542",
+      "4121356"
     ]
   },
   {
@@ -40501,9 +40809,9 @@
   },
   {
     "_id": "004051",
-    "descricao": "H - Aux  Extra C/ Ad Not (Seg à Sáb)",
+    "descricao": "H - Aux Extra C/ Ad Not (Seg à Sáb)",
     "descricaoNormalizada": "h aux extra c ad not seg a sab",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4075900"
@@ -40511,9 +40819,9 @@
   },
   {
     "_id": "004052",
-    "descricao": "H - Aux  Extra C/ Ad Not (Dom e Fer)",
+    "descricao": "H - Aux Extra C/ Ad Not (Dom e Fer)",
     "descricaoNormalizada": "h aux extra c ad not dom e fer",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4075383"
@@ -40591,9 +40899,9 @@
   },
   {
     "_id": "004060",
-    "descricao": "H-Enc. Tubu-Ho Extra C/ Ad  (Dom e Fer)",
+    "descricao": "H-Enc. Tubu-Ho Extra C/ Ad (Dom e Fer)",
     "descricaoNormalizada": "h enc tubu ho extra c ad dom e fer",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4075945"
@@ -40966,7 +41274,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083370"
+      "4083370",
+      "4093228"
     ]
   },
   {
@@ -40976,7 +41285,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083371"
+      "4083371",
+      "4093227"
     ]
   },
   {
@@ -40986,7 +41296,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083372"
+      "4083372",
+      "4093226"
     ]
   },
   {
@@ -40996,7 +41307,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083373"
+      "4083373",
+      "4093225"
     ]
   },
   {
@@ -41006,7 +41318,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083374"
+      "4083374",
+      "4093224"
     ]
   },
   {
@@ -41016,7 +41329,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083375"
+      "4083375",
+      "4093223"
     ]
   },
   {
@@ -41026,7 +41340,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083376"
+      "4083376",
+      "4093222"
     ]
   },
   {
@@ -41036,7 +41351,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083377"
+      "4083377",
+      "4093221"
     ]
   },
   {
@@ -41046,7 +41362,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083378"
+      "4083378",
+      "4093220"
     ]
   },
   {
@@ -41056,14 +41373,15 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083379"
+      "4083379",
+      "4093219"
     ]
   },
   {
     "_id": "004107",
-    "descricao": "MOB. \\ DESMOB.  (Demanda Fixas)",
+    "descricao": "MOB. \\ DESMOB. (Demanda Fixas)",
     "descricaoNormalizada": "mob desmob demanda fixas",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4083550"
@@ -41096,7 +41414,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083553"
+      "4083553",
+      "4089754"
     ]
   },
   {
@@ -41106,7 +41425,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083554"
+      "4083554",
+      "4089755"
     ]
   },
   {
@@ -41116,7 +41436,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083555"
+      "4083555",
+      "4089756"
     ]
   },
   {
@@ -41126,7 +41447,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083556"
+      "4083556",
+      "4089757"
     ]
   },
   {
@@ -41136,7 +41458,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083557"
+      "4083557",
+      "4089758"
     ]
   },
   {
@@ -41146,7 +41469,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083558"
+      "4083558",
+      "4089759"
     ]
   },
   {
@@ -41156,7 +41480,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083562"
+      "4083562",
+      "4089763"
     ]
   },
   {
@@ -41166,7 +41491,10 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083563"
+      "4083563",
+      "4089764",
+      "4089770",
+      "4089776"
     ]
   },
   {
@@ -41176,7 +41504,10 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083564"
+      "4083564",
+      "4089765",
+      "4089771",
+      "4089777"
     ]
   },
   {
@@ -41246,7 +41577,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083568"
+      "4083568",
+      "4089769"
     ]
   },
   {
@@ -41276,7 +41608,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083573"
+      "4083573",
+      "4089774"
     ]
   },
   {
@@ -41286,7 +41619,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083574"
+      "4083574",
+      "4089775"
     ]
   },
   {
@@ -41301,9 +41635,9 @@
   },
   {
     "_id": "004131",
-    "descricao": "MECÂNICO CALDEREIRO  (PRERICULOSIDADE)",
+    "descricao": "MECÂNICO CALDEREIRO (PRERICULOSIDADE)",
     "descricaoNormalizada": "mecanico caldereiro prericulosidade",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4083576"
@@ -41316,7 +41650,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083578"
+      "4083578",
+      "4089779"
     ]
   },
   {
@@ -41326,7 +41661,8 @@
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083580"
+      "4083580",
+      "4089781"
     ]
   },
   {
@@ -41336,7 +41672,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083581"
+      "4083581",
+      "4089782"
     ]
   },
   {
@@ -41346,7 +41683,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083582"
+      "4083582",
+      "4089783"
     ]
   },
   {
@@ -41396,7 +41734,8 @@
     "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083585"
+      "4083585",
+      "4089786"
     ]
   },
   {
@@ -41406,7 +41745,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083586"
+      "4083586",
+      "4089787"
     ]
   },
   {
@@ -41416,7 +41756,8 @@
     "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083587"
+      "4083587",
+      "4089788"
     ]
   },
   {
@@ -41426,7 +41767,8 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083588"
+      "4083588",
+      "4089789"
     ]
   },
   {
@@ -41436,7 +41778,8 @@
     "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083589"
+      "4083589",
+      "4089790"
     ]
   },
   {
@@ -41446,7 +41789,8 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083590"
+      "4083590",
+      "4089791"
     ]
   },
   {
@@ -41456,7 +41800,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083591"
+      "4083591",
+      "4089792"
     ]
   },
   {
@@ -41466,7 +41811,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083592"
+      "4083592",
+      "4089793"
     ]
   },
   {
@@ -41476,7 +41822,8 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083593"
+      "4083593",
+      "4089794"
     ]
   },
   {
@@ -41486,7 +41833,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083594"
+      "4083594",
+      "4089795"
     ]
   },
   {
@@ -41496,7 +41844,8 @@
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083596"
+      "4083596",
+      "4089797"
     ]
   },
   {
@@ -41506,7 +41855,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083598"
+      "4083598",
+      "4089799"
     ]
   },
   {
@@ -41516,7 +41866,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083599"
+      "4083599",
+      "4089800"
     ]
   },
   {
@@ -41526,7 +41877,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083600"
+      "4083600",
+      "4089801"
     ]
   },
   {
@@ -41536,7 +41888,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083601"
+      "4083601",
+      "4089802"
     ]
   },
   {
@@ -41546,7 +41899,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083602"
+      "4083602",
+      "4089803"
     ]
   },
   {
@@ -41556,7 +41910,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083604"
+      "4083604",
+      "4089805"
     ]
   },
   {
@@ -41566,7 +41921,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083605"
+      "4083605",
+      "4089806"
     ]
   },
   {
@@ -41576,7 +41932,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083606"
+      "4083606",
+      "4089807"
     ]
   },
   {
@@ -41586,7 +41943,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083607"
+      "4083607",
+      "4089808"
     ]
   },
   {
@@ -41596,7 +41954,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083608"
+      "4083608",
+      "4089809"
     ]
   },
   {
@@ -41606,7 +41965,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083609"
+      "4083609",
+      "4089810"
     ]
   },
   {
@@ -41616,7 +41976,8 @@
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083610"
+      "4083610",
+      "4089811"
     ]
   },
   {
@@ -41626,7 +41987,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083611"
+      "4083611",
+      "4089812"
     ]
   },
   {
@@ -41636,7 +41998,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083612"
+      "4083612",
+      "4089813"
     ]
   },
   {
@@ -41706,7 +42069,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083613"
+      "4083613",
+      "4089814"
     ]
   },
   {
@@ -41716,7 +42080,8 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083614"
+      "4083614",
+      "4089815"
     ]
   },
   {
@@ -41726,7 +42091,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083615"
+      "4083615",
+      "4089816"
     ]
   },
   {
@@ -41771,9 +42137,9 @@
   },
   {
     "_id": "004178",
-    "descricao": "Sv Encanador  (demanda Semanal) H Adm",
+    "descricao": "Sv Encanador (demanda Semanal) H Adm",
     "descricaoNormalizada": "sv encanador demanda semanal h adm",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4061394"
@@ -41791,9 +42157,9 @@
   },
   {
     "_id": "004180",
-    "descricao": "Sv Encanador  (demanda Mensal) H Esp",
+    "descricao": "Sv Encanador (demanda Mensal) H Esp",
     "descricaoNormalizada": "sv encanador demanda mensal h esp",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4061396"
@@ -41811,9 +42177,9 @@
   },
   {
     "_id": "004182",
-    "descricao": "Sv Encanador  (demanda Semanal) H Esp",
+    "descricao": "Sv Encanador (demanda Semanal) H Esp",
     "descricaoNormalizada": "sv encanador demanda semanal h esp",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4061398"
@@ -41861,9 +42227,9 @@
   },
   {
     "_id": "004187",
-    "descricao": "Sv Encanador  H Esp HE 50%",
+    "descricao": "Sv Encanador H Esp HE 50%",
     "descricaoNormalizada": "sv encanador h esp he 50",
-    "quantidadeCaracteres": 26,
+    "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4061643"
@@ -41871,9 +42237,9 @@
   },
   {
     "_id": "004188",
-    "descricao": "Sv Encanador  H Esp HE 70%",
+    "descricao": "Sv Encanador H Esp HE 70%",
     "descricaoNormalizada": "sv encanador h esp he 70",
-    "quantidadeCaracteres": 26,
+    "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4061644"
@@ -41881,9 +42247,9 @@
   },
   {
     "_id": "004189",
-    "descricao": "Sv Encanador  H Esp HE 100%",
+    "descricao": "Sv Encanador H Esp HE 100%",
     "descricaoNormalizada": "sv encanador h esp he 100",
-    "quantidadeCaracteres": 27,
+    "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4061645"
@@ -41926,7 +42292,8 @@
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083616"
+      "4083616",
+      "4089817"
     ]
   },
   {
@@ -41936,7 +42303,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083617"
+      "4083617",
+      "4089818"
     ]
   },
   {
@@ -41946,7 +42314,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083618"
+      "4083618",
+      "4089819"
     ]
   },
   {
@@ -41956,7 +42325,8 @@
     "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083619"
+      "4083619",
+      "4089820"
     ]
   },
   {
@@ -41966,7 +42336,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083620"
+      "4083620",
+      "4089821"
     ]
   },
   {
@@ -41976,7 +42347,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083621"
+      "4083621",
+      "4089822"
     ]
   },
   {
@@ -41986,7 +42358,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083622"
+      "4083622",
+      "4089823"
     ]
   },
   {
@@ -42041,7 +42414,7 @@
   },
   {
     "_id": "004205",
-    "descricao": "EV - AJUDANTE (HE NOT SEG A SAB)",
+    "descricao": "EV - AJUDANTE (HE NOT SEG A SAB)",
     "descricaoNormalizada": "ev ajudante he not seg a sab",
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
@@ -42456,7 +42829,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083629"
+      "4083629",
+      "4089830"
     ]
   },
   {
@@ -42486,7 +42860,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083630"
+      "4083630",
+      "4089831"
     ]
   },
   {
@@ -42496,7 +42871,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083631"
+      "4083631",
+      "4089832"
     ]
   },
   {
@@ -42631,9 +43007,9 @@
   },
   {
     "_id": "004264",
-    "descricao": "Fabr.curva carbon coletor inf  ate1000mm",
+    "descricao": "Fabr.curva carbon coletor inf ate1000mm",
     "descricaoNormalizada": "fabr curva carbon coletor inf ate1000mm",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4095659"
@@ -43451,9 +43827,9 @@
   },
   {
     "_id": "004346",
-    "descricao": "Reves.MetroL. Aleta  INOX(até 1000mm)",
+    "descricao": "Reves.MetroL. Aleta INOX(até 1000mm)",
     "descricaoNormalizada": "reves metrol aleta inox ate 1000mm",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4095756"
@@ -44621,9 +44997,9 @@
   },
   {
     "_id": "004463",
-    "descricao": "Tirfor  1,5 ton HORA",
+    "descricao": "Tirfor 1,5 ton HORA",
     "descricaoNormalizada": "tirfor 1 5 ton hora",
-    "quantidadeCaracteres": 20,
+    "quantidadeCaracteres": 19,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4096659"
@@ -44661,9 +45037,9 @@
   },
   {
     "_id": "004467",
-    "descricao": "Veículo Leve  Diária",
+    "descricao": "Veículo Leve Diária",
     "descricaoNormalizada": "veiculo leve diaria",
-    "quantidadeCaracteres": 20,
+    "quantidadeCaracteres": 19,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4096663"
@@ -45021,9 +45397,9 @@
   },
   {
     "_id": "004503",
-    "descricao": "Sv Eletricista  HE 100%",
+    "descricao": "Sv Eletricista HE 100%",
     "descricaoNormalizada": "sv eletricista he 100",
-    "quantidadeCaracteres": 23,
+    "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4062705"
@@ -45066,27 +45442,30 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083632"
+      "4083632",
+      "4089833"
     ]
   },
   {
     "_id": "004508",
-    "descricao": "COORDENADOR DE CONTRATO  (HORA NORMAL)",
+    "descricao": "COORDENADOR DE CONTRATO (HORA NORMAL)",
     "descricaoNormalizada": "coordenador de contrato hora normal",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083633"
+      "4083633",
+      "4089834"
     ]
   },
   {
     "_id": "004509",
-    "descricao": "COORDENADOR DE CONTRATO  (HORA NOT)",
+    "descricao": "COORDENADOR DE CONTRATO (HORA NOT)",
     "descricaoNormalizada": "coordenador de contrato hora not",
-    "quantidadeCaracteres": 35,
+    "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083634"
+      "4083634",
+      "4089835"
     ]
   },
   {
@@ -45151,42 +45530,46 @@
   },
   {
     "_id": "004516",
-    "descricao": "COORD. DE CONTRATO  (HORA EXTRA SEM)",
+    "descricao": "COORD. DE CONTRATO (HORA EXTRA SEM)",
     "descricaoNormalizada": "coord de contrato hora extra sem",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083635"
+      "4083635",
+      "4089836"
     ]
   },
   {
     "_id": "004517",
-    "descricao": "COORD. DE CONTRATO  (HE DOM/FER)",
+    "descricao": "COORD. DE CONTRATO (HE DOM/FER)",
     "descricaoNormalizada": "coord de contrato he dom fer",
-    "quantidadeCaracteres": 32,
+    "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083636"
+      "4083636",
+      "4089837"
     ]
   },
   {
     "_id": "004518",
-    "descricao": "COORD. DE CONTRATO  (INSALUBRIDADE)",
+    "descricao": "COORD. DE CONTRATO (INSALUBRIDADE)",
     "descricaoNormalizada": "coord de contrato insalubridade",
-    "quantidadeCaracteres": 35,
+    "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083637"
+      "4083637",
+      "4089838"
     ]
   },
   {
     "_id": "004519",
-    "descricao": "COORD. DE CONTRATO  (PRERICULOSIDADE)",
+    "descricao": "COORD. DE CONTRATO (PRERICULOSIDADE)",
     "descricaoNormalizada": "coord de contrato prericulosidade",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083638"
+      "4083638",
+      "4089839"
     ]
   },
   {
@@ -45196,7 +45579,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083639"
+      "4083639",
+      "4089840"
     ]
   },
   {
@@ -45206,7 +45590,8 @@
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083640"
+      "4083640",
+      "4089841"
     ]
   },
   {
@@ -45216,7 +45601,8 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083641"
+      "4083641",
+      "4089842"
     ]
   },
   {
@@ -45226,7 +45612,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083642"
+      "4083642",
+      "4089843"
     ]
   },
   {
@@ -45236,7 +45623,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083643"
+      "4083643",
+      "4089844"
     ]
   },
   {
@@ -45246,7 +45634,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083644"
+      "4083644",
+      "4089845"
     ]
   },
   {
@@ -45256,7 +45645,8 @@
     "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083645"
+      "4083645",
+      "4089846"
     ]
   },
   {
@@ -45266,7 +45656,8 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083646"
+      "4083646",
+      "4089847"
     ]
   },
   {
@@ -45276,7 +45667,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083647"
+      "4083647",
+      "4089848"
     ]
   },
   {
@@ -45286,7 +45678,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083648"
+      "4083648",
+      "4089849"
     ]
   },
   {
@@ -45296,7 +45689,8 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083649"
+      "4083649",
+      "4089850"
     ]
   },
   {
@@ -45306,7 +45700,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4083650"
+      "4083650",
+      "4089851"
     ]
   },
   {
@@ -45436,7 +45831,8 @@
     "quantidadeCaracteres": 23,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4090119"
+      "4090119",
+      "4101464"
     ]
   },
   {
@@ -45446,7 +45842,8 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4090120"
+      "4090120",
+      "4101465"
     ]
   },
   {
@@ -45456,7 +45853,8 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4090121"
+      "4090121",
+      "4101466"
     ]
   },
   {
@@ -45466,7 +45864,8 @@
     "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4090122"
+      "4090122",
+      "4101467"
     ]
   },
   {
@@ -45621,9 +46020,9 @@
   },
   {
     "_id": "004563",
-    "descricao": "COORD. DE CONTRATO  (HE NOT DOM/FER)",
+    "descricao": "COORD. DE CONTRATO (HE NOT DOM/FER)",
     "descricaoNormalizada": "coord de contrato he not dom fer",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4100218"
@@ -45681,9 +46080,9 @@
   },
   {
     "_id": "004569",
-    "descricao": "Tecnico Eletromecanica  (HE NOT DOM/FER)",
+    "descricao": "Tecnico Eletromecanica (HE NOT DOM/FER)",
     "descricaoNormalizada": "tecnico eletromecanica he not dom fer",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4100224"
@@ -45691,9 +46090,9 @@
   },
   {
     "_id": "004570",
-    "descricao": "Aux. Almoxarifado  (HE NOT DOM/FER)",
+    "descricao": "Aux. Almoxarifado (HE NOT DOM/FER)",
     "descricaoNormalizada": "aux almoxarifado he not dom fer",
-    "quantidadeCaracteres": 35,
+    "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4100226"
@@ -45711,7 +46110,7 @@
   },
   {
     "_id": "004572",
-    "descricao": "AJUDANTE MANUTENÇÃO (HE NOT SEG A SAB)",
+    "descricao": "AJUDANTE MANUTENÇÃO (HE NOT SEG A SAB)",
     "descricaoNormalizada": "ajudante manutencao he not seg a sab",
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
@@ -45721,7 +46120,7 @@
   },
   {
     "_id": "004573",
-    "descricao": "SOLDADOR MAÇARIQUEIRO (HE NOT SEG A SAB)",
+    "descricao": "SOLDADOR MAÇARIQUEIRO (HE NOT SEG A SAB)",
     "descricaoNormalizada": "soldador macariqueiro he not seg a sab",
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
@@ -45731,7 +46130,7 @@
   },
   {
     "_id": "004574",
-    "descricao": "INSTRUMENTISTA MANUT (HE NOT SEG A SAB)",
+    "descricao": "INSTRUMENTISTA MANUT (HE NOT SEG A SAB)",
     "descricaoNormalizada": "instrumentista manut he not seg a sab",
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
@@ -45741,7 +46140,7 @@
   },
   {
     "_id": "004575",
-    "descricao": "SUPERVISOR ELÉTRICA (HE NOT SEG A SAB)",
+    "descricao": "SUPERVISOR ELÉTRICA (HE NOT SEG A SAB)",
     "descricaoNormalizada": "supervisor eletrica he not seg a sab",
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
@@ -45751,7 +46150,7 @@
   },
   {
     "_id": "004576",
-    "descricao": "SUPERVISOR ELETROMEC (HE NOT SEG A SAB)",
+    "descricao": "SUPERVISOR ELETROMEC (HE NOT SEG A SAB)",
     "descricaoNormalizada": "supervisor eletromec he not seg a sab",
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
@@ -45761,7 +46160,7 @@
   },
   {
     "_id": "004577",
-    "descricao": "COORDENADOR CONTRATO (HE NOT SEG A SAB)",
+    "descricao": "COORDENADOR CONTRATO (HE NOT SEG A SAB)",
     "descricaoNormalizada": "coordenador contrato he not seg a sab",
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
@@ -45771,7 +46170,7 @@
   },
   {
     "_id": "004578",
-    "descricao": "ENGENHEIRO SEGURANÇA (HE NOT SEG A SAB)",
+    "descricao": "ENGENHEIRO SEGURANÇA (HE NOT SEG A SAB)",
     "descricaoNormalizada": "engenheiro seguranca he not seg a sab",
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
@@ -45781,7 +46180,7 @@
   },
   {
     "_id": "004579",
-    "descricao": "PROGRAMADOR (HE NOTURNA SEG A SAB)",
+    "descricao": "PROGRAMADOR (HE NOTURNA SEG A SAB)",
     "descricaoNormalizada": "programador he noturna seg a sab",
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
@@ -45791,7 +46190,7 @@
   },
   {
     "_id": "004580",
-    "descricao": "PINTOR (HORA EXTRA NOTURNA SEG A SAB)",
+    "descricao": "PINTOR (HORA EXTRA NOTURNA SEG A SAB)",
     "descricaoNormalizada": "pintor hora extra noturna seg a sab",
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
@@ -45801,7 +46200,7 @@
   },
   {
     "_id": "004581",
-    "descricao": "ENCARREGADO ELETROMEC (HE NOT SEG A SAB)",
+    "descricao": "ENCARREGADO ELETROMEC (HE NOT SEG A SAB)",
     "descricaoNormalizada": "encarregado eletromec he not seg a sab",
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
@@ -46486,7 +46885,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4090080"
+      "4090080",
+      "4090082"
     ]
   },
   {
@@ -46961,9 +47361,9 @@
   },
   {
     "_id": "004697",
-    "descricao": "Tecnico Eletromecanica  (HORA NORMAL)",
+    "descricao": "Tecnico Eletromecanica (HORA NORMAL)",
     "descricaoNormalizada": "tecnico eletromecanica hora normal",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4093431"
@@ -46971,9 +47371,9 @@
   },
   {
     "_id": "004698",
-    "descricao": "Tecnico Eletromecanica  (HORA NOT)",
+    "descricao": "Tecnico Eletromecanica (HORA NOT)",
     "descricaoNormalizada": "tecnico eletromecanica hora not",
-    "quantidadeCaracteres": 34,
+    "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4093433"
@@ -46981,9 +47381,9 @@
   },
   {
     "_id": "004699",
-    "descricao": "Tecnico Eletromecanica  (HE SEM)",
+    "descricao": "Tecnico Eletromecanica (HE SEM)",
     "descricaoNormalizada": "tecnico eletromecanica he sem",
-    "quantidadeCaracteres": 32,
+    "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4093434"
@@ -46991,9 +47391,9 @@
   },
   {
     "_id": "004700",
-    "descricao": "Tecnico Eletromecanica  (HE DOM/FER)",
+    "descricao": "Tecnico Eletromecanica (HE DOM/FER)",
     "descricaoNormalizada": "tecnico eletromecanica he dom fer",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4093435"
@@ -47051,9 +47451,9 @@
   },
   {
     "_id": "004706",
-    "descricao": "SUP ELETROMECÂNICA  (HE DOM/FER)",
+    "descricao": "SUP ELETROMECÂNICA (HE DOM/FER)",
     "descricaoNormalizada": "sup eletromecanica he dom fer",
-    "quantidadeCaracteres": 32,
+    "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4093443"
@@ -47131,9 +47531,9 @@
   },
   {
     "_id": "004714",
-    "descricao": "Aux. Almoxarifado  (HORA NORMAL)",
+    "descricao": "Aux. Almoxarifado (HORA NORMAL)",
     "descricaoNormalizada": "aux almoxarifado hora normal",
-    "quantidadeCaracteres": 32,
+    "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4098155"
@@ -47141,9 +47541,9 @@
   },
   {
     "_id": "004715",
-    "descricao": "Aux. Almoxarifado  (HE SEM)",
+    "descricao": "Aux. Almoxarifado (HE SEM)",
     "descricaoNormalizada": "aux almoxarifado he sem",
-    "quantidadeCaracteres": 27,
+    "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4098156"
@@ -47151,9 +47551,9 @@
   },
   {
     "_id": "004716",
-    "descricao": "Aux. Almoxarifado  (HE DOM/FER)",
+    "descricao": "Aux. Almoxarifado (HE DOM/FER)",
     "descricaoNormalizada": "aux almoxarifado he dom fer",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4098158"
@@ -47241,9 +47641,9 @@
   },
   {
     "_id": "004725",
-    "descricao": "SUP ELETROMECÂNICA  (HE NOT DOM/FER)",
+    "descricao": "SUP ELETROMECÂNICA (HE NOT DOM/FER)",
     "descricaoNormalizada": "sup eletromecanica he not dom fer",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4100225"
@@ -47611,7 +48011,7 @@
   },
   {
     "_id": "004762",
-    "descricao": "AJUDANTE (HE NOTURNA SEG A SAB)",
+    "descricao": "AJUDANTE (HE NOTURNA SEG A SAB)",
     "descricaoNormalizada": "ajudante he noturna seg a sab",
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
@@ -47621,7 +48021,7 @@
   },
   {
     "_id": "004763",
-    "descricao": "AJUDANTE (HE NOTURNA DOM.FER)",
+    "descricao": "AJUDANTE (HE NOTURNA DOM.FER)",
     "descricaoNormalizada": "ajudante he noturna dom fer",
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
@@ -47671,7 +48071,7 @@
   },
   {
     "_id": "004768",
-    "descricao": "MONTADOR(A) (HE NOTURNA SEG A SAB)",
+    "descricao": "MONTADOR(A) (HE NOTURNA SEG A SAB)",
     "descricaoNormalizada": "montador a he noturna seg a sab",
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
@@ -47681,7 +48081,7 @@
   },
   {
     "_id": "004769",
-    "descricao": "MONTADOR(A) (HE NOTURNA DOM.FER)",
+    "descricao": "MONTADOR(A) (HE NOTURNA DOM.FER)",
     "descricaoNormalizada": "montador a he noturna dom fer",
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
@@ -47731,7 +48131,7 @@
   },
   {
     "_id": "004774",
-    "descricao": "MONTADOR(A) LIDER(HE NOT SEG A SAB)",
+    "descricao": "MONTADOR(A) LIDER(HE NOT SEG A SAB)",
     "descricaoNormalizada": "montador a lider he not seg a sab",
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
@@ -47741,7 +48141,7 @@
   },
   {
     "_id": "004775",
-    "descricao": "MONTADOR(A) LIDER(HE NOT DOM.FER)",
+    "descricao": "MONTADOR(A) LIDER(HE NOT DOM.FER)",
     "descricaoNormalizada": "montador a lider he not dom fer",
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
@@ -47791,7 +48191,7 @@
   },
   {
     "_id": "004780",
-    "descricao": "ENCARREGADO(A) (HE NOTURNA SEG.SAB)",
+    "descricao": "ENCARREGADO(A) (HE NOTURNA SEG.SAB)",
     "descricaoNormalizada": "encarregado a he noturna seg sab",
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
@@ -47801,7 +48201,7 @@
   },
   {
     "_id": "004781",
-    "descricao": "ENCARREGADO(A) (HE NOTURNA DOM.FER)",
+    "descricao": "ENCARREGADO(A) (HE NOTURNA DOM.FER)",
     "descricaoNormalizada": "encarregado a he noturna dom fer",
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
@@ -47911,7 +48311,7 @@
   },
   {
     "_id": "004792",
-    "descricao": "SUPERVISOR(A) (HE NOTURNA SEG.SAB)",
+    "descricao": "SUPERVISOR(A) (HE NOTURNA SEG.SAB)",
     "descricaoNormalizada": "supervisor a he noturna seg sab",
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
@@ -47921,7 +48321,7 @@
   },
   {
     "_id": "004793",
-    "descricao": "SUPERVISOR(A) (HE NOTURNA DOM.FER)",
+    "descricao": "SUPERVISOR(A) (HE NOTURNA DOM.FER)",
     "descricaoNormalizada": "supervisor a he noturna dom fer",
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
@@ -47971,7 +48371,7 @@
   },
   {
     "_id": "004798",
-    "descricao": "PROJETISTAS (HE NOTURNA SEG.SAB)",
+    "descricao": "PROJETISTAS (HE NOTURNA SEG.SAB)",
     "descricaoNormalizada": "projetistas he noturna seg sab",
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
@@ -47981,7 +48381,7 @@
   },
   {
     "_id": "004799",
-    "descricao": "PROJETISTAS (HE NOTURNA DOM.FER)",
+    "descricao": "PROJETISTAS (HE NOTURNA DOM.FER)",
     "descricaoNormalizada": "projetistas he noturna dom fer",
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
@@ -48031,7 +48431,7 @@
   },
   {
     "_id": "004804",
-    "descricao": "CORD(A) CONTRATO (HE NOTURNA SEG.SAB)",
+    "descricao": "CORD(A) CONTRATO (HE NOTURNA SEG.SAB)",
     "descricaoNormalizada": "cord a contrato he noturna seg sab",
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
@@ -48041,7 +48441,7 @@
   },
   {
     "_id": "004805",
-    "descricao": "CORD(A) CONTRATO (HE NOTURNA DOM.FER)",
+    "descricao": "CORD(A) CONTRATO (HE NOTURNA DOM.FER)",
     "descricaoNormalizada": "cord a contrato he noturna dom fer",
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
@@ -48316,7 +48716,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030322"
+      "4030322",
+      "4030432"
     ]
   },
   {
@@ -48356,7 +48757,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030326"
+      "4030326",
+      "4056661"
     ]
   },
   {
@@ -48456,7 +48858,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030337"
+      "4030337",
+      "4030418"
     ]
   },
   {
@@ -48486,7 +48889,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030340"
+      "4030340",
+      "4030420"
     ]
   },
   {
@@ -48506,7 +48910,9 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030342"
+      "4030342",
+      "4030421",
+      "4030447"
     ]
   },
   {
@@ -48636,7 +49042,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030355"
+      "4030355",
+      "4030423"
     ]
   },
   {
@@ -48656,7 +49063,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030357"
+      "4030357",
+      "4030424"
     ]
   },
   {
@@ -48676,7 +49084,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030359"
+      "4030359",
+      "4030425"
     ]
   },
   {
@@ -48716,7 +49125,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030364"
+      "4030364",
+      "4030428"
     ]
   },
   {
@@ -48726,7 +49136,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030379"
+      "4030379",
+      "4030431"
     ]
   },
   {
@@ -48766,7 +49177,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030393"
+      "4030393",
+      "4030434"
     ]
   },
   {
@@ -48851,12 +49263,13 @@
   },
   {
     "_id": "004886",
-    "descricao": "SV - DIVISÓRIA  DIVILUX EUCATEX LINHA 35",
+    "descricao": "SV - DIVISÓRIA DIVILUX EUCATEX LINHA 35",
     "descricaoNormalizada": "sv divisoria divilux eucatex linha 35",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030413"
+      "4030413",
+      "4030441"
     ]
   },
   {
@@ -48866,7 +49279,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030414"
+      "4030414",
+      "4030442"
     ]
   },
   {
@@ -48876,7 +49290,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030415"
+      "4030415",
+      "4030416"
     ]
   },
   {
@@ -48886,7 +49301,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030417"
+      "4030417",
+      "4030443"
     ]
   },
   {
@@ -48896,7 +49312,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030419"
+      "4030419",
+      "4030445"
     ]
   },
   {
@@ -48906,7 +49323,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030422"
+      "4030422",
+      "4030448"
     ]
   },
   {
@@ -48936,7 +49354,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030429"
+      "4030429",
+      "4030451"
     ]
   },
   {
@@ -48946,7 +49365,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030430"
+      "4030430",
+      "4030450"
     ]
   },
   {
@@ -48976,7 +49396,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4030436"
+      "4030436",
+      "4030458"
     ]
   },
   {
@@ -49176,7 +49597,8 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4031828"
+      "4031828",
+      "4097306"
     ]
   },
   {
@@ -49216,7 +49638,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4031833"
+      "4031833",
+      "4068555"
     ]
   },
   {
@@ -49226,7 +49649,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4034009"
+      "4034009",
+      "4095225"
     ]
   },
   {
@@ -49306,7 +49730,9 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4036817"
+      "4036817",
+      "4036815",
+      "4036819"
     ]
   },
   {
@@ -49626,7 +50052,8 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4059107"
+      "4059107",
+      "4060317"
     ]
   },
   {
@@ -50396,7 +50823,9 @@
     "quantidadeCaracteres": 12,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4068021"
+      "4068021",
+      "4068061",
+      "4067926"
     ]
   },
   {
@@ -50406,7 +50835,9 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4068022"
+      "4068022",
+      "4068062",
+      "4068033"
     ]
   },
   {
@@ -50416,7 +50847,9 @@
     "quantidadeCaracteres": 20,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4068023"
+      "4068023",
+      "4068066",
+      "4068034"
     ]
   },
   {
@@ -50426,7 +50859,9 @@
     "quantidadeCaracteres": 8,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4068028"
+      "4068028",
+      "4068075",
+      "4068040"
     ]
   },
   {
@@ -50436,7 +50871,8 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4068029"
+      "4068029",
+      "4068041"
     ]
   },
   {
@@ -50446,7 +50882,8 @@
     "quantidadeCaracteres": 18,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4068039"
+      "4068039",
+      "4068074"
     ]
   },
   {
@@ -50481,9 +50918,9 @@
   },
   {
     "_id": "005049",
-    "descricao": "VIG DESARMADO  (MOB MENOS DE 15 DIAS)",
+    "descricao": "VIG DESARMADO (MOB MENOS DE 15 DIAS)",
     "descricaoNormalizada": "vig desarmado mob menos de 15 dias",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4068556"
@@ -50511,9 +50948,9 @@
   },
   {
     "_id": "005052",
-    "descricao": "VIGILANTE LÍDER  (MOB MENOS DE 15 DIAS)",
+    "descricao": "VIGILANTE LÍDER (MOB MENOS DE 15 DIAS)",
     "descricaoNormalizada": "vigilante lider mob menos de 15 dias",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4068590"
@@ -50561,9 +50998,9 @@
   },
   {
     "_id": "005057",
-    "descricao": "VIG DESARMADO  (MOB MAIS DE 15 DIAS)",
+    "descricao": "VIG DESARMADO (MOB MAIS DE 15 DIAS)",
     "descricaoNormalizada": "vig desarmado mob mais de 15 dias",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4068597"
@@ -50791,9 +51228,9 @@
   },
   {
     "_id": "005080",
-    "descricao": " EQUIPAMENTOS/ESTRUTURAS",
+    "descricao": "EQUIPAMENTOS/ESTRUTURAS",
     "descricaoNormalizada": "equipamentos estruturas",
-    "quantidadeCaracteres": 24,
+    "quantidadeCaracteres": 23,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4074891"
@@ -50801,9 +51238,9 @@
   },
   {
     "_id": "005081",
-    "descricao": "  LOCAÇÃO VEÍCULOS-CONSERVAÇÃO E LIMPEZA",
+    "descricao": "LOCAÇÃO VEÍCULOS-CONSERVAÇÃO E LIMPEZA",
     "descricaoNormalizada": "locacao veiculos conservacao e limpeza",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4074892"
@@ -50811,9 +51248,9 @@
   },
   {
     "_id": "005082",
-    "descricao": " INSUMOS",
+    "descricao": "INSUMOS",
     "descricaoNormalizada": "insumos",
-    "quantidadeCaracteres": 8,
+    "quantidadeCaracteres": 7,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4074894"
@@ -50871,9 +51308,9 @@
   },
   {
     "_id": "005088",
-    "descricao": " SV Frutas Avulsas  - maçã - unidade",
+    "descricao": "SV Frutas Avulsas - maçã - unidade",
     "descricaoNormalizada": "sv frutas avulsas maca unidade",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4077086"
@@ -50921,9 +51358,9 @@
   },
   {
     "_id": "005093",
-    "descricao": "SV Bolo de cenoura c cobertura  chocolat",
+    "descricao": "SV Bolo de cenoura c cobertura chocolat",
     "descricaoNormalizada": "sv bolo de cenoura c cobertura chocolat",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4077121"
@@ -51661,9 +52098,9 @@
   },
   {
     "_id": "005167",
-    "descricao": "MEIO OFICIAL  HORA NORMAL",
+    "descricao": "MEIO OFICIAL HORA NORMAL",
     "descricaoNormalizada": "meio oficial hora normal",
-    "quantidadeCaracteres": 25,
+    "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4080401"
@@ -51751,9 +52188,9 @@
   },
   {
     "_id": "005176",
-    "descricao": "H.I+A.Not-Of. Manut. Predial  NR35-ADM",
+    "descricao": "H.I+A.Not-Of. Manut. Predial NR35-ADM",
     "descricaoNormalizada": "h i a not of manut predial nr35 adm",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4083037"
@@ -51771,9 +52208,9 @@
   },
   {
     "_id": "005178",
-    "descricao": "Mês-Assist.Adm.  Medição e Bancodoc-ADM",
+    "descricao": "Mês-Assist.Adm. Medição e Bancodoc-ADM",
     "descricaoNormalizada": "mes assist adm medicao e bancodoc adm",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4084137"
@@ -51881,12 +52318,13 @@
   },
   {
     "_id": "005189",
-    "descricao": "Mês-Aux. de Sv. Gerais  -ADM",
+    "descricao": "Mês-Aux. de Sv. Gerais -ADM",
     "descricaoNormalizada": "mes aux de sv gerais adm",
-    "quantidadeCaracteres": 28,
+    "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085728"
+      "4085728",
+      "4085729"
     ]
   },
   {
@@ -51906,7 +52344,8 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085731"
+      "4085731",
+      "4085751"
     ]
   },
   {
@@ -51921,9 +52360,9 @@
   },
   {
     "_id": "005193",
-    "descricao": "Mês-Sup. Civil  (motorista caminhão)-ADM",
+    "descricao": "Mês-Sup. Civil (motorista caminhão)-ADM",
     "descricaoNormalizada": "mes sup civil motorista caminhao adm",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085733"
@@ -51946,7 +52385,12 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085736"
+      "4085736",
+      "4085743",
+      "4085745",
+      "4085746",
+      "4085758",
+      "4085769"
     ]
   },
   {
@@ -51956,7 +52400,9 @@
     "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085737"
+      "4085737",
+      "4085742",
+      "4085755"
     ]
   },
   {
@@ -51966,14 +52412,15 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085738"
+      "4085738",
+      "4085744"
     ]
   },
   {
     "_id": "005198",
-    "descricao": "Mês-Eletricista  NR35-ADM",
+    "descricao": "Mês-Eletricista NR35-ADM",
     "descricaoNormalizada": "mes eletricista nr35 adm",
-    "quantidadeCaracteres": 25,
+    "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085739"
@@ -52011,19 +52458,20 @@
   },
   {
     "_id": "005202",
-    "descricao": "HN+Add.N - Aux. de Sv. Gerais  - ADM",
+    "descricao": "HN+Add.N - Aux. de Sv. Gerais - ADM",
     "descricaoNormalizada": "hn add n aux de sv gerais adm",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085750"
+      "4085750",
+      "4085812"
     ]
   },
   {
     "_id": "005203",
-    "descricao": "HN+Add.N - Mensageiro  - ADM",
+    "descricao": "HN+Add.N - Mensageiro - ADM",
     "descricaoNormalizada": "hn add n mensageiro adm",
-    "quantidadeCaracteres": 28,
+    "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085752"
@@ -52036,17 +52484,21 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085753"
+      "4085753",
+      "4086051",
+      "4086322"
     ]
   },
   {
     "_id": "005205",
-    "descricao": "HN+Add.N - Servente de obras  - ADM",
+    "descricao": "HN+Add.N - Servente de obras - ADM",
     "descricaoNormalizada": "hn add n servente de obras adm",
-    "quantidadeCaracteres": 35,
+    "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085756"
+      "4085756",
+      "4085990",
+      "4087521"
     ]
   },
   {
@@ -52056,7 +52508,8 @@
     "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085757"
+      "4085757",
+      "4085762"
     ]
   },
   {
@@ -52151,12 +52604,13 @@
   },
   {
     "_id": "005216",
-    "descricao": "Peric.Mês - Aux. de Sv. Gerais  - FGH",
+    "descricao": "Peric.Mês - Aux. de Sv. Gerais - FGH",
     "descricaoNormalizada": "peric mes aux de sv gerais fgh",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085774"
+      "4085774",
+      "4085871"
     ]
   },
   {
@@ -52171,9 +52625,9 @@
   },
   {
     "_id": "005218",
-    "descricao": "HN-Assist.Adm.  Medição e Bancodoc-ADM",
+    "descricao": "HN-Assist.Adm. Medição e Bancodoc-ADM",
     "descricaoNormalizada": "hn assist adm medicao e bancodoc adm",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085777"
@@ -52281,12 +52735,13 @@
   },
   {
     "_id": "005229",
-    "descricao": "HN-Aux. de Sv. Gerais  -ADM",
+    "descricao": "HN-Aux. de Sv. Gerais -ADM",
     "descricaoNormalizada": "hn aux de sv gerais adm",
-    "quantidadeCaracteres": 27,
+    "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085788"
+      "4085788",
+      "4085816"
     ]
   },
   {
@@ -52311,9 +52766,9 @@
   },
   {
     "_id": "005232",
-    "descricao": "HN+Add.N - Aux. de Sv. Gerais  - XY",
+    "descricao": "HN+Add.N - Aux. de Sv. Gerais - XY",
     "descricaoNormalizada": "hn add n aux de sv gerais xy",
-    "quantidadeCaracteres": 35,
+    "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085792"
@@ -52321,9 +52776,9 @@
   },
   {
     "_id": "005233",
-    "descricao": "HN-Sup. Civil  (motorista caminhão)-ADM",
+    "descricao": "HN-Sup. Civil (motorista caminhão)-ADM",
     "descricaoNormalizada": "hn sup civil motorista caminhao adm",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085793"
@@ -52346,7 +52801,10 @@
     "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085795"
+      "4085795",
+      "4085796",
+      "4085803",
+      "4085829"
     ]
   },
   {
@@ -52356,7 +52814,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085797"
+      "4085797",
+      "4085815"
     ]
   },
   {
@@ -52366,14 +52825,15 @@
     "quantidadeCaracteres": 21,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085798"
+      "4085798",
+      "4085804"
     ]
   },
   {
     "_id": "005238",
-    "descricao": "HN-Eletricista  NR35-ADM",
+    "descricao": "HN-Eletricista NR35-ADM",
     "descricaoNormalizada": "hn eletricista nr35 adm",
-    "quantidadeCaracteres": 24,
+    "quantidadeCaracteres": 23,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085799"
@@ -52406,7 +52866,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085805"
+      "4085805",
+      "4085825"
     ]
   },
   {
@@ -52431,9 +52892,9 @@
   },
   {
     "_id": "005244",
-    "descricao": "HN+Add.N - Médico do trabalho  - ADM",
+    "descricao": "HN+Add.N - Médico do trabalho - ADM",
     "descricaoNormalizada": "hn add n medico do trabalho adm",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085811"
@@ -52441,12 +52902,13 @@
   },
   {
     "_id": "005245",
-    "descricao": "Peric.Mês - Op. de roçadeira  - ADM",
+    "descricao": "Peric.Mês - Op. de roçadeira - ADM",
     "descricaoNormalizada": "peric mes op de rocadeira adm",
-    "quantidadeCaracteres": 35,
+    "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085813"
+      "4085813",
+      "4085865"
     ]
   },
   {
@@ -52536,7 +52998,8 @@
     "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085817"
+      "4085817",
+      "4085822"
     ]
   },
   {
@@ -52556,7 +53019,10 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4036095"
+      "4036095",
+      "4036096",
+      "4036098",
+      "4036097"
     ]
   },
   {
@@ -52736,7 +53202,8 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4041315"
+      "4041315",
+      "4067694"
     ]
   },
   {
@@ -53036,7 +53503,9 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4068035"
+      "4068035",
+      "4068069",
+      "4068024"
     ]
   },
   {
@@ -53081,12 +53550,14 @@
   },
   {
     "_id": "005309",
-    "descricao": "Vigilante Patrimonial  24HS",
+    "descricao": "Vigilante Patrimonial 24HS",
     "descricaoNormalizada": "vigilante patrimonial 24hs",
-    "quantidadeCaracteres": 27,
+    "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4076431"
+      "4076431",
+      "4077078",
+      "4077983"
     ]
   },
   {
@@ -53101,9 +53572,9 @@
   },
   {
     "_id": "005311",
-    "descricao": "SV - CERCAS MUDAN -  Equipamentos - Manu",
+    "descricao": "SV - CERCAS MUDAN - Equipamentos - Manu",
     "descricaoNormalizada": "sv cercas mudan equipamentos manu",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4036110"
@@ -53136,7 +53607,8 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4063424"
+      "4063424",
+      "4102190"
     ]
   },
   {
@@ -53146,7 +53618,8 @@
     "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4037112"
+      "4037112",
+      "4014402"
     ]
   },
   {
@@ -53381,9 +53854,9 @@
   },
   {
     "_id": "005339",
-    "descricao": "SV-TRANSP MUNICIPAL -  EST01",
+    "descricao": "SV-TRANSP MUNICIPAL - EST01",
     "descricaoNormalizada": "sv transp municipal est01",
-    "quantidadeCaracteres": 28,
+    "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4056359"
@@ -53566,7 +54039,8 @@
     "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085834"
+      "4085834",
+      "4085993"
     ]
   },
   {
@@ -53576,7 +54050,8 @@
     "quantidadeCaracteres": 17,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099968"
+      "4099968",
+      "4099970"
     ]
   },
   {
@@ -53896,7 +54371,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099966"
+      "4099966",
+      "4099972"
     ]
   },
   {
@@ -53961,9 +54437,9 @@
   },
   {
     "_id": "005397",
-    "descricao": "OLHOS D'ÁGUA  - SILVICULTURA - MICRO",
+    "descricao": "OLHOS D'ÁGUA - SILVICULTURA - MICRO",
     "descricaoNormalizada": "olhos d agua silvicultura micro",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4117116"
@@ -53971,9 +54447,9 @@
   },
   {
     "_id": "005398",
-    "descricao": "CURVELO  - SILVICULTURA - MICRO",
+    "descricao": "CURVELO - SILVICULTURA - MICRO",
     "descricaoNormalizada": "curvelo silvicultura micro",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4117114"
@@ -53981,9 +54457,9 @@
   },
   {
     "_id": "005399",
-    "descricao": "CURVELO  - SILVICULTURA - MICRO RESERVA",
+    "descricao": "CURVELO - SILVICULTURA - MICRO RESERVA",
     "descricaoNormalizada": "curvelo silvicultura micro reserva",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4117115"
@@ -54076,7 +54552,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4053685"
+      "4053685",
+      "4036100"
     ]
   },
   {
@@ -54356,7 +54833,9 @@
     "quantidadeCaracteres": 10,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099893"
+      "4099893",
+      "4100967",
+      "4117533"
     ]
   },
   {
@@ -54421,9 +54900,9 @@
   },
   {
     "_id": "005443",
-    "descricao": "SV - CERCAS MUDAN -  Aux. de Jardinagem",
+    "descricao": "SV - CERCAS MUDAN - Aux. de Jardinagem",
     "descricaoNormalizada": "sv cercas mudan aux de jardinagem",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4036109"
@@ -54441,12 +54920,13 @@
   },
   {
     "_id": "005445",
-    "descricao": "H.E.SS-Aux. de Sv. Gerais  -ADM",
+    "descricao": "H.E.SS-Aux. de Sv. Gerais -ADM",
     "descricaoNormalizada": "h e ss aux de sv gerais adm",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085848"
+      "4085848",
+      "4085849"
     ]
   },
   {
@@ -54466,7 +54946,8 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4068031"
+      "4068031",
+      "4068063"
     ]
   },
   {
@@ -54506,7 +54987,8 @@
     "quantidadeCaracteres": 10,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099949"
+      "4099949",
+      "4099947"
     ]
   },
   {
@@ -54591,9 +55073,9 @@
   },
   {
     "_id": "005460",
-    "descricao": "ÔNIBUS  INTERNO/USINA",
+    "descricao": "ÔNIBUS INTERNO/USINA",
     "descricaoNormalizada": "onibus interno usina",
-    "quantidadeCaracteres": 21,
+    "quantidadeCaracteres": 20,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4025543"
@@ -54631,9 +55113,9 @@
   },
   {
     "_id": "005464",
-    "descricao": "SV - PEQ. REPAROS  Equipamentos - Manute",
+    "descricao": "SV - PEQ. REPAROS Equipamentos - Manute",
     "descricaoNormalizada": "sv peq reparos equipamentos manute",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4036107"
@@ -54686,7 +55168,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4077942"
+      "4077942",
+      "4099752"
     ]
   },
   {
@@ -54741,9 +55224,9 @@
   },
   {
     "_id": "005475",
-    "descricao": "HN+Add.N - Jardineiro  - ADM",
+    "descricao": "HN+Add.N - Jardineiro - ADM",
     "descricaoNormalizada": "hn add n jardineiro adm",
-    "quantidadeCaracteres": 28,
+    "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085852"
@@ -54906,7 +55389,10 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085855"
+      "4085855",
+      "4085856",
+      "4085863",
+      "4085894"
     ]
   },
   {
@@ -54936,14 +55422,17 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4036816"
+      "4036816",
+      "4036814",
+      "4036818",
+      "4036820"
     ]
   },
   {
     "_id": "005495",
-    "descricao": "H.E.SS-Eletricista  NR35-ADM",
+    "descricao": "H.E.SS-Eletricista NR35-ADM",
     "descricaoNormalizada": "h e ss eletricista nr35 adm",
-    "quantidadeCaracteres": 28,
+    "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085859"
@@ -54956,7 +55445,9 @@
     "quantidadeCaracteres": 14,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099895"
+      "4099895",
+      "4099910",
+      "4101628"
     ]
   },
   {
@@ -55076,7 +55567,8 @@
     "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085864"
+      "4085864",
+      "4085868"
     ]
   },
   {
@@ -55381,12 +55873,13 @@
   },
   {
     "_id": "005539",
-    "descricao": "HN+Add.N - Op. de motosserra  - ADM",
+    "descricao": "HN+Add.N - Op. de motosserra - ADM",
     "descricaoNormalizada": "hn add n op de motosserra adm",
-    "quantidadeCaracteres": 35,
+    "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085872"
+      "4085872",
+      "4086090"
     ]
   },
   {
@@ -55406,7 +55899,8 @@
     "quantidadeCaracteres": 11,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4117521"
+      "4117521",
+      "4060906"
     ]
   },
   {
@@ -55441,9 +55935,9 @@
   },
   {
     "_id": "005545",
-    "descricao": "SV  LIMPEZA",
+    "descricao": "SV LIMPEZA",
     "descricaoNormalizada": "sv limpeza",
-    "quantidadeCaracteres": 11,
+    "quantidadeCaracteres": 10,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4090386"
@@ -55461,12 +55955,15 @@
   },
   {
     "_id": "005547",
-    "descricao": "Peric.Mês - Servente de obras  - ADM",
+    "descricao": "Peric.Mês - Servente de obras - ADM",
     "descricaoNormalizada": "peric mes servente de obras adm",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085873"
+      "4085873",
+      "4086053",
+      "4086189",
+      "4086341"
     ]
   },
   {
@@ -55511,12 +56008,13 @@
   },
   {
     "_id": "005552",
-    "descricao": "H.E.SS-Of. de Manut. Predial  NR35-ADM",
+    "descricao": "H.E.SS-Of. de Manut. Predial NR35-ADM",
     "descricaoNormalizada": "h e ss of de manut predial nr35 adm",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085875"
+      "4085875",
+      "4085884"
     ]
   },
   {
@@ -55541,9 +56039,9 @@
   },
   {
     "_id": "005555",
-    "descricao": "HN+Add.N - Op. de roçadeira  - ADM",
+    "descricao": "HN+Add.N - Op. de roçadeira - ADM",
     "descricaoNormalizada": "hn add n op de rocadeira adm",
-    "quantidadeCaracteres": 34,
+    "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085876"
@@ -55556,7 +56054,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085877"
+      "4085877",
+      "4085882"
     ]
   },
   {
@@ -55576,7 +56075,9 @@
     "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4091835"
+      "4091835",
+      "4066906",
+      "4059491"
     ]
   },
   {
@@ -55606,7 +56107,8 @@
     "quantidadeCaracteres": 13,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4069294"
+      "4069294",
+      "4092883"
     ]
   },
   {
@@ -55841,9 +56343,9 @@
   },
   {
     "_id": "005585",
-    "descricao": "SV - CERCAS MUDAN  Motorista",
+    "descricao": "SV - CERCAS MUDAN Motorista",
     "descricaoNormalizada": "sv cercas mudan motorista",
-    "quantidadeCaracteres": 28,
+    "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4036108"
@@ -55941,9 +56443,9 @@
   },
   {
     "_id": "005595",
-    "descricao": "Meio oficial de manutenção  1° Turno 44H",
+    "descricao": "Meio oficial de manutenção 1° Turno 44H",
     "descricaoNormalizada": "meio oficial de manutencao 1 turno 44h",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4120658"
@@ -55966,7 +56468,10 @@
     "quantidadeCaracteres": 8,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099911"
+      "4099911",
+      "4100964",
+      "4092270",
+      "4117541"
     ]
   },
   {
@@ -56086,7 +56591,8 @@
     "quantidadeCaracteres": 17,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097287"
+      "4097287",
+      "4110358"
     ]
   },
   {
@@ -56146,7 +56652,8 @@
     "quantidadeCaracteres": 19,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097283"
+      "4097283",
+      "4077951"
     ]
   },
   {
@@ -56336,7 +56843,8 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099946"
+      "4099946",
+      "4099945"
     ]
   },
   {
@@ -56471,7 +56979,7 @@
   },
   {
     "_id": "005648",
-    "descricao": "SV - Robô Cortador de Grama - CSG",
+    "descricao": "SV - Robô Cortador de Grama - CSG",
     "descricaoNormalizada": "sv robo cortador de grama csg",
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
@@ -56586,7 +57094,8 @@
     "quantidadeCaracteres": 17,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4101629"
+      "4101629",
+      "4099897"
     ]
   },
   {
@@ -56641,12 +57150,13 @@
   },
   {
     "_id": "005665",
-    "descricao": "H.E.DF-Aux. de Sv. Gerais  -ADM",
+    "descricao": "H.E.DF-Aux. de Sv. Gerais -ADM",
     "descricaoNormalizada": "h e df aux de sv gerais adm",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085908"
+      "4085908",
+      "4085909"
     ]
   },
   {
@@ -56706,7 +57216,8 @@
     "quantidadeCaracteres": 21,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4071910"
+      "4071910",
+      "4071911"
     ]
   },
   {
@@ -56816,7 +57327,10 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085916"
+      "4085916",
+      "4085923",
+      "4085925",
+      "4085949"
     ]
   },
   {
@@ -56866,7 +57380,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085917"
+      "4085917",
+      "4085935"
     ]
   },
   {
@@ -56906,7 +57421,8 @@
     "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085918"
+      "4085918",
+      "4085924"
     ]
   },
   {
@@ -56961,9 +57477,9 @@
   },
   {
     "_id": "005697",
-    "descricao": "H.E.DF-Eletricista  NR35-ADM",
+    "descricao": "H.E.DF-Eletricista NR35-ADM",
     "descricaoNormalizada": "h e df eletricista nr35 adm",
-    "quantidadeCaracteres": 28,
+    "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085919"
@@ -56976,7 +57492,9 @@
     "quantidadeCaracteres": 7,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099998"
+      "4099998",
+      "4099981",
+      "4099993"
     ]
   },
   {
@@ -57166,7 +57684,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085931"
+      "4085931",
+      "4086284"
     ]
   },
   {
@@ -57191,9 +57710,9 @@
   },
   {
     "_id": "005720",
-    "descricao": "HN+Add.N - Líder Limpeza  - ADM",
+    "descricao": "HN+Add.N - Líder Limpeza - ADM",
     "descricaoNormalizada": "hn add n lider limpeza adm",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085932"
@@ -57336,7 +57855,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085937"
+      "4085937",
+      "4085942"
     ]
   },
   {
@@ -57396,7 +57916,8 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4041318"
+      "4041318",
+      "4067695"
     ]
   },
   {
@@ -57441,9 +57962,9 @@
   },
   {
     "_id": "005745",
-    "descricao": "Op. De Maquina  1° Turno 44H - SEG-SAB",
+    "descricao": "Op. De Maquina 1° Turno 44H - SEG-SAB",
     "descricaoNormalizada": "op de maquina 1 turno 44h seg sab",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4120652"
@@ -57631,12 +58152,15 @@
   },
   {
     "_id": "005764",
-    "descricao": "Peric.Mês - Aux. de Sv. Gerais  - ADM",
+    "descricao": "Peric.Mês - Aux. de Sv. Gerais - ADM",
     "descricaoNormalizada": "peric mes aux de sv gerais adm",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085954"
+      "4085954",
+      "4085991",
+      "4086228",
+      "4086285"
     ]
   },
   {
@@ -57901,12 +58425,13 @@
   },
   {
     "_id": "005791",
-    "descricao": "H.P.E.SS-Aux. de Sv. Gerais  -ADM",
+    "descricao": "H.P.E.SS-Aux. de Sv. Gerais -ADM",
     "descricaoNormalizada": "h p e ss aux de sv gerais adm",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085968"
+      "4085968",
+      "4085969"
     ]
   },
   {
@@ -58026,7 +58551,10 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085975"
+      "4085975",
+      "4085976",
+      "4085983",
+      "4086014"
     ]
   },
   {
@@ -58046,7 +58574,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085977"
+      "4085977",
+      "4085995"
     ]
   },
   {
@@ -58071,9 +58600,9 @@
   },
   {
     "_id": "005808",
-    "descricao": "H.P.E.SS-Eletricista  NR35-ADM",
+    "descricao": "H.P.E.SS-Eletricista NR35-ADM",
     "descricaoNormalizada": "h p e ss eletricista nr35 adm",
-    "quantidadeCaracteres": 30,
+    "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085979"
@@ -58136,7 +58665,8 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085984"
+      "4085984",
+      "4085988"
     ]
   },
   {
@@ -58171,9 +58701,9 @@
   },
   {
     "_id": "005818",
-    "descricao": "Peric.Mês - Líder Limpeza  - XY",
+    "descricao": "Peric.Mês - Líder Limpeza - XY",
     "descricaoNormalizada": "peric mes lider limpeza xy",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4085985"
@@ -58206,7 +58736,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4103528"
+      "4103528",
+      "4103524"
     ]
   },
   {
@@ -58226,7 +58757,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085992"
+      "4085992",
+      "4086052"
     ]
   },
   {
@@ -58286,7 +58818,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4085997"
+      "4085997",
+      "4086002"
     ]
   },
   {
@@ -58501,9 +59034,9 @@
   },
   {
     "_id": "005851",
-    "descricao": "SV - ENCERADEIRA 350MM  - CSG",
+    "descricao": "SV - ENCERADEIRA 350MM - CSG",
     "descricaoNormalizada": "sv enceradeira 350mm csg",
-    "quantidadeCaracteres": 29,
+    "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4097625"
@@ -58556,7 +59089,9 @@
     "quantidadeCaracteres": 15,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099996"
+      "4099996",
+      "4100030",
+      "4121450"
     ]
   },
   {
@@ -58671,12 +59206,13 @@
   },
   {
     "_id": "005868",
-    "descricao": "H.P.E.DF-Aux. de Sv. Gerais  -ADM",
+    "descricao": "H.P.E.DF-Aux. de Sv. Gerais -ADM",
     "descricaoNormalizada": "h p e df aux de sv gerais adm",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086028"
+      "4086028",
+      "4086029"
     ]
   },
   {
@@ -58716,7 +59252,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4103526"
+      "4103526",
+      "4103522"
     ]
   },
   {
@@ -58726,7 +59263,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4103527"
+      "4103527",
+      "4103523"
     ]
   },
   {
@@ -58846,7 +59384,11 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086036"
+      "4086036",
+      "4086043",
+      "4086045",
+      "4086058",
+      "4086069"
     ]
   },
   {
@@ -58856,7 +59398,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086037"
+      "4086037",
+      "4086055"
     ]
   },
   {
@@ -58876,14 +59419,15 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086038"
+      "4086038",
+      "4086044"
     ]
   },
   {
     "_id": "005889",
-    "descricao": "H.P.E.DF-Eletricista  NR35-ADM",
+    "descricao": "H.P.E.DF-Eletricista NR35-ADM",
     "descricaoNormalizada": "h p e df eletricista nr35 adm",
-    "quantidadeCaracteres": 30,
+    "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086039"
@@ -58991,9 +59535,9 @@
   },
   {
     "_id": "005900",
-    "descricao": "HN+Add.N - Of. de Manut. Predial  - ADM",
+    "descricao": "HN+Add.N - Of. de Manut. Predial - ADM",
     "descricaoNormalizada": "hn add n of de manut predial adm",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086050"
@@ -59041,9 +59585,9 @@
   },
   {
     "_id": "005905",
-    "descricao": "HN+Add.N - Motorista  - ADM",
+    "descricao": "HN+Add.N - Motorista - ADM",
     "descricaoNormalizada": "hn add n motorista adm",
-    "quantidadeCaracteres": 27,
+    "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086056"
@@ -59066,7 +59610,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086057"
+      "4086057",
+      "4086062"
     ]
   },
   {
@@ -59146,7 +59691,9 @@
     "quantidadeCaracteres": 8,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4068038"
+      "4068038",
+      "4068026",
+      "4068073"
     ]
   },
   {
@@ -59246,7 +59793,8 @@
     "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4103525"
+      "4103525",
+      "4103521"
     ]
   },
   {
@@ -59301,9 +59849,9 @@
   },
   {
     "_id": "005931",
-    "descricao": "SV - CARRINHO FUNCIONAL  - CSG",
+    "descricao": "SV - CARRINHO FUNCIONAL - CSG",
     "descricaoNormalizada": "sv carrinho funcional csg",
-    "quantidadeCaracteres": 30,
+    "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4097624"
@@ -59431,12 +59979,13 @@
   },
   {
     "_id": "005944",
-    "descricao": "H.P+Ad.Not-Aux. de Sv. Gerais  -ADM",
+    "descricao": "H.P+Ad.Not-Aux. de Sv. Gerais -ADM",
     "descricaoNormalizada": "h p ad not aux de sv gerais adm",
-    "quantidadeCaracteres": 35,
+    "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086086"
+      "4086086",
+      "4086111"
     ]
   },
   {
@@ -59506,7 +60055,10 @@
     "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086093"
+      "4086093",
+      "4086094",
+      "4086099",
+      "4086123"
     ]
   },
   {
@@ -59526,14 +60078,15 @@
     "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086095"
+      "4086095",
+      "4086100"
     ]
   },
   {
     "_id": "005954",
-    "descricao": "H.P+Ad.Not-Eletricista  NR35-ADM",
+    "descricao": "H.P+Ad.Not-Eletricista NR35-ADM",
     "descricaoNormalizada": "h p ad not eletricista nr35 adm",
-    "quantidadeCaracteres": 32,
+    "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086096"
@@ -59616,7 +60169,10 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086106"
+      "4086106",
+      "4086226",
+      "4086304",
+      "4087565"
     ]
   },
   {
@@ -59651,9 +60207,9 @@
   },
   {
     "_id": "005966",
-    "descricao": "H.P+Ad.Not-Of.Manut. Predial  NR35-ADM",
+    "descricao": "H.P+Ad.Not-Of.Manut. Predial NR35-ADM",
     "descricaoNormalizada": "h p ad not of manut predial nr35 adm",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086110"
@@ -59696,7 +60252,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086112"
+      "4086112",
+      "4086117"
     ]
   },
   {
@@ -60041,12 +60598,13 @@
   },
   {
     "_id": "006005",
-    "descricao": "H.I+E.SS-Aux. de Sv. Gerais  -ADM",
+    "descricao": "H.I+E.SS-Aux. de Sv. Gerais -ADM",
     "descricaoNormalizada": "h i e ss aux de sv gerais adm",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086143"
+      "4086143",
+      "4086144"
     ]
   },
   {
@@ -60126,7 +60684,10 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086150"
+      "4086150",
+      "4086151",
+      "4086158",
+      "4086184"
     ]
   },
   {
@@ -60156,7 +60717,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086152"
+      "4086152",
+      "4086170"
     ]
   },
   {
@@ -60176,14 +60738,15 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086153"
+      "4086153",
+      "4086159"
     ]
   },
   {
     "_id": "006019",
-    "descricao": "H.I+E.SS-Eletricista  NR35-ADM",
+    "descricao": "H.I+E.SS-Eletricista NR35-ADM",
     "descricaoNormalizada": "h i e ss eletricista nr35 adm",
-    "quantidadeCaracteres": 30,
+    "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086154"
@@ -60251,9 +60814,9 @@
   },
   {
     "_id": "006026",
-    "descricao": "HN+Add.N - Eletricista  -NR35 - ADM",
+    "descricao": "HN+Add.N - Eletricista -NR35 - ADM",
     "descricaoNormalizada": "hn add n eletricista nr35 adm",
-    "quantidadeCaracteres": 35,
+    "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086165"
@@ -60261,9 +60824,9 @@
   },
   {
     "_id": "006027",
-    "descricao": "Peric.Mês - Jardineiro  - ADM",
+    "descricao": "Peric.Mês - Jardineiro - ADM",
     "descricaoNormalizada": "peric mes jardineiro adm",
-    "quantidadeCaracteres": 29,
+    "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086166"
@@ -60281,9 +60844,9 @@
   },
   {
     "_id": "006029",
-    "descricao": "HN+Add.N - Analista de Processos  - ADM",
+    "descricao": "HN+Add.N - Analista de Processos - ADM",
     "descricaoNormalizada": "hn add n analista de processos adm",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086167"
@@ -60291,9 +60854,9 @@
   },
   {
     "_id": "006030",
-    "descricao": "Peric.Mês - Eletricista  -NR35 - ADM",
+    "descricao": "Peric.Mês - Eletricista -NR35 - ADM",
     "descricaoNormalizada": "peric mes eletricista nr35 adm",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086168"
@@ -60326,7 +60889,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086172"
+      "4086172",
+      "4086177"
     ]
   },
   {
@@ -60581,12 +61145,13 @@
   },
   {
     "_id": "006059",
-    "descricao": "H.I+E.DF-Aux. de Sv. Gerais  -ADM",
+    "descricao": "H.I+E.DF-Aux. de Sv. Gerais -ADM",
     "descricaoNormalizada": "h i e df aux de sv gerais adm",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086203"
+      "4086203",
+      "4086204"
     ]
   },
   {
@@ -60721,9 +61286,9 @@
   },
   {
     "_id": "006073",
-    "descricao": "SV - CERCAS MUDAN  Motorista HE 50%",
+    "descricao": "SV - CERCAS MUDAN Motorista HE 50%",
     "descricaoNormalizada": "sv cercas mudan motorista he 50",
-    "quantidadeCaracteres": 35,
+    "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4036833"
@@ -60731,9 +61296,9 @@
   },
   {
     "_id": "006074",
-    "descricao": "SV - CERCAS MUDAN  Motorista HE 100%",
+    "descricao": "SV - CERCAS MUDAN Motorista HE 100%",
     "descricaoNormalizada": "sv cercas mudan motorista he 100",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4036834"
@@ -61476,7 +62041,11 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086210"
+      "4086210",
+      "4086211",
+      "4086218",
+      "4086233",
+      "4086244"
     ]
   },
   {
@@ -61586,7 +62155,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086212"
+      "4086212",
+      "4086230"
     ]
   },
   {
@@ -61636,7 +62206,8 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086213"
+      "4086213",
+      "4086219"
     ]
   },
   {
@@ -61681,9 +62252,9 @@
   },
   {
     "_id": "006169",
-    "descricao": "H.I+E.DF-Eletricista  NR35-ADM",
+    "descricao": "H.I+E.DF-Eletricista NR35-ADM",
     "descricaoNormalizada": "h i e df eletricista nr35 adm",
-    "quantidadeCaracteres": 30,
+    "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086214"
@@ -61891,9 +62462,9 @@
   },
   {
     "_id": "006190",
-    "descricao": "HN+Add.N - Sup.Limp.SV Gerais II  - ADM",
+    "descricao": "HN+Add.N - Sup.Limp.SV Gerais II - ADM",
     "descricaoNormalizada": "hn add n sup limp sv gerais ii adm",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086225"
@@ -61926,7 +62497,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086232"
+      "4086232",
+      "4086237"
     ]
   },
   {
@@ -62121,12 +62693,13 @@
   },
   {
     "_id": "006213",
-    "descricao": "H.I+A.Not-Aux. de Sv. Gerais  -ADM",
+    "descricao": "H.I+A.Not-Aux. de Sv. Gerais -ADM",
     "descricaoNormalizada": "h i a not aux de sv gerais adm",
-    "quantidadeCaracteres": 34,
+    "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086261"
+      "4086261",
+      "4086288"
     ]
   },
   {
@@ -62151,9 +62724,9 @@
   },
   {
     "_id": "006216",
-    "descricao": "HN+Add.N - Supervisor Civil -  - ADM",
+    "descricao": "HN+Add.N - Supervisor Civil - - ADM",
     "descricaoNormalizada": "hn add n supervisor civil adm",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086265"
@@ -62186,7 +62759,10 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086268"
+      "4086268",
+      "4086269",
+      "4086276",
+      "4086300"
     ]
   },
   {
@@ -62206,14 +62782,15 @@
     "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086271"
+      "4086271",
+      "4086277"
     ]
   },
   {
     "_id": "006222",
-    "descricao": "H.I+A.Not-Eletricista  NR35-ADM",
+    "descricao": "H.I+A.Not-Eletricista NR35-ADM",
     "descricaoNormalizada": "h i a not eletricista nr35 adm",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086272"
@@ -62261,9 +62838,9 @@
   },
   {
     "_id": "006227",
-    "descricao": "Peric.Mês - Mensageiro  - ADM",
+    "descricao": "Peric.Mês - Mensageiro - ADM",
     "descricaoNormalizada": "peric mes mensageiro adm",
-    "quantidadeCaracteres": 29,
+    "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086286"
@@ -62276,7 +62853,8 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086289"
+      "4086289",
+      "4086294"
     ]
   },
   {
@@ -62361,9 +62939,9 @@
   },
   {
     "_id": "006237",
-    "descricao": "H.Oc-Assist.Adm.  Medição e Bancodoc-ADM",
+    "descricao": "H.Oc-Assist.Adm. Medição e Bancodoc-ADM",
     "descricaoNormalizada": "h oc assist adm medicao e bancodoc adm",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086307"
@@ -62471,12 +63049,13 @@
   },
   {
     "_id": "006248",
-    "descricao": "H.Oc-Aux. de Sv. Gerais  -ADM",
+    "descricao": "H.Oc-Aux. de Sv. Gerais -ADM",
     "descricaoNormalizada": "h oc aux de sv gerais adm",
-    "quantidadeCaracteres": 29,
+    "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086318"
+      "4086318",
+      "4086346"
     ]
   },
   {
@@ -62506,7 +63085,10 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086325"
+      "4086325",
+      "4086326",
+      "4086333",
+      "4086364"
     ]
   },
   {
@@ -62516,7 +63098,8 @@
     "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086327"
+      "4086327",
+      "4086345"
     ]
   },
   {
@@ -62526,14 +63109,15 @@
     "quantidadeCaracteres": 23,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086328"
+      "4086328",
+      "4086334"
     ]
   },
   {
     "_id": "006254",
-    "descricao": "H.Oc-Eletricista  NR35-ADM",
+    "descricao": "H.Oc-Eletricista NR35-ADM",
     "descricaoNormalizada": "h oc eletricista nr35 adm",
-    "quantidadeCaracteres": 26,
+    "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4086329"
@@ -62586,7 +63170,8 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4117820"
+      "4117820",
+      "4117823"
     ]
   },
   {
@@ -62596,7 +63181,8 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4117821"
+      "4117821",
+      "4117824"
     ]
   },
   {
@@ -62606,7 +63192,8 @@
     "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4117822"
+      "4117822",
+      "4117825"
     ]
   },
   {
@@ -62646,7 +63233,8 @@
     "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4086347"
+      "4086347",
+      "4086352"
     ]
   },
   {
@@ -62771,9 +63359,9 @@
   },
   {
     "_id": "006278",
-    "descricao": "HN+Add.N - Aux. de Sv. Gerais  - FGH",
+    "descricao": "HN+Add.N - Aux. de Sv. Gerais - FGH",
     "descricaoNormalizada": "hn add n aux de sv gerais fgh",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4087522"
@@ -62826,7 +63414,8 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4087527"
+      "4087527",
+      "4087620"
     ]
   },
   {
@@ -62841,9 +63430,9 @@
   },
   {
     "_id": "006285",
-    "descricao": "HN+Add.N - Líder Limpeza  - XY",
+    "descricao": "HN+Add.N - Líder Limpeza - XY",
     "descricaoNormalizada": "hn add n lider limpeza xy",
-    "quantidadeCaracteres": 30,
+    "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4087529"
@@ -62851,9 +63440,9 @@
   },
   {
     "_id": "006286",
-    "descricao": "Peric.Mês - Líder Limpeza  - ADM",
+    "descricao": "Peric.Mês - Líder Limpeza - ADM",
     "descricaoNormalizada": "peric mes lider limpeza adm",
-    "quantidadeCaracteres": 32,
+    "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4087562"
@@ -62881,9 +63470,9 @@
   },
   {
     "_id": "006289",
-    "descricao": "Peric.Mês - Of. de Manut. Predial  - ADM",
+    "descricao": "Peric.Mês - Of. de Manut. Predial - ADM",
     "descricaoNormalizada": "peric mes of de manut predial adm",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4087566"
@@ -62891,9 +63480,9 @@
   },
   {
     "_id": "006290",
-    "descricao": "Peric.Mês - Motorista  - ADM",
+    "descricao": "Peric.Mês - Motorista - ADM",
     "descricaoNormalizada": "peric mes motorista adm",
-    "quantidadeCaracteres": 28,
+    "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4087567"
@@ -62911,9 +63500,9 @@
   },
   {
     "_id": "006292",
-    "descricao": "Peric.Mês - Analista de Processos  - ADM",
+    "descricao": "Peric.Mês - Analista de Processos - ADM",
     "descricaoNormalizada": "peric mes analista de processos adm",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4087569"
@@ -62941,9 +63530,9 @@
   },
   {
     "_id": "006295",
-    "descricao": "Peric.Mês - Sup. Civil  -condutor ADM",
+    "descricao": "Peric.Mês - Sup. Civil -condutor ADM",
     "descricaoNormalizada": "peric mes sup civil condutor adm",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4087632"
@@ -62951,9 +63540,9 @@
   },
   {
     "_id": "006296",
-    "descricao": "Peric.Mês - Supervisor Civil -  - ADM",
+    "descricao": "Peric.Mês - Supervisor Civil - - ADM",
     "descricaoNormalizada": "peric mes supervisor civil adm",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4087633"
@@ -62981,9 +63570,9 @@
   },
   {
     "_id": "006299",
-    "descricao": "Peric.Mês - Médico do trabalho  - ADM",
+    "descricao": "Peric.Mês - Médico do trabalho - ADM",
     "descricaoNormalizada": "peric mes medico do trabalho adm",
-    "quantidadeCaracteres": 37,
+    "quantidadeCaracteres": 36,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4087636"
@@ -63116,7 +63705,8 @@
     "quantidadeCaracteres": 5,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4090817"
+      "4090817",
+      "4100113"
     ]
   },
   {
@@ -63131,9 +63721,9 @@
   },
   {
     "_id": "006314",
-    "descricao": "SUPERVISOR DE OBRAS  HORA EXTRA",
+    "descricao": "SUPERVISOR DE OBRAS HORA EXTRA",
     "descricaoNormalizada": "supervisor de obras hora extra",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4091689"
@@ -63431,9 +64021,9 @@
   },
   {
     "_id": "006344",
-    "descricao": "SV-LOCAÇÂO DE SERRRA CIRCULAR  220 9 pol",
+    "descricao": "SV-LOCAÇÂO DE SERRRA CIRCULAR 220 9 pol",
     "descricaoNormalizada": "sv locacao de serrra circular 220 9 pol",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4093239"
@@ -63921,9 +64511,9 @@
   },
   {
     "_id": "006393",
-    "descricao": " HORA EXTRA INSPETOR 24 HRS",
+    "descricao": "HORA EXTRA INSPETOR 24 HRS",
     "descricaoNormalizada": "hora extra inspetor 24 hrs",
-    "quantidadeCaracteres": 27,
+    "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4069088"
@@ -64011,9 +64601,9 @@
   },
   {
     "_id": "006402",
-    "descricao": "MEIO OFICIAL  HORA EXTRA",
+    "descricao": "MEIO OFICIAL HORA EXTRA",
     "descricaoNormalizada": "meio oficial hora extra",
-    "quantidadeCaracteres": 24,
+    "quantidadeCaracteres": 23,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4095345"
@@ -64061,9 +64651,9 @@
   },
   {
     "_id": "006407",
-    "descricao": "Analista TST -  44h Diurno (seg a sex)",
+    "descricao": "Analista TST - 44h Diurno (seg a sex)",
     "descricaoNormalizada": "analista tst 44h diurno seg a sex",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4123478"
@@ -64151,9 +64741,9 @@
   },
   {
     "_id": "006416",
-    "descricao": "VIGILANTE LÍDER  (MOB MAIS DE 15 DIAS)",
+    "descricao": "VIGILANTE LÍDER (MOB MAIS DE 15 DIAS)",
     "descricaoNormalizada": "vigilante lider mob mais de 15 dias",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4068600"
@@ -64306,7 +64896,8 @@
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096487"
+      "4096487",
+      "4096488"
     ]
   },
   {
@@ -64316,7 +64907,8 @@
     "quantidadeCaracteres": 40,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4096910"
+      "4096910",
+      "4096489"
     ]
   },
   {
@@ -64331,9 +64923,9 @@
   },
   {
     "_id": "006434",
-    "descricao": "OFICIAL MONTADOR  (REPAROS)",
+    "descricao": "OFICIAL MONTADOR (REPAROS)",
     "descricaoNormalizada": "oficial montador reparos",
-    "quantidadeCaracteres": 27,
+    "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4095356"
@@ -64606,7 +65198,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4100071"
+      "4100071",
+      "4100061"
     ]
   },
   {
@@ -64616,7 +65209,8 @@
     "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4100072"
+      "4100072",
+      "4100062"
     ]
   },
   {
@@ -64706,7 +65300,8 @@
     "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099829"
+      "4099829",
+      "4099973"
     ]
   },
   {
@@ -64726,7 +65321,8 @@
     "quantidadeCaracteres": 11,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099931"
+      "4099931",
+      "4068601"
     ]
   },
   {
@@ -64921,9 +65517,9 @@
   },
   {
     "_id": "006493",
-    "descricao": "SV-H.  EXTRA 100%(SAB-DOM)-VIGILANTE BA",
+    "descricao": "SV-H. EXTRA 100%(SAB-DOM)-VIGILANTE BA",
     "descricaoNormalizada": "sv h extra 100 sab dom vigilante ba",
-    "quantidadeCaracteres": 39,
+    "quantidadeCaracteres": 38,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4037012"
@@ -65091,9 +65687,9 @@
   },
   {
     "_id": "006510",
-    "descricao": "CONTR PRAGAS  CX DAGUA 20.001 A 30.000M2",
+    "descricao": "CONTR PRAGAS CX DAGUA 20.001 A 30.000M2",
     "descricaoNormalizada": "contr pragas cx dagua 20 001 a 30 000m2",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4079797"
@@ -65101,9 +65697,9 @@
   },
   {
     "_id": "006511",
-    "descricao": "CONTR PRAGAS  CX DAGUA 30.001 A 40.000M2",
+    "descricao": "CONTR PRAGAS CX DAGUA 30.001 A 40.000M2",
     "descricaoNormalizada": "contr pragas cx dagua 30 001 a 40 000m2",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4079799"
@@ -65111,9 +65707,9 @@
   },
   {
     "_id": "006512",
-    "descricao": "CONTR PRAGAS  CX DAGUA 40.001 A 50.000M2",
+    "descricao": "CONTR PRAGAS CX DAGUA 40.001 A 50.000M2",
     "descricaoNormalizada": "contr pragas cx dagua 40 001 a 50 000m2",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4079800"
@@ -65121,9 +65717,9 @@
   },
   {
     "_id": "006513",
-    "descricao": "CONTR PRAGAS  CX DAGUA 50.001 A 60.000M2",
+    "descricao": "CONTR PRAGAS CX DAGUA 50.001 A 60.000M2",
     "descricaoNormalizada": "contr pragas cx dagua 50 001 a 60 000m2",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4079801"
@@ -65171,9 +65767,9 @@
   },
   {
     "_id": "006518",
-    "descricao": "CONTR PRAGAS  CX DAGUA 60.001 A 70.000M2",
+    "descricao": "CONTR PRAGAS CX DAGUA 60.001 A 70.000M2",
     "descricaoNormalizada": "contr pragas cx dagua 60 001 a 70 000m2",
-    "quantidadeCaracteres": 40,
+    "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4079802"
@@ -65516,7 +66112,8 @@
     "quantidadeCaracteres": 18,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4097684"
+      "4097684",
+      "4117842"
     ]
   },
   {
@@ -65581,9 +66178,9 @@
   },
   {
     "_id": "006559",
-    "descricao": "H.EXTRA -OP. ROÇADEIRA  NORMAL",
+    "descricao": "H.EXTRA -OP. ROÇADEIRA NORMAL",
     "descricaoNormalizada": "h extra op rocadeira normal",
-    "quantidadeCaracteres": 30,
+    "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099776"
@@ -65591,9 +66188,9 @@
   },
   {
     "_id": "006560",
-    "descricao": "H.EXTRA -OP. MAQUINA  NORMAL",
+    "descricao": "H.EXTRA -OP. MAQUINA NORMAL",
     "descricaoNormalizada": "h extra op maquina normal",
-    "quantidadeCaracteres": 28,
+    "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099777"
@@ -65601,9 +66198,9 @@
   },
   {
     "_id": "006561",
-    "descricao": "H.EXTRA -MOTORISTA  NORMAL",
+    "descricao": "H.EXTRA -MOTORISTA NORMAL",
     "descricaoNormalizada": "h extra motorista normal",
-    "quantidadeCaracteres": 26,
+    "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099778"
@@ -65611,9 +66208,9 @@
   },
   {
     "_id": "006562",
-    "descricao": "H.EXTRA -OP. MAQUINA PESADA  NORMAL",
+    "descricao": "H.EXTRA -OP. MAQUINA PESADA NORMAL",
     "descricaoNormalizada": "h extra op maquina pesada normal",
-    "quantidadeCaracteres": 35,
+    "quantidadeCaracteres": 34,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099779"
@@ -65621,9 +66218,9 @@
   },
   {
     "_id": "006563",
-    "descricao": "H.EXTRA -COORDENADOR  NORMAL",
+    "descricao": "H.EXTRA -COORDENADOR NORMAL",
     "descricaoNormalizada": "h extra coordenador normal",
-    "quantidadeCaracteres": 28,
+    "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099780"
@@ -65631,9 +66228,9 @@
   },
   {
     "_id": "006564",
-    "descricao": "H.EXTRA -TEC. SEGURANÇA  NORMAL",
+    "descricao": "H.EXTRA -TEC. SEGURANÇA NORMAL",
     "descricaoNormalizada": "h extra tec seguranca normal",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099781"
@@ -65701,9 +66298,9 @@
   },
   {
     "_id": "006571",
-    "descricao": "H.EXTRA -OP. ROÇADEIRA  50%",
+    "descricao": "H.EXTRA -OP. ROÇADEIRA 50%",
     "descricaoNormalizada": "h extra op rocadeira 50",
-    "quantidadeCaracteres": 27,
+    "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099788"
@@ -65711,9 +66308,9 @@
   },
   {
     "_id": "006572",
-    "descricao": "H.EXTRA -OP. MAQUINA  50%",
+    "descricao": "H.EXTRA -OP. MAQUINA 50%",
     "descricaoNormalizada": "h extra op maquina 50",
-    "quantidadeCaracteres": 25,
+    "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099789"
@@ -65721,9 +66318,9 @@
   },
   {
     "_id": "006573",
-    "descricao": "H.EXTRA -MOTORISTA  50%",
+    "descricao": "H.EXTRA -MOTORISTA 50%",
     "descricaoNormalizada": "h extra motorista 50",
-    "quantidadeCaracteres": 23,
+    "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099790"
@@ -65731,9 +66328,9 @@
   },
   {
     "_id": "006574",
-    "descricao": "H.EXTRA -OP. MAQUINA PESADA  50%",
+    "descricao": "H.EXTRA -OP. MAQUINA PESADA 50%",
     "descricaoNormalizada": "h extra op maquina pesada 50",
-    "quantidadeCaracteres": 32,
+    "quantidadeCaracteres": 31,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099791"
@@ -65741,9 +66338,9 @@
   },
   {
     "_id": "006575",
-    "descricao": "H.EXTRA -COORDENADOR  50%",
+    "descricao": "H.EXTRA -COORDENADOR 50%",
     "descricaoNormalizada": "h extra coordenador 50",
-    "quantidadeCaracteres": 25,
+    "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099792"
@@ -65751,9 +66348,9 @@
   },
   {
     "_id": "006576",
-    "descricao": "H.EXTRA -TEC. SEGURANÇA  50%",
+    "descricao": "H.EXTRA -TEC. SEGURANÇA 50%",
     "descricaoNormalizada": "h extra tec seguranca 50",
-    "quantidadeCaracteres": 28,
+    "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099793"
@@ -65821,9 +66418,9 @@
   },
   {
     "_id": "006583",
-    "descricao": "H.EXTRA -OP. ROÇADEIRA  100%",
+    "descricao": "H.EXTRA -OP. ROÇADEIRA 100%",
     "descricaoNormalizada": "h extra op rocadeira 100",
-    "quantidadeCaracteres": 28,
+    "quantidadeCaracteres": 27,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099800"
@@ -65831,9 +66428,9 @@
   },
   {
     "_id": "006584",
-    "descricao": "H.EXTRA -OP. MAQUINA  100%",
+    "descricao": "H.EXTRA -OP. MAQUINA 100%",
     "descricaoNormalizada": "h extra op maquina 100",
-    "quantidadeCaracteres": 26,
+    "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099801"
@@ -65841,9 +66438,9 @@
   },
   {
     "_id": "006585",
-    "descricao": "H.EXTRA -MOTORISTA  100%",
+    "descricao": "H.EXTRA -MOTORISTA 100%",
     "descricaoNormalizada": "h extra motorista 100",
-    "quantidadeCaracteres": 24,
+    "quantidadeCaracteres": 23,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099802"
@@ -65851,9 +66448,9 @@
   },
   {
     "_id": "006586",
-    "descricao": "H.EXTRA -OP. MAQUINA PESADA  100%",
+    "descricao": "H.EXTRA -OP. MAQUINA PESADA 100%",
     "descricaoNormalizada": "h extra op maquina pesada 100",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099803"
@@ -65861,9 +66458,9 @@
   },
   {
     "_id": "006587",
-    "descricao": "H.EXTRA -COORDENADOR  100%",
+    "descricao": "H.EXTRA -COORDENADOR 100%",
     "descricaoNormalizada": "h extra coordenador 100",
-    "quantidadeCaracteres": 26,
+    "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099804"
@@ -65871,9 +66468,9 @@
   },
   {
     "_id": "006588",
-    "descricao": "H.EXTRA -TEC. SEGURANÇA  100%",
+    "descricao": "H.EXTRA -TEC. SEGURANÇA 100%",
     "descricaoNormalizada": "h extra tec seguranca 100",
-    "quantidadeCaracteres": 29,
+    "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4099805"
@@ -65996,7 +66593,8 @@
     "quantidadeCaracteres": 9,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099990"
+      "4099990",
+      "4121047"
     ]
   },
   {
@@ -66026,7 +66624,8 @@
     "quantidadeCaracteres": 11,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4099994"
+      "4099994",
+      "4110937"
     ]
   },
   {
@@ -66416,7 +67015,8 @@
     "quantidadeCaracteres": 12,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4100890"
+      "4100890",
+      "4121466"
     ]
   },
   {
@@ -66461,9 +67061,9 @@
   },
   {
     "_id": "006647",
-    "descricao": "MEIO OFICIAL  ADIC.NOT 20%",
+    "descricao": "MEIO OFICIAL ADIC.NOT 20%",
     "descricaoNormalizada": "meio oficial adic not 20",
-    "quantidadeCaracteres": 26,
+    "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4100895"
@@ -66471,9 +67071,9 @@
   },
   {
     "_id": "006648",
-    "descricao": "MOTORISTA  ADIC.NOT 20%",
+    "descricao": "MOTORISTA ADIC.NOT 20%",
     "descricaoNormalizada": "motorista adic not 20",
-    "quantidadeCaracteres": 23,
+    "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4100896"
@@ -66481,9 +67081,9 @@
   },
   {
     "_id": "006649",
-    "descricao": "OFICIAL MANT. ELÉTRICA  ADIC.NOT 20%",
+    "descricao": "OFICIAL MANT. ELÉTRICA ADIC.NOT 20%",
     "descricaoNormalizada": "oficial mant eletrica adic not 20",
-    "quantidadeCaracteres": 36,
+    "quantidadeCaracteres": 35,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4100897"
@@ -66611,9 +67211,9 @@
   },
   {
     "_id": "006662",
-    "descricao": " ETILOMETRO DIGITAL BFD-110",
+    "descricao": "ETILOMETRO DIGITAL BFD-110",
     "descricaoNormalizada": "etilometro digital bfd 110",
-    "quantidadeCaracteres": 27,
+    "quantidadeCaracteres": 26,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4101908"
@@ -66706,7 +67306,8 @@
     "quantidadeCaracteres": 10,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4102861"
+      "4102861",
+      "4102867"
     ]
   },
   {
@@ -66736,7 +67337,8 @@
     "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4102865"
+      "4102865",
+      "4103434"
     ]
   },
   {
@@ -68091,9 +68693,9 @@
   },
   {
     "_id": "006810",
-    "descricao": "Farofa rica  (de 11 a 20 pessoas)",
+    "descricao": "Farofa rica (de 11 a 20 pessoas)",
     "descricaoNormalizada": "farofa rica de 11 a 20 pessoas",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4103352"
@@ -68101,9 +68703,9 @@
   },
   {
     "_id": "006811",
-    "descricao": "Farofa rica  (de 21 a 40 pessoas)",
+    "descricao": "Farofa rica (de 21 a 40 pessoas)",
     "descricaoNormalizada": "farofa rica de 21 a 40 pessoas",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4103353"
@@ -68151,9 +68753,9 @@
   },
   {
     "_id": "006816",
-    "descricao": "Bolo de festa  - Até 30 pessoas",
+    "descricao": "Bolo de festa - Até 30 pessoas",
     "descricaoNormalizada": "bolo de festa ate 30 pessoas",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4103358"
@@ -68161,9 +68763,9 @@
   },
   {
     "_id": "006817",
-    "descricao": "Bolo de festa  - Até 40 pessoas",
+    "descricao": "Bolo de festa - Até 40 pessoas",
     "descricaoNormalizada": "bolo de festa ate 40 pessoas",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4103359"
@@ -68171,9 +68773,9 @@
   },
   {
     "_id": "006818",
-    "descricao": "Bolo de festa  - Até 50 pessoas",
+    "descricao": "Bolo de festa - Até 50 pessoas",
     "descricaoNormalizada": "bolo de festa ate 50 pessoas",
-    "quantidadeCaracteres": 31,
+    "quantidadeCaracteres": 30,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4103360"
@@ -68181,9 +68783,9 @@
   },
   {
     "_id": "006819",
-    "descricao": "Frutas Avulsas  - Banana",
+    "descricao": "Frutas Avulsas - Banana",
     "descricaoNormalizada": "frutas avulsas banana",
-    "quantidadeCaracteres": 24,
+    "quantidadeCaracteres": 23,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4103361"
@@ -68191,9 +68793,9 @@
   },
   {
     "_id": "006820",
-    "descricao": "Frutas Avulsas  - Mexerica",
+    "descricao": "Frutas Avulsas - Mexerica",
     "descricaoNormalizada": "frutas avulsas mexerica",
-    "quantidadeCaracteres": 26,
+    "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4103362"
@@ -68201,9 +68803,9 @@
   },
   {
     "_id": "006821",
-    "descricao": "Frutas Avulsas  - Laranja",
+    "descricao": "Frutas Avulsas - Laranja",
     "descricaoNormalizada": "frutas avulsas laranja",
-    "quantidadeCaracteres": 25,
+    "quantidadeCaracteres": 24,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4103363"
@@ -68301,9 +68903,9 @@
   },
   {
     "_id": "006831",
-    "descricao": "Iogurte natural  - 170gr",
+    "descricao": "Iogurte natural - 170gr",
     "descricaoNormalizada": "iogurte natural 170gr",
-    "quantidadeCaracteres": 24,
+    "quantidadeCaracteres": 23,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4103374"
@@ -68661,9 +69263,9 @@
   },
   {
     "_id": "006867",
-    "descricao": "Caldo verde  - de 11 a 20 pessoas",
+    "descricao": "Caldo verde - de 11 a 20 pessoas",
     "descricaoNormalizada": "caldo verde de 11 a 20 pessoas",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4103400"
@@ -68671,9 +69273,9 @@
   },
   {
     "_id": "006868",
-    "descricao": "Caldo verde  - de 21 a 40 pessoas",
+    "descricao": "Caldo verde - de 21 a 40 pessoas",
     "descricaoNormalizada": "caldo verde de 21 a 40 pessoas",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4103401"
@@ -68681,9 +69283,9 @@
   },
   {
     "_id": "006869",
-    "descricao": "Caldo verde  - de 41 a 60 pessoas",
+    "descricao": "Caldo verde - de 41 a 60 pessoas",
     "descricaoNormalizada": "caldo verde de 41 a 60 pessoas",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4103402"
@@ -69086,7 +69688,8 @@
     "quantidadeCaracteres": 16,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4103445"
+      "4103445",
+      "4103465"
     ]
   },
   {
@@ -70651,9 +71254,9 @@
   },
   {
     "_id": "007066",
-    "descricao": "Inst. NVR Profissional,  08 canais",
+    "descricao": "Inst. NVR Profissional, 08 canais",
     "descricaoNormalizada": "inst nvr profissional 08 canais",
-    "quantidadeCaracteres": 34,
+    "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110268"
@@ -70681,9 +71284,9 @@
   },
   {
     "_id": "007069",
-    "descricao": "Inst. NVR Profissional,  64 canais",
+    "descricao": "Inst. NVR Profissional, 64 canais",
     "descricaoNormalizada": "inst nvr profissional 64 canais",
-    "quantidadeCaracteres": 34,
+    "quantidadeCaracteres": 33,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110271"
@@ -70711,9 +71314,9 @@
   },
   {
     "_id": "007072",
-    "descricao": "Inst.  HD - 1 TB",
+    "descricao": "Inst. HD - 1 TB",
     "descricaoNormalizada": "inst hd 1 tb",
-    "quantidadeCaracteres": 16,
+    "quantidadeCaracteres": 15,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110304"
@@ -70721,9 +71324,9 @@
   },
   {
     "_id": "007073",
-    "descricao": "Inst.  HD - 2 TB",
+    "descricao": "Inst. HD - 2 TB",
     "descricaoNormalizada": "inst hd 2 tb",
-    "quantidadeCaracteres": 16,
+    "quantidadeCaracteres": 15,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110305"
@@ -70731,9 +71334,9 @@
   },
   {
     "_id": "007074",
-    "descricao": "Inst.  HD - 3 TB",
+    "descricao": "Inst. HD - 3 TB",
     "descricaoNormalizada": "inst hd 3 tb",
-    "quantidadeCaracteres": 16,
+    "quantidadeCaracteres": 15,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110306"
@@ -70741,9 +71344,9 @@
   },
   {
     "_id": "007075",
-    "descricao": "Inst.  HD - 4 TB",
+    "descricao": "Inst. HD - 4 TB",
     "descricaoNormalizada": "inst hd 4 tb",
-    "quantidadeCaracteres": 16,
+    "quantidadeCaracteres": 15,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110307"
@@ -70751,9 +71354,9 @@
   },
   {
     "_id": "007076",
-    "descricao": "Inst.  HD - 6 TB",
+    "descricao": "Inst. HD - 6 TB",
     "descricaoNormalizada": "inst hd 6 tb",
-    "quantidadeCaracteres": 16,
+    "quantidadeCaracteres": 15,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110308"
@@ -70761,9 +71364,9 @@
   },
   {
     "_id": "007077",
-    "descricao": "Inst.  HD - 8 TB",
+    "descricao": "Inst. HD - 8 TB",
     "descricaoNormalizada": "inst hd 8 tb",
-    "quantidadeCaracteres": 16,
+    "quantidadeCaracteres": 15,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110309"
@@ -70771,9 +71374,9 @@
   },
   {
     "_id": "007078",
-    "descricao": "Inst.  HD - 10 TB",
+    "descricao": "Inst. HD - 10 TB",
     "descricaoNormalizada": "inst hd 10 tb",
-    "quantidadeCaracteres": 17,
+    "quantidadeCaracteres": 16,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110310"
@@ -70971,9 +71574,9 @@
   },
   {
     "_id": "007098",
-    "descricao": "Técnico  17h às 23h (seg-sex)",
+    "descricao": "Técnico 17h às 23h (seg-sex)",
     "descricaoNormalizada": "tecnico 17h as 23h seg sex",
-    "quantidadeCaracteres": 29,
+    "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110335"
@@ -71001,9 +71604,9 @@
   },
   {
     "_id": "007101",
-    "descricao": "Auxiliar  17h às 23h (seg-sex)",
+    "descricao": "Auxiliar 17h às 23h (seg-sex)",
     "descricaoNormalizada": "auxiliar 17h as 23h seg sex",
-    "quantidadeCaracteres": 30,
+    "quantidadeCaracteres": 29,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110338"
@@ -71021,9 +71624,9 @@
   },
   {
     "_id": "007103",
-    "descricao": "Auxiliar  07h às 17h (Sábado)",
+    "descricao": "Auxiliar 07h às 17h (Sábado)",
     "descricaoNormalizada": "auxiliar 07h as 17h sabado",
-    "quantidadeCaracteres": 29,
+    "quantidadeCaracteres": 28,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110340"
@@ -71246,7 +71849,8 @@
     "quantidadeCaracteres": 21,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4110900"
+      "4110900",
+      "4121354"
     ]
   },
   {
@@ -71256,7 +71860,9 @@
     "quantidadeCaracteres": 22,
     "origem": "MIGRACAO",
     "legacyIds": [
-      "4110901"
+      "4110901",
+      "4117537",
+      "4121355"
     ]
   },
   {
@@ -71391,9 +71997,9 @@
   },
   {
     "_id": "007140",
-    "descricao": "CAMINHÃO MÉDIO VW Delivery  9-150",
+    "descricao": "CAMINHÃO MÉDIO VW Delivery 9-150",
     "descricaoNormalizada": "caminhao medio vw delivery 9 150",
-    "quantidadeCaracteres": 33,
+    "quantidadeCaracteres": 32,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110915"
@@ -71401,9 +72007,9 @@
   },
   {
     "_id": "007141",
-    "descricao": "CAMINHONETE APOIO HILLUX  - CAB. DUPLA",
+    "descricao": "CAMINHONETE APOIO HILLUX - CAB. DUPLA",
     "descricaoNormalizada": "caminhonete apoio hillux cab dupla",
-    "quantidadeCaracteres": 38,
+    "quantidadeCaracteres": 37,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4110916"
@@ -71701,7 +72307,7 @@
   },
   {
     "_id": "007171",
-    "descricao": "SV - Robô Multifunc p/ esp compac - CSG",
+    "descricao": "SV - Robô Multifunc p/ esp compac - CSG",
     "descricaoNormalizada": "sv robo multifunc p esp compac csg",
     "quantidadeCaracteres": 39,
     "origem": "MIGRACAO",
@@ -71721,9 +72327,9 @@
   },
   {
     "_id": "007173",
-    "descricao": " Manutentor de edificações",
+    "descricao": "Manutentor de edificações",
     "descricaoNormalizada": "manutentor de edificacoes",
-    "quantidadeCaracteres": 26,
+    "quantidadeCaracteres": 25,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4121044"
@@ -72731,9 +73337,9 @@
   },
   {
     "_id": "007274",
-    "descricao": " Coordenador de obras",
+    "descricao": "Coordenador de obras",
     "descricaoNormalizada": "coordenador de obras",
-    "quantidadeCaracteres": 21,
+    "quantidadeCaracteres": 20,
     "origem": "MIGRACAO",
     "legacyIds": [
       "4122343"

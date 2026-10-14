@@ -1,85 +1,103 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { GrupoServicoService, UnidadeMedidaService, CodigoServicoService } from './services/apiService'
+import { onMounted, ref } from 'vue'
 
-import GrupoServicoForm from './components/GrupoServicoForm.vue'
-import UnidadeMedidaForm from './components/UnidadeMedidaForm.vue'
-import CodigoServicoForm from './components/CodigoServicoForm.vue'
+import NotificacoesToast from '@/components/NotificacoesToast.vue'
+import ResumoPainel from '@/components/ResumoPainel.vue'
+import CadastroSimples from '@/views/CadastroSimples.vue'
+import CodigosCompletosView from '@/views/CodigosCompletosView.vue'
+import CodigosServicoView from '@/views/CodigosServicoView.vue'
+import { CodigoFornecedorService, GrupoServicoService, UnidadeMedidaService } from '@/services/apiService'
 
-const grupos = ref([])
-const unidades = ref([])
-const codigos = ref([])
+const abas = [
+  { id: 'completos', titulo: 'Códigos Completos' },
+  { id: 'servicos', titulo: 'Códigos de Serviço' },
+  { id: 'grupos', titulo: 'Grupos de Serviço' },
+  { id: 'fornecedores', titulo: 'Fornecedores' },
+  { id: 'unidades', titulo: 'Unidades de Medida' },
+]
 
-const carregarDados = async () => {
-  try {
-    const [resGrupos, resUnidades, resCodigos] = await Promise.all([
-      GrupoServicoService.listarTodos(),
-      UnidadeMedidaService.listarTodos(),
-      CodigoServicoService.listarTodos()
-    ])
-    grupos.value = resGrupos.data
-    unidades.value = resUnidades.data
-    codigos.value = resCodigos.data
-  } catch (err) {
-    console.error('Erro ao carregar dados do Spring Boot:', err)
-  }
+const cadastros = {
+  grupos: {
+    titulo: 'Grupo de Serviço',
+    service: GrupoServicoService,
+    campos: [{ nome: 'nome', rotulo: 'Nome', maxlength: 100 }],
+    colunas: [{ campo: 'id', rotulo: 'ID', mono: true }, { campo: 'nome', rotulo: 'Nome' }],
+  },
+  fornecedores: {
+    titulo: 'Fornecedor',
+    service: CodigoFornecedorService,
+    campos: [
+      { nome: 'codigoFornecedorSAP', rotulo: 'Código SAP', tipo: 'number' },
+      { nome: 'nome', rotulo: 'Nome', maxlength: 150 },
+    ],
+    colunas: [
+      { campo: 'id', rotulo: 'ID', mono: true },
+      { campo: 'codigoFornecedorSAP', rotulo: 'Código SAP', mono: true },
+      { campo: 'nome', rotulo: 'Nome' },
+    ],
+  },
+  unidades: {
+    titulo: 'Unidade de Medida',
+    service: UnidadeMedidaService,
+    campos: [
+      { nome: 'sigla', rotulo: 'Sigla', maxlength: 10 },
+      { nome: 'nome', rotulo: 'Nome', maxlength: 100 },
+    ],
+    colunas: [
+      { campo: 'id', rotulo: 'ID', mono: true },
+      { campo: 'sigla', rotulo: 'Sigla', mono: true },
+      { campo: 'nome', rotulo: 'Nome' },
+    ],
+  },
 }
 
-const handleSalvarGrupo = async (novoGrupo) => {
-  await GrupoServicoService.salvar(novoGrupo)
-  carregarDados()
+const abaAtiva = ref('completos')
+const resumo = ref(null)
+
+async function atualizarResumo() {
+  resumo.value?.carregar()
 }
 
-const handleSalvarUnidade = async (novaUnidade) => {
-  await UnidadeMedidaService.salvar(novaUnidade)
-  carregarDados()
-}
-
-const handleSalvarCodigo = async (novoCodigo) => {
-  await CodigoServicoService.salvar(novoCodigo)
-  carregarDados()
-}
-
-onMounted(() => {
-  carregarDados()
-})
+onMounted(atualizarResumo)
 </script>
+
 <template>
-  <div class="container">
-    <header>
-      <h1>Padronização de Serviços SAP — Gerdau GC 2026</h1>
-    </header>
-
-    <div class="grid">
-      <GrupoServicoForm 
-        :grupos="grupos" 
-        @salvarGrupo="handleSalvarGrupo" 
-      />
-
-      <UnidadeMedidaForm 
-        :unidades="unidades" 
-        @salvarUnidade="handleSalvarUnidade" 
-      />
-
-      <CodigoServicoForm 
-        :grupos="grupos" 
-        :unidades="unidades" 
-        :codigos="codigos" 
-        @salvarCodigo="handleSalvarCodigo" 
-      />
+  <header class="topo">
+    <div class="marca">
+      <strong>GERDAU</strong>
+      <span>Catálogo Padronizado de Serviços</span>
     </div>
-  </div>
+  </header>
+
+  <main class="conteudo">
+    <ResumoPainel ref="resumo" @navegar="abaAtiva = $event" />
+
+    <nav class="abas">
+      <button
+        v-for="aba in abas"
+        :key="aba.id"
+        :class="{ ativa: abaAtiva === aba.id }"
+        @click="abaAtiva = aba.id"
+      >
+        {{ aba.titulo }}
+      </button>
+    </nav>
+
+    <CodigosCompletosView v-if="abaAtiva === 'completos'" @alterado="atualizarResumo" />
+    <CodigosServicoView v-else-if="abaAtiva === 'servicos'" @alterado="atualizarResumo" />
+    <CadastroSimples v-else :key="abaAtiva" v-bind="cadastros[abaAtiva]" @alterado="atualizarResumo" />
+  </main>
+
+  <NotificacoesToast />
 </template>
+
 <style scoped>
-.container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    color: #f8f9fa;
-    background-color: #1e1e2e;
-    min-height: 100vh; 
-  }
-header { border-bottom: 2px solid #ff79c6; padding-bottom: 10px; margin-bottom: 20px; }
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.topo { background: var(--azul); color: #fff; padding: .9rem 1.5rem; border-bottom: 4px solid var(--amarelo); }
+.marca { display: flex; gap: .75rem; align-items: baseline; max-width: 1280px; margin: 0 auto; }
+.marca strong { font-size: 1.3rem; letter-spacing: .12em; }
+.marca span { opacity: .85; }
+.conteudo { max-width: 1280px; margin: 0 auto; padding: 1.25rem 1.5rem 3rem; }
+.abas { display: flex; gap: .25rem; border-bottom: 2px solid var(--borda); margin-bottom: 1.25rem; flex-wrap: wrap; }
+.abas button { background: none; color: var(--cinza); border: none; border-bottom: 3px solid transparent; border-radius: 0; margin-bottom: -2px; }
+.abas button.ativa { color: var(--azul); border-bottom-color: var(--amarelo); font-weight: 600; }
 </style>

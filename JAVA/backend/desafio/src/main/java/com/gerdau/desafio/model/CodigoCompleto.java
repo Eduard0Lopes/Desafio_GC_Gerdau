@@ -2,50 +2,35 @@ package com.gerdau.desafio.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Código SAP composto: GS (3) + CF (3) + CS (6) + UM (2) = 14 dígitos.
+ */
 @Data
-@Document(collection = "codigos_completos")
+@Document(collection = CodigoCompleto.COLECAO)
 public class CodigoCompleto {
+
+    public static final String COLECAO = "codigos_completos";
 
     @Id
     private String id;
-
-    @Indexed(unique = true)
-    @Field("idCompleto")
     private String idCompleto;
-
-    @Field("gsId")
     private String gsId;
-
-    @Field("cfId")
     private String cfId;
-
-    @Field("csId")
     private String csId;
-
-    @Field("umId")
     private String umId;
-
-    @Field("descricaoSnapshot")
     private String descricaoSnapshot;
-
-    @Field("usuarioCriacaoId")
     private String usuarioCriacaoId;
+    private Instant createdAt;
+    private Origem origem;
+    private List<String> legacyIds = new ArrayList<>();
 
-    @Field("createdAt")
-    private String createdAt;
-
-    @Field("origem")
-    private String origem;
-
-    @Field("legacyIds")
-    private List<String> legacyIds;
-
-    @Field("cenarioTeste")
-    private String cenarioTeste;
+    public static String comporId(String gsId, String cfId, String csId, String umId) {
+        return gsId + cfId + csId + umId;
+    }
 }
