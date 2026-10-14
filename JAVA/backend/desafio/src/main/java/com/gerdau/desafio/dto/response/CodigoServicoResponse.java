@@ -6,6 +6,7 @@ public record CodigoServicoResponse(
         String descricao,
         String descricaoNormalizada,
         int quantidadeCaracteres,
-        String origem
-) {
-}
+        String origem,
+        String grupoServicoId,
+        String unidadeMedidaId
+) {}
