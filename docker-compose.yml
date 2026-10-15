@@ -1,0 +1,62 @@
+# =============================================================================
+# Desafio GC — Gerdau: pilha completa em um comando
+#
+#   docker compose up --build
+#
+#   frontend  → http://localhost           (Vue + nginx, proxy /api)
+#   backend   → http://localhost:8080      (Spring Boot + Swagger)
+#   swagger   → http://localhost:8080/swagger-ui.html
+#   mongo     → mongodb://localhost:27017  (banco local)
+#
+# Na primeira subida o backend carrega AUTOMATICAMENTE os dados oficiais do
+# Time de IA (IA/data/processed — somente leitura) fazendo o merge de
+# base_saneada.xlsx × matriz_de_para_gerdau.xlsx.
+# =============================================================================
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: gerdau-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build: ./JAVA/backend/desafio
+    container_name: gerdau-backend
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      # O destino dos dados vem do .env — por padrão o cluster Atlas (o "Mongo web").
+      # Use MONGODB_URI=mongodb://mongo:27017/gerdau_prototipo para o Mongo local do compose.
+      MONGODB_URI: ${MONGODB_URI:-mongodb+srv://gerdau_mvp_user:gerdaumvp2026@cluster0.fsmqcef.mongodb.net/gerdau_prototipo?retryWrites=true&w=majority}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-gerdau_prototipo}
+      SEED_DIR: /app/dados-oficiais
+      SEED_ENABLED: "true"
+      ENSURE_INDEXES: "true"
+      SEARCH_ENGINE: local
+      SIMILARITY_ENFORCEMENT: enforce
+      API_DOCS_ENABLED: "true"
+    volumes:
+      # planilhas oficiais do Time de IA — somente leitura
+      - ./IA/data/processed:/app/dados-oficiais:ro
+
+  frontend:
+    build: ./JAVA/frontend
+    container_name: gerdau-frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  mongo-data:

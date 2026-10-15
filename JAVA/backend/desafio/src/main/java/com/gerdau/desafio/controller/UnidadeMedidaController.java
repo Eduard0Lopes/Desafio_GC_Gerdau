@@ -1,9 +1,12 @@
 package com.gerdau.desafio.controller;
 
-import com.gerdau.desafio.dto.request.UnidadeMedidaRequest;
 import com.gerdau.desafio.dto.response.UnidadeMedidaResponse;
-import com.gerdau.desafio.service.UnidadeMedidaService;
+import com.gerdau.desafio.service.CatalogoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,29 +14,35 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/unidades-medida")
+@RequestMapping("/api/v1/unidades-medida")
+@Tag(name = "Unidades de Medida", description = "Componente Unidade de Medida — seção 10.1")
 public class UnidadeMedidaController {
 
-    private final UnidadeMedidaService service;
+    public record NovaUnidadeRequest(
+            @NotBlank(message = "A sigla é obrigatória.")
+            @Size(max = 10, message = "A sigla deve ter no máximo 10 caracteres.")
+            String sigla,
+            String nome) {
+    }
 
-    public UnidadeMedidaController(UnidadeMedidaService service) {
+    private final CatalogoService service;
+
+    public UnidadeMedidaController(CatalogoService service) {
         this.service = service;
     }
 
     @GetMapping
-    public ResponseEntity<List<UnidadeMedidaResponse>> listarTodos() {
-        return ResponseEntity.ok(service.listarTodos());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<UnidadeMedidaResponse> buscarPorId(@PathVariable String id) {
-        return ResponseEntity.ok(service.buscarPorId(id));
+    @Operation(summary = "Listar/buscar unidades (?query= para os seletores)")
+    public ResponseEntity<List<UnidadeMedidaResponse>> listar(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "20") int limite) {
+        return ResponseEntity.ok(service.unidades(query, Math.min(Math.max(limite, 1), 100)));
     }
 
     @PostMapping
-    public ResponseEntity<UnidadeMedidaResponse> salvar(
-            @Valid @RequestBody UnidadeMedidaRequest request) {
-        UnidadeMedidaResponse salvo = service.criar(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+    @Operation(summary = "Cadastrar nova unidade (com verificação de duplicidade)")
+    public ResponseEntity<UnidadeMedidaResponse> criar(@Valid @RequestBody NovaUnidadeRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.criarUnidade(request.sigla(), request.nome()));
     }
 }

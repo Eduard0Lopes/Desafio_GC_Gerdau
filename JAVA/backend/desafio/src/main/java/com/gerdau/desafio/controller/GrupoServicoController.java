@@ -1,9 +1,12 @@
 package com.gerdau.desafio.controller;
 
-import com.gerdau.desafio.dto.request.GrupoServicoRequest;
 import com.gerdau.desafio.dto.response.GrupoServicoResponse;
-import com.gerdau.desafio.service.GrupoServicoService;
+import com.gerdau.desafio.service.CatalogoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,29 +14,33 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/grupos-servico")
+@RequestMapping("/api/v1/grupos-servico")
+@Tag(name = "Grupos de Serviço", description = "Componente Grupo de Serviço — seção 10.1")
 public class GrupoServicoController {
 
-    private final GrupoServicoService service;
+    public record NovoGrupoRequest(
+            @NotBlank(message = "O nome é obrigatório.")
+            @Size(min = 2, max = 100, message = "O nome deve ter entre 2 e 100 caracteres.")
+            String nome) {
+    }
 
-    public GrupoServicoController(GrupoServicoService service) {
+    private final CatalogoService service;
+
+    public GrupoServicoController(CatalogoService service) {
         this.service = service;
     }
 
     @GetMapping
-    public ResponseEntity<List<GrupoServicoResponse>> listarTodos() {
-        return ResponseEntity.ok(service.listarTodos());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<GrupoServicoResponse> buscarPorId(@PathVariable String id) {
-        return ResponseEntity.ok(service.buscarPorId(id));
+    @Operation(summary = "Listar/buscar grupos (?query= para os seletores)")
+    public ResponseEntity<List<GrupoServicoResponse>> listar(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "20") int limite) {
+        return ResponseEntity.ok(service.grupos(query, Math.min(Math.max(limite, 1), 100)));
     }
 
     @PostMapping
-    public ResponseEntity<GrupoServicoResponse> salvar(
-            @Valid @RequestBody GrupoServicoRequest request) {
-        GrupoServicoResponse salvo = service.criar(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+    @Operation(summary = "Cadastrar novo grupo (com verificação de duplicidade)")
+    public ResponseEntity<GrupoServicoResponse> criar(@Valid @RequestBody NovoGrupoRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.criarGrupo(request.nome()));
     }
 }

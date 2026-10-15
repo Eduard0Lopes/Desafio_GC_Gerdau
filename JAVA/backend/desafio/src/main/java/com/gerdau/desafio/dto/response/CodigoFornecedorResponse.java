@@ -2,7 +2,8 @@ package com.gerdau.desafio.dto.response;
 
 public record CodigoFornecedorResponse(
         String id,
-        String codigoOriginal,
+        Long codigoFornecedorSAP,
+        String nome,
         String nomeNormalizado,
         String origem
 ) {

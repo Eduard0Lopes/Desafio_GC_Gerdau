@@ -10,6 +10,9 @@ import java.util.List;
 @Repository
 public interface CodigoServicoRepository extends MongoRepository<CodigoServico, String> {
 
-    @Query("{ 'descricaoNormalizada' : { $regex: ?0, $options: 'i' } }")
-    List<CodigoServico> findByDescricaoNormalizadaRegex(String termo);
+    @Query(value = "{ $or: [ { 'descricao': { $regex: ?0, $options: 'i' } },"
+            + " { 'descricaoNormalizada': { $regex: ?0, $options: 'i' } },"
+            + " { 'id': { $regex: ?0, $options: 'i' } },"
+            + " { 'legacyIds': { $regex: ?0, $options: 'i' } } ] }")
+    List<CodigoServico> buscarPorTexto(String termo);
 }

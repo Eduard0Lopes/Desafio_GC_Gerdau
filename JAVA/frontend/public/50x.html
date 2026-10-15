@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="5" />
+    <title>Backend iniciando…</title>
+    <style>
+      body {
+        background: #1b1e2c;
+        color: #eef0f8;
+        font-family: 'Segoe UI', sans-serif;
+        display: grid;
+        place-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .caixa {
+        background: #2a2e42;
+        border: 1px solid #3d4260;
+        border-radius: 14px;
+        padding: 34px 42px;
+        max-width: 520px;
+        text-align: center;
+      }
+      h1 { font-size: 1.25rem; margin: 0 0 12px; }
+      p { color: #a7adc4; line-height: 1.6; margin: 0 0 18px; }
+      .ponto { color: #7c62e0; font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <div class="caixa">
+      <h1><span class="ponto">●</span> Backend iniciando…</h1>
+      <p>
+        A aplicação está subindo e carregando os dados oficiais (poucos segundos).
+        Esta página recarrega automaticamente — ou pressione <strong>F5</strong>.
+      </p>
+      <p style="font-size: 0.85rem">
+        Se persistir, verifique: <code>docker compose up --build</code>
+      </p>
+    </div>
+  </body>
+</html>
