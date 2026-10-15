@@ -29,12 +29,23 @@ public class AutorizacaoInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        String uri = request.getRequestURI() == null ? "" : request.getRequestURI();
+        String metodo = request.getMethod() == null ? "" : request.getMethod().toUpperCase();
+        boolean rotaGovernanca = uri.contains("/api/v1/governanca");
+        boolean alteracaoOuExclusao = "DELETE".equals(metodo) || "PUT".equals(metodo) || "PATCH".equals(metodo);
+        if (!rotaGovernanca && !alteracaoOuExclusao) {
+            // consulta e cadastro seguem liberados para todos os perfis (seção 12.2)
+            return true;
+        }
         String papel = request.getHeader(HEADER_PAPEL);
         if (PAPEL_ADMIN.equalsIgnoreCase(papel == null ? "" : papel.trim())) {
             return true;
         }
-        throw new AcessoNegadoException(
-                "Acesso restrito à Governança de Dados: o perfil informado não tem permissão "
-                        + "(envie o header " + HEADER_PAPEL + ": ADMIN).");
+        throw new AcessoNegadoException(rotaGovernanca
+                ? "Acesso restrito à Governança de Dados: o perfil informado não tem permissão "
+                        + "(envie o header " + HEADER_PAPEL + ": ADMIN)."
+                : "Acesso restrito: " + metodo.toLowerCase()
+                        + " em componentes do catálogo exige o perfil ADMIN (envie o header "
+                        + HEADER_PAPEL + ": ADMIN).");
     }
 }

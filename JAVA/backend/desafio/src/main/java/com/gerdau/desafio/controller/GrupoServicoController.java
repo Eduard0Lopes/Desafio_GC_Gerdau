@@ -43,4 +43,12 @@ public class GrupoServicoController {
     public ResponseEntity<GrupoServicoResponse> criar(@Valid @RequestBody NovoGrupoRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.criarGrupo(request.nome()));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Excluir grupo (apenas ADMIN)",
+            description = "Ação auditada. Bloqueada (409) enquanto o grupo estiver vinculado a códigos completos.")
+    public ResponseEntity<Void> excluir(@PathVariable String id) {
+        service.excluirGrupo(id);
+        return ResponseEntity.noContent().build();
+    }
 }

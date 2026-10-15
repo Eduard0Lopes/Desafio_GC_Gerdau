@@ -12,4 +12,7 @@ public interface GrupoServicoRepository extends MongoRepository<GrupoServico, St
 
     @Query(value = "{ $or: [ { 'nomeNormalizado': { $regex: ?0, $options: 'i' } }, { 'nome': { $regex: ?0, $options: 'i' } } ] }")
     List<GrupoServico> buscarPorTexto(String termo);
+
+    /** Itens com exatamente este nome normalizado (identidade — reutilização anti-duplicidade). */
+    List<GrupoServico> findByNomeNormalizado(String nomeNormalizado);
 }

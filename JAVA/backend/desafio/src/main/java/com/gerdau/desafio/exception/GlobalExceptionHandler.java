@@ -64,6 +64,16 @@ public class GlobalExceptionHandler {
                         "Um ou mais campos estão inválidos.", request.getRequestURI(), campos, corr(request)));
     }
 
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRotaNaoEncontrada(Exception ex, HttpServletRequest request) {
+        log.warn("[NOT FOUND] Rota inexistente {} {}", request.getMethod(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Not Found", "ROTA_NAO_ENCONTRADA",
+                        "Rota não encontrada: " + request.getMethod() + " " + request.getRequestURI()
+                                + ". Se esta ação acabou de ser implementada, reinicie o backend para atualizar o código.",
+                        request.getRequestURI(), corr(request)));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, HttpServletRequest request) {
         log.error("[INTERNAL ERROR] {} | path: {}", ex.getMessage(), request.getRequestURI(), ex);

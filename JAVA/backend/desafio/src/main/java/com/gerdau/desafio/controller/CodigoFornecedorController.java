@@ -43,4 +43,12 @@ public class CodigoFornecedorController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(service.criarFornecedor(request.nome(), request.codigoSap()));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Excluir fornecedor (apenas ADMIN)",
+            description = "Ação auditada. Bloqueada (409) enquanto estiver vinculado a códigos completos.")
+    public ResponseEntity<Void> excluir(@PathVariable String id) {
+        service.excluirFornecedor(id);
+        return ResponseEntity.noContent().build();
+    }
 }

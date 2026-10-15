@@ -68,7 +68,8 @@ class SequenceServiceTest {
         when(grupoRepo.existsById("CIVIL")).thenReturn(true);
         CatalogoService service = new CatalogoService(grupoRepo,
                 Mockito.mock(CodigoFornecedorRepository.class), Mockito.mock(CodigoServicoRepository.class),
-                Mockito.mock(UnidadeMedidaRepository.class), Mockito.mock(SimilaridadeService.class),
+                Mockito.mock(UnidadeMedidaRepository.class), Mockito.mock(CodigoCompletoRepository.class),
+                Mockito.mock(SimilaridadeService.class),
                 Mockito.mock(AuditoriaService.class), Mockito.mock(SequenceService.class));
 
         assertThrows(ConflictException.class, () -> service.criarGrupo("Civil"));
@@ -80,7 +81,8 @@ class SequenceServiceTest {
         when(unidadeRepo.existsById("HR")).thenReturn(true);
         CatalogoService service = new CatalogoService(Mockito.mock(GrupoServicoRepository.class),
                 Mockito.mock(CodigoFornecedorRepository.class), Mockito.mock(CodigoServicoRepository.class),
-                unidadeRepo, Mockito.mock(SimilaridadeService.class),
+                unidadeRepo, Mockito.mock(CodigoCompletoRepository.class),
+                Mockito.mock(SimilaridadeService.class),
                 Mockito.mock(AuditoriaService.class), Mockito.mock(SequenceService.class));
 
         assertThrows(ConflictException.class, () -> service.criarUnidade("HR", "Hora"));

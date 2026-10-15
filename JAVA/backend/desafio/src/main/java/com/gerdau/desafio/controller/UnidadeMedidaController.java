@@ -45,4 +45,12 @@ public class UnidadeMedidaController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(service.criarUnidade(request.sigla(), request.nome()));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Excluir unidade (apenas ADMIN)",
+            description = "Ação auditada. Bloqueada (409) enquanto estiver vinculada a códigos completos.")
+    public ResponseEntity<Void> excluir(@PathVariable String id) {
+        service.excluirUnidade(id);
+        return ResponseEntity.noContent().build();
+    }
 }

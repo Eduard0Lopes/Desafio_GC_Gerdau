@@ -105,7 +105,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { api } from '../services/api'
+import { api, chaveIdempotente } from '../services/api'
 import { toast } from '../services/toast'
 import ModalBloqueio from '../components/ModalBloqueio.vue'
 import ModalGovernanca from '../components/ModalGovernanca.vue'
@@ -222,7 +222,8 @@ async function criarItem(): Promise<void> {
 }
 
 function reutilizar(item: CandidatoSimilar): void {
-  router.push({ path: '/', query: { reutilizar: item.id } })
+  toast.sucesso(`Código existente reutilizado: ${item.id} — ${item.descricao}. Nenhum novo item foi criado.`)
+  router.push({ path: '/', query: { reutilizar: item.id, tipo: tipo.value, descricao: item.descricao } })
 }
 
 async function enviarGovernanca(justificativa: string): Promise<void> {
@@ -238,9 +239,10 @@ async function enviarGovernanca(justificativa: string): Promise<void> {
         justificativa,
         usuarioCriacaoId: props.usuario || null
       },
-      'gov-' + Date.now()
+      chaveIdempotente('gov-', tipo.value, descricao.value, justificativa)
     )
     modalGovernanca.value = false
+    toast.sucesso('Enviado para Governança — o cadastro passará por validação humana pela Equipe de Governança de Dados.')
     router.push('/')
   } catch (e) {
     toast.erro((e as Error).message)

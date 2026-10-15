@@ -15,6 +15,8 @@ public interface MatrizDeParaRepository extends MongoRepository<MatrizDePara, St
 
     List<MatrizDePara> findByDecisionAndStatusRevisaoOrderByScoreDesc(String decision, String statusRevisao, Pageable pageable);
 
+    List<MatrizDePara> findByDecisionOrderByScoreDesc(String decision, Pageable pageable);
+
     long countByStatusRevisao(String statusRevisao);
 
     long countByDecision(String decision);

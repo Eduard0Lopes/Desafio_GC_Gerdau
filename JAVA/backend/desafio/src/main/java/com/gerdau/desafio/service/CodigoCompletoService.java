@@ -100,6 +100,19 @@ public class CodigoCompletoService {
 
         // Persiste componentes novos e materializa os IDs oficiais
         PreviewService.ComponentesResolvidos r = previewService.resolver(paraPreview(request), true);
+
+        // Pré-validação: TODOS os componentes novos são conferidos antes de gravar qualquer
+        // um deles — se algum não puder ser criado, nada é salvo (nunca fica cadastro parcial).
+        if (r.grupoNovo()) {
+            catalogoService.exigirGrupoLivre(r.grupoServico().getNome());
+        }
+        if (r.fornecedorNovo()) {
+            catalogoService.exigirFornecedorLivre(r.codigoFornecedor().getId());
+        }
+        if (r.unidadeNova()) {
+            catalogoService.exigirUnidadeLivre(r.unidadeMedida().getSigla());
+        }
+
         String gsId = r.grupoServico().getId();
         String cfId = r.codigoFornecedor().getId();
         String csId = r.codigoServico().getId();

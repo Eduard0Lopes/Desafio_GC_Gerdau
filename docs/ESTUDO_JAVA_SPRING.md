@@ -247,7 +247,7 @@ mvn spring-boot:run   # sobe o backend localmente
 
 ```
 Desafio_GC_Gerdau/
-├── IA/                       # DO TIME DE IA — SOMENTE LEITURA (nunca mexemos!)
+├── IA/                       # DO TIME DE IA — SOMENTE LEITURA
 │   └── data/processed/       # base_saneada.xlsx + matriz_de_para_gerdau.xlsx
 ├── JAVA/
 │   ├── backend/desafio/      # API Spring Boot
@@ -485,7 +485,7 @@ trapaça. O `nosql/` era material de teste e foi **ignorado**.
 
 ## 5.3 IDs de negócio: `CS-130835` (e não o formato 3/3/6/2)
 
-**Decisão (sua!):** usar o `newId` oficial como ID dos documentos.
+**Decisão:** usar o `newId` oficial como ID dos documentos.
 **Por quê?** O documento técnico traz os dois formatos; o `newId` é o que a equipe já
 usa no dia a dia — menos ruído cognitivo. O formato antigo continua documentado.
 
@@ -496,7 +496,7 @@ cadastrarem juntos?
 **Solução:** coleção `contadores` + operação atômica `findAndModify` + `synchronized`
 (a chave do método `proximoCodigoServico()`).
 **Detalhe importante:** ao subir, o serviço **varre os IDs já existentes** e pula os
-ocupados — foi uma correção nossa quando a sequência "esgotou" após o seed oficial.
+ocupados — foi uma correção quando a sequência "esgotou" após o seed oficial.
 
 ## 5.5 O motor de similaridade (40% + 60%)
 

@@ -16,4 +16,13 @@ public interface CodigoCompletoRepository extends MongoRepository<CodigoCompleto
     List<CodigoCompleto> findByStatusOrderByCreatedAtDesc(String status);
 
     long countByStatus(String status);
+
+    // uso dos componentes (integridade: exclusão bloqueada enquanto houver vínculo)
+    long countByGsId(String gsId);
+
+    long countByCfId(String cfId);
+
+    long countByCsId(String csId);
+
+    long countByUmId(String umId);
 }

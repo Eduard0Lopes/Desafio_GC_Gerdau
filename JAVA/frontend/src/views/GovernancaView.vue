@@ -50,14 +50,6 @@
         <span style="cursor: pointer; margin-left: 6px" @click="alternarFiltro('TODOS')">✕</span>
       </span>
       <span style="flex: 1"></span>
-      <button
-        class="botao botao-escuro"
-        :disabled="processando === 'massa'"
-        title="Consolida todos os pendentes de uma vez (evita revisar um a um)"
-        @click="pedirConsolidacaoEmMassa"
-      >
-        ⚡ Consolidar em massa
-      </button>
       <input
         v-model="busca"
         placeholder="Buscar por código, descrição…"
@@ -146,30 +138,37 @@
         <div class="linha-campo" style="margin-top: 14px">
           <textarea
             v-model="observacoes[item.id]"
-            placeholder="Observação da decisão (opcional — obrigatória para exclusão/rejeição)"
+            placeholder="Motivo da decisão (obrigatório)"
             style="min-height: 58px"
           ></textarea>
         </div>
 
+        <!-- decisão já registrada (pode ser refeita — sempre com novo motivo) -->
+        <div v-if="item.origem === 'HISTORICO' && item.status === 'REVISADO'" class="aviso aviso-verde" style="margin: 12px 0 0">
+          <span class="icone">✓</span>
+          <div>
+            Decisão registrada por <strong>{{ item.solicitante || 'governança' }}</strong>.
+            <span v-if="item.justificativa" class="suave"> — {{ item.justificativa }}</span>
+          </div>
+        </div>
+
         <div class="linha-botoes" style="margin-top: 12px">
-          <template v-if="item.origem === 'HISTORICO' && item.status === 'REVISADO'">
-            <div class="aviso aviso-verde" style="margin: 0; flex: 1">
-              <span class="icone">✓</span>
-              <div>
-                Decisão já registrada por <strong>{{ item.solicitante || 'governança' }}</strong>.
-                <span v-if="item.justificativa" class="suave"> — {{ item.justificativa }}</span>
-              </div>
-            </div>
-            <button class="botao botao-escuro" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'reverter')">
-              ↩ Reverter decisão
-            </button>
-          </template>
-          <template v-else-if="item.origem === 'HISTORICO'">
+          <template v-if="item.origem === 'HISTORICO'">
+            <!-- QUASE REPETIDO (DUPLICIDADE): resolver ou dizer que está tudo bem -->
+            <!-- EM ATENÇÃO (ALERTA e demais): manter, resolver ou excluir -->
             <button class="botao botao-verde" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'manter')">
-              ✓ Manter no catálogo
+              {{ item.decision === 'DUPLICIDADE' ? '✓ Está tudo bem' : '✓ Manter' }}
             </button>
-            <button class="botao botao-vermelho" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'excluir')">
-              ✕ Excluir duplicata
+            <button class="botao botao-escuro" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'resolver')">
+              🔧 Resolver
+            </button>
+            <button
+              v-if="item.decision !== 'DUPLICIDADE'"
+              class="botao botao-vermelho"
+              :disabled="processando === item.id"
+              @click="pedirConfirmacao(item, 'excluir')"
+            >
+              ✕ Excluir
             </button>
           </template>
           <template v-else>
@@ -300,6 +299,8 @@ async function carregar(): Promise<void> {
     const statusServidor =
       filtro.value === 'REVISADOS' ? 'REVISADO'
       : filtro.value === 'SEM_PENDENCIA' ? 'SEM_PENDENCIA'
+      // as visões por decisão mostram TODOS os sinalizados (pendentes e já decididos)
+      : filtro.value === 'DUPLICIDADE' || filtro.value === 'ALERTA' ? 'TODOS'
       : 'PENDENTE'
     const decisaoServidor =
       filtro.value === 'DUPLICIDADE' ? 'DUPLICIDADE'
@@ -329,48 +330,44 @@ function carregarComDebounce(): void {
   timer = setTimeout(carregar, 350)
 }
 
-function pedirConsolidacaoEmMassa(): void {
-  const alvo = filtro.value === 'ALERTA' ? 'ALERTA' : 'DUPLICIDADE'
-  const qtd = alvo === 'ALERTA' ? resumo.value.decisionAlerta : resumo.value.decisionDuplicidade
-  confirmacao.value = {
-    titulo: `Consolidar ${qtd?.toLocaleString('pt-BR') ?? 'todos'} possíveis repetidos?`,
-    mensagem: `Todos os itens "${alvo === 'ALERTA' ? 'em atenção' : 'possíveis repetidos'}" pendentes serão revisados de uma só vez como consolidação — a decisão fica registrada na auditoria com seu nome. Os registros originais continuam preservados.`,
-    rotulo: `⚡ Consolidar tudo`,
-    perigosa: true,
-    acao: 'massa',
-    item: { identificador: alvo } as ItemGovernanca
-  }
-}
-
 function pedirConfirmacao(item: ItemGovernanca, acao: string): void {
+  const ehDuplicidade = item.decision === 'DUPLICIDADE'
   const textos: Record<string, { titulo: string; mensagem: string; rotulo: string; perigosa: boolean }> = {
     manter: {
-      titulo: 'Manter no catálogo?',
-      mensagem: `O item ${item.identificador} será mantido como válido (não é repetição). A decisão fica registrada na auditoria.`,
-      rotulo: '✓ Manter', perigosa: false
+      titulo: ehDuplicidade ? 'Está tudo bem?' : 'Manter no catálogo?',
+      mensagem: `O item ${item.identificador} será mantido como válido${ehDuplicidade
+        ? ' — a possível repetição está aceitável' : ' (não é um problema)'}. O motivo informado fica registrado na auditoria.`,
+      rotulo: ehDuplicidade ? '✓ Está tudo bem' : '✓ Manter', perigosa: false
+    },
+    resolver: {
+      titulo: 'Resolver a repetição?',
+      mensagem: `O item ${item.identificador} será marcado como resolvido — a repetição fica unificada no código padrão. O motivo informado fica registrado na auditoria.`,
+      rotulo: '🔧 Resolver', perigosa: false
     },
     excluir: {
-      titulo: 'Excluir duplicata?',
-      mensagem: `O item ${item.identificador} será marcado como repetição e sairá da lista ativa. O registro original continua preservado e a decisão fica registrada.`,
-      rotulo: '✕ Excluir duplicata', perigosa: true
+      titulo: 'Excluir do catálogo?',
+      mensagem: `O item ${item.identificador} será excluído do catálogo ativo (o registro original continua preservado no histórico). O motivo informado fica registrado na auditoria.`,
+      rotulo: '✕ Excluir', perigosa: true
     },
     aprovar: {
       titulo: 'Aprovar cadastro?',
-      mensagem: `O cadastro ${item.identificador} será aprovado e ativado.`,
+      mensagem: `O cadastro ${item.identificador} será aprovado e ativado. O motivo informado fica registrado na auditoria.`,
       rotulo: '✓ Aprovar', perigosa: false
     },
     rejeitar: {
       titulo: 'Rejeitar cadastro?',
-      mensagem: `O cadastro ${item.identificador} será rejeitado. Informe o motivo na observação antes de confirmar.`,
+      mensagem: `O cadastro ${item.identificador} será rejeitado. O motivo informado fica registrado na auditoria.`,
       rotulo: '✕ Rejeitar', perigosa: true
-    },
-    reverter: {
-      titulo: 'Reverter decisão?',
-      mensagem: `O item ${item.identificador} voltará para a fila de pendentes e a decisão anterior ficará registrada na auditoria.`,
-      rotulo: '↩ Reverter', perigosa: false
     }
   }
   confirmacao.value = { ...textos[acao], acao, item }
+}
+
+/** Ações do histórico → ação registrada no banco e na auditoria. */
+const ACAO_HISTORICO: Record<string, { acao: string; passado: string }> = {
+  manter: { acao: 'MANTER', passado: 'mantido' },
+  resolver: { acao: 'RESOLVER', passado: 'resolvido' },
+  excluir: { acao: 'EXCLUIR', passado: 'excluído' }
 }
 
 async function executarConfirmacao(): Promise<void> {
@@ -378,55 +375,28 @@ async function executarConfirmacao(): Promise<void> {
   if (!c) return
   const { item, acao } = c
 
-  // consolidação em massa do histórico
-  if (acao === 'massa') {
-    confirmacao.value = null
-    processando.value = 'massa'
-    try {
-      const r = await api.consolidarEmMassa(item.identificador, {
-        revisadoPor: props.usuario || 'governanca',
-        observacao: 'Consolidação em massa aprovada na governança'
-      })
-      toast.sucesso(`${r.total.toLocaleString('pt-BR')} registros consolidados de uma só vez.`)
-      await carregar()
-      atualizarPendentes()
-    } catch (e) {
-      toast.erro((e as Error).message)
-    } finally {
-      processando.value = null
-    }
-    return
-  }
-
-  if ((acao === 'excluir' || acao === 'rejeitar') && !(observacoes[item.id] || '').trim()) {
-    toast.aviso('Informe o motivo da decisão no campo de observação.')
+  // toda decisão exige um motivo — em TODAS as ações
+  const motivo = (observacoes[item.id] || '').trim()
+  if (!motivo) {
+    toast.aviso('Informe o motivo da decisão — ele é obrigatório.')
     return
   }
   confirmacao.value = null
   processando.value = item.id
   try {
-    if (acao === 'manter') {
+    const historico = ACAO_HISTORICO[acao]
+    if (historico) {
       await api.revisarHistorico(item.id, {
-        revisadoPor: props.usuario || 'governanca', acao: 'MANTER',
-        observacao: observacoes[item.id] || 'Mantido como válido após revisão'
+        revisadoPor: props.usuario || 'governanca',
+        acao: historico.acao,
+        observacao: motivo
       })
-      toast.sucesso(`Item ${item.identificador} mantido no catálogo.`)
-    } else if (acao === 'excluir') {
-      await api.revisarHistorico(item.id, {
-        revisadoPor: props.usuario || 'governanca', acao: 'CONSOLIDAR',
-        observacao: observacoes[item.id] || 'Repetição unificada no código padrão'
-      })
-      toast.sucesso(`Duplicata ${item.identificador} excluída da lista ativa (registro original preservado).`)
+      toast.sucesso(`Item ${item.identificador} ${historico.passado} — decisão registrada.`)
     } else if (acao === 'aprovar') {
-      await api.aprovar(item.id, { aprovadoPor: props.usuario || 'governanca', observacao: observacoes[item.id] || null })
+      await api.aprovar(item.id, { aprovadoPor: props.usuario || 'governanca', observacao: motivo })
       toast.sucesso(`Cadastro ${item.identificador} aprovado.`)
-    } else if (acao === 'reverter') {
-      await api.reverterRevisao(item.id, {
-        revisadoPor: props.usuario || 'governanca', observacao: observacoes[item.id] || null
-      })
-      toast.sucesso(`Decisão do item ${item.identificador} revertida — voltou para a fila.`)
     } else {
-      await api.rejeitar(item.id, { aprovadoPor: props.usuario || 'governanca', observacao: observacoes[item.id] || null })
+      await api.rejeitar(item.id, { aprovadoPor: props.usuario || 'governanca', observacao: motivo })
       toast.sucesso(`Cadastro ${item.identificador} rejeitado.`)
     }
     await carregar()

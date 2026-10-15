@@ -4,7 +4,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/** Registra o controle de permissões nos endpoints de governança (seção 12.2). */
+/** Registra o controle de permissões (seção 12.2): governança exige ADMIN sempre;
+ *  nos demais endpoints, exclusão/alteração também exige ADMIN. */
 @Configuration
 public class AutorizacaoConfig implements WebMvcConfigurer {
 
@@ -17,6 +18,6 @@ public class AutorizacaoConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(autorizacaoInterceptor)
-                .addPathPatterns("/api/v1/governanca/**");
+                .addPathPatterns("/api/v1/**");
     }
 }

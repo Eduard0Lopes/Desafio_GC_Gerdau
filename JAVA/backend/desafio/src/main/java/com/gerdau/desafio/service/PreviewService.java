@@ -63,6 +63,10 @@ public class PreviewService {
     /**
      * Resolve os componentes sem persistir.
      *
+     * <p>Um dado "novo" que já existe no catálogo (mesmo nome/sigla) REUTILIZA o item
+     * existente em vez de tentar criar outro — é a regra "Reutilize o item existente"
+     * aplicada automaticamente, evitando erro de duplicidade e cadastros parciais.</p>
+     *
      * @param alocarIds {@code false} na prévia (componentes novos recebem {@link #MARCADOR_NOVO})
      */
     public ComponentesResolvidos resolver(PreviewRequest req, boolean alocarIds) {
@@ -72,12 +76,18 @@ public class PreviewService {
             gs = grupoServicoRepository.findById(req.gsId())
                     .orElseThrow(() -> new BusinessException("Grupo de Serviço não encontrado: " + req.gsId()));
         } else if (naoVazio(req.gsNovoNome())) {
-            gs = new GrupoServico();
-            gs.setId(alocarIds ? DataSeeder.slug(req.gsNovoNome()) : MARCADOR_NOVO);
-            gs.setNome(req.gsNovoNome().trim());
-            gs.setNomeNormalizado(TextoUtil.normalizar(req.gsNovoNome()));
-            gs.setOrigem("SISTEMA");
-            grupoNovo = true;
+            String nome = req.gsNovoNome().trim();
+            GrupoServico existente = buscarGrupoExistente(nome);
+            if (existente != null) {
+                gs = existente;
+            } else {
+                gs = new GrupoServico();
+                gs.setId(alocarIds ? DataSeeder.slug(nome) : MARCADOR_NOVO);
+                gs.setNome(nome);
+                gs.setNomeNormalizado(TextoUtil.normalizar(nome));
+                gs.setOrigem("SISTEMA");
+                grupoNovo = true;
+            }
         } else {
             throw new BusinessException("Informe o Grupo de Serviço (id) ou o nome de um novo grupo.");
         }
@@ -88,17 +98,23 @@ public class PreviewService {
             cf = codigoFornecedorRepository.findById(req.cfId())
                     .orElseThrow(() -> new BusinessException("Código de Fornecedor não encontrado: " + req.cfId()));
         } else if (naoVazio(req.cfNovoNome())) {
-            cf = new CodigoFornecedor();
-            String sap = naoVazio(req.cfNovoCodigoSap()) ? req.cfNovoCodigoSap().trim()
-                    : String.valueOf(System.currentTimeMillis() % 10_000_000);
-            cf.setId(alocarIds ? sap : MARCADOR_NOVO);
-            if (alocarIds) {
-                cf.setCodigoFornecedorSAP(Long.parseLong(sap));
+            String nome = req.cfNovoNome().trim();
+            String sap = naoVazio(req.cfNovoCodigoSap()) ? req.cfNovoCodigoSap().trim() : null;
+            CodigoFornecedor existente = buscarFornecedorExistente(nome, sap);
+            if (existente != null) {
+                cf = existente;
+            } else {
+                cf = new CodigoFornecedor();
+                String id = sap != null ? sap : String.valueOf(System.currentTimeMillis() % 10_000_000);
+                cf.setId(alocarIds ? id : MARCADOR_NOVO);
+                if (alocarIds) {
+                    cf.setCodigoFornecedorSAP(Long.parseLong(id));
+                }
+                cf.setNome(nome);
+                cf.setNomeNormalizado(TextoUtil.normalizar(nome));
+                cf.setOrigem("SISTEMA");
+                fornecedorNovo = true;
             }
-            cf.setNome(req.cfNovoNome().trim());
-            cf.setNomeNormalizado(TextoUtil.normalizar(req.cfNovoNome()));
-            cf.setOrigem("SISTEMA");
-            fornecedorNovo = true;
         } else {
             throw new BusinessException("Informe o Código de Fornecedor (id) ou o nome de um novo fornecedor.");
         }
@@ -131,18 +147,46 @@ public class PreviewService {
             um = unidadeMedidaRepository.findById(req.umId())
                     .orElseThrow(() -> new BusinessException("Unidade de Medida não encontrada: " + req.umId()));
         } else if (naoVazio(req.umNovaSigla())) {
-            um = new UnidadeMedida();
-            um.setId(alocarIds ? req.umNovaSigla().trim().toUpperCase() : MARCADOR_NOVO);
-            um.setSigla(req.umNovaSigla().trim().toUpperCase());
-            um.setNome(naoVazio(req.umNovoNome()) ? req.umNovoNome().trim() : um.getSigla());
-            um.setNomeNormalizado(TextoUtil.normalizar(um.getNome()));
-            um.setOrigem("SISTEMA");
-            unidadeNova = true;
+            String sigla = req.umNovaSigla().trim().toUpperCase();
+            UnidadeMedida existente = unidadeMedidaRepository.findById(sigla).orElse(null);
+            if (existente != null) {
+                um = existente;
+            } else {
+                um = new UnidadeMedida();
+                um.setId(alocarIds ? sigla : MARCADOR_NOVO);
+                um.setSigla(sigla);
+                um.setNome(naoVazio(req.umNovoNome()) ? req.umNovoNome().trim() : sigla);
+                um.setNomeNormalizado(TextoUtil.normalizar(um.getNome()));
+                um.setOrigem("SISTEMA");
+                unidadeNova = true;
+            }
         } else {
             throw new BusinessException("Informe a Unidade de Medida (id) ou a sigla de uma nova unidade.");
         }
 
         return new ComponentesResolvidos(gs, grupoNovo, cf, fornecedorNovo, cs, codigoNovo, um, unidadeNova);
+    }
+
+    /** Grupo existente com o mesmo nome (identidade do G.S. = nome/slug) — reutiliza em vez de duplicar. */
+    private GrupoServico buscarGrupoExistente(String nome) {
+        GrupoServico porId = grupoServicoRepository.findById(DataSeeder.slug(nome)).orElse(null);
+        if (porId != null) {
+            return porId;
+        }
+        return grupoServicoRepository.findByNomeNormalizado(TextoUtil.normalizar(nome))
+                .stream().findFirst().orElse(null);
+    }
+
+    /**
+     * Fornecedor existente: mesmo código SAP (identidade) ou — quando o SAP não foi
+     * informado — mesmo nome. Com SAP novo, o fornecedor é outro mesmo com nome igual.
+     */
+    private CodigoFornecedor buscarFornecedorExistente(String nome, String codigoSap) {
+        if (codigoSap != null) {
+            return codigoFornecedorRepository.findById(codigoSap).orElse(null);
+        }
+        return codigoFornecedorRepository.findByNomeNormalizado(TextoUtil.normalizar(nome))
+                .stream().findFirst().orElse(null);
     }
 
     public PreviewResponse montarPreview(PreviewRequest req) {

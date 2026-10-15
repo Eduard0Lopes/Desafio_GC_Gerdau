@@ -48,4 +48,12 @@ public class CodigoServicoController {
     public ResponseEntity<CodigoServicoResponse> criar(@Valid @RequestBody NovoServicoRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.criarServico(request.descricao()));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Excluir serviço (apenas ADMIN)",
+            description = "Ação auditada. Bloqueada (409) enquanto estiver vinculado a códigos completos.")
+    public ResponseEntity<Void> excluir(@PathVariable String id) {
+        service.excluirServico(id);
+        return ResponseEntity.noContent().build();
+    }
 }

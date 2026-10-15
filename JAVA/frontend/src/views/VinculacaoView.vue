@@ -5,49 +5,61 @@
       <div class="painel">
         <label class="painel-rotulo">Grupo de Serviço</label>
         <ComboboxBusca
+          ref="cbGs"
           placeholder="Digite para buscar…"
           :carregar="api.gruposServico.listar"
           :nomeDe="(i: any) => String(i.nome)"
           :idDe="() => ''"
+          :permiteExcluir="isAdmin"
           v-model="gs"
           @criarNovo="(t: string) => irParaCadastro('Grupo de Serviço', t)"
+          @excluir="(i: any) => pedirExclusao(i, 'GS')"
         />
       </div>
 
       <div class="painel">
         <label class="painel-rotulo">Código de Fornecedor</label>
         <ComboboxBusca
+          ref="cbCf"
           placeholder="Digite para buscar…"
           :carregar="api.codigosFornecedor.listar"
           :nomeDe="(i: any) => String(i.nome)"
           :idDe="(i: any) => String(i.codigoFornecedorSAP || i.id)"
+          :permiteExcluir="isAdmin"
           v-model="cf"
           @criarNovo="(t: string) => irParaCadastro('Código de Fornecedor', t)"
+          @excluir="(i: any) => pedirExclusao(i, 'CF')"
         />
       </div>
 
       <div class="painel">
         <label class="painel-rotulo">Código de Serviço</label>
         <ComboboxBusca
+          ref="cbCs"
           placeholder="Digite para buscar…"
           :carregar="api.codigosServico.listar"
           :nomeDe="(i: any) => String(i.descricao)"
           :idDe="(i: any) => String(i.id)"
           :sapDe="(i: any) => `${i.quantidadeCaracteres ?? String(i.descricao || '').length}/40 SAP`"
+          :permiteExcluir="isAdmin"
           v-model="cs"
           @criarNovo="(t: string) => irParaCadastro('Código de Serviço', t)"
+          @excluir="(i: any) => pedirExclusao(i, 'CS')"
         />
       </div>
 
       <div class="painel">
         <label class="painel-rotulo">Unidade de Medida</label>
         <ComboboxBusca
+          ref="cbUm"
           placeholder="Digite para buscar…"
           :carregar="api.unidadesMedida.listar"
           :nomeDe="(i: any) => `${i.sigla} - ${i.nome}`"
           :idDe="() => ''"
+          :permiteExcluir="isAdmin"
           v-model="um"
           @criarNovo="(t: string) => irParaCadastro('Unidade de Medida', t)"
+          @excluir="(i: any) => pedirExclusao(i, 'UM')"
         />
       </div>
     </section>
@@ -99,24 +111,6 @@
       </div>
     </div>
 
-    <!-- vínculo já existe: aviso simples (sem modal de duplicidade) -->
-    <div v-if="vinculoExistente" class="modal-fundo" @click.self="vinculoExistente = false">
-      <div class="modal">
-        <h3>Este vínculo já existe</h3>
-        <div class="aviso aviso-azul">
-          <span class="icone">ℹ</span>
-          <div>
-            A composição <strong>{{ preview?.idCompleto }}</strong> já está registrada.<br />
-            <span class="suave">{{ preview?.descricaoSnapshot }}</span>
-          </div>
-        </div>
-        <div class="linha-botoes">
-          <button class="botao botao-escuro" @click="vinculoExistente = false">Voltar</button>
-          <button class="botao botao-roxo" @click="vinculoExistente = false; limpar()">Novo registro</button>
-        </div>
-      </div>
-    </div>
-
     <!-- Bloqueio de Duplicidade (print 3) — apenas em criação de item novo -->
     <ModalBloqueio
       v-if="modalBloqueio"
@@ -136,6 +130,17 @@
       @confirmar="confirmarGovernanca"
     />
 
+    <!-- exclusão de componente do catálogo (ADMIN) -->
+    <ModalConfirmacao
+      v-if="exclusao"
+      titulo="Excluir componente do catálogo?"
+      :mensagem="`${ROTULO_TIPO[exclusao.tipo]} “${exclusao.rotulo}” será excluído definitivamente. A ação fica registrada na auditoria.`"
+      rotulo-confirmar="✕ Excluir"
+      :acao-perigosa="true"
+      @confirmar="executarExclusao"
+      @cancelar="exclusao = null"
+    />
+
     <!-- sucesso (fecha automaticamente com barra de tempo) -->
     <div v-if="sucesso" class="modal-fundo">
       <div class="modal">
@@ -151,7 +156,7 @@
         </div>
         <div class="linha-botoes" style="margin-top: 14px">
           <button class="botao botao-roxo" @click="limpar">Novo registro</button>
-          <button class="botao botao-escuro" @click="$router.push('/admin')">Ver Painel Admin</button>
+          <button v-if="isAdmin" class="botao botao-escuro" @click="$router.push('/admin')">Ver Painel Admin</button>
         </div>
       </div>
     </div>
@@ -270,18 +275,26 @@
 
 <script setup lang="ts">
 import { computed, inject, onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { api } from '../services/api'
+import { useRoute, useRouter } from 'vue-router'
+import { api, chaveIdempotente } from '../services/api'
 import { toast } from '../services/toast'
 import ComboboxBusca from '../components/ComboboxBusca.vue'
 import ModalBloqueio from '../components/ModalBloqueio.vue'
+import ModalConfirmacao from '../components/ModalConfirmacao.vue'
 import ModalGovernanca from '../components/ModalGovernanca.vue'
 import type { CandidatoSimilar, CriarCodigoCompletoPayload, PreviewResponse } from '../types'
 
 type Item = Record<string, unknown>
 
+/** Candidato do modal de bloqueio — carrega o tipo do componente quando o item é de outro catálogo. */
+type ItemBloqueio = CandidatoSimilar & { tipoComponente?: string }
+
+/** Componentes do catálogo que o ADMIN pode excluir. */
+type TipoComponenteCatalogo = 'GS' | 'CF' | 'CS' | 'UM'
+
 const props = withDefaults(defineProps<{ usuario?: string; papel?: string }>(), { usuario: '', papel: 'USUARIO' })
 const router = useRouter()
+const route = useRoute()
 const atualizarPendentes = inject<() => void>('atualizarPendentes', () => {})
 
 const isAdmin = computed(() => props.papel === 'ADMIN')
@@ -309,12 +322,55 @@ const cf = ref<Item | null>(null)
 const cs = ref<Item | null>(null)
 const um = ref<Item | null>(null)
 
+// ---------- exclusão de componentes (apenas ADMIN — auditada; bloqueada se houver vínculos) ----------
+const cbGs = ref<InstanceType<typeof ComboboxBusca> | null>(null)
+const cbCf = ref<InstanceType<typeof ComboboxBusca> | null>(null)
+const cbCs = ref<InstanceType<typeof ComboboxBusca> | null>(null)
+const cbUm = ref<InstanceType<typeof ComboboxBusca> | null>(null)
+
+const ROTULO_TIPO: Record<TipoComponenteCatalogo, string> = {
+  GS: 'Grupo de Serviço',
+  CF: 'Código de Fornecedor',
+  CS: 'Código de Serviço',
+  UM: 'Unidade de Medida'
+}
+const exclusao = ref<{ tipo: TipoComponenteCatalogo; id: string; rotulo: string } | null>(null)
+
+function pedirExclusao(item: Item, tipo: TipoComponenteCatalogo): void {
+  const nome = tipo === 'CS'
+    ? String(item.descricao ?? item.nome ?? item.id)
+    : tipo === 'UM'
+      ? String(`${item.sigla ?? ''} - ${item.nome ?? ''}`).trim()
+      : String(item.nome ?? item.descricao ?? item.id)
+  exclusao.value = { tipo, id: String(item.id), rotulo: nome }
+}
+
+async function executarExclusao(): Promise<void> {
+  const alvo = exclusao.value
+  if (!alvo) return
+  exclusao.value = null
+  try {
+    await api.componentes.excluir(alvo.tipo, alvo.id)
+    toast.sucesso(`${ROTULO_TIPO[alvo.tipo]} “${alvo.rotulo}” excluído com sucesso.`)
+    const selecoes: Record<TipoComponenteCatalogo, { value: Item | null }> = { GS: gs, CF: cf, CS: cs, UM: um }
+    const paineis: Record<TipoComponenteCatalogo, { recarregar: () => void } | null> = {
+      GS: cbGs.value, CF: cbCf.value, CS: cbCs.value, UM: cbUm.value
+    }
+    // se o item excluído estava selecionado no painel, a seleção é limpa
+    const selecionado = selecoes[alvo.tipo]
+    if (selecionado.value && String(selecionado.value.id) === alvo.id) selecionado.value = null
+    paineis[alvo.tipo]?.recarregar()
+    atualizarPendentes()
+  } catch (e) {
+    toast.erro((e as Error).message)
+  }
+}
+
 const preview = ref<PreviewResponse | null>(null)
 const processando = ref(false)
 const modalPreview = ref(false)
 const modalBloqueio = ref(false)
 const modalGovernanca = ref(false)
-const vinculoExistente = ref(false)
 const sucesso = ref<{ titulo: string; mensagem: string } | null>(null)
 const tempoRestante = ref(100)
 
@@ -331,34 +387,19 @@ watch(sucesso, (novo) => {
       clearInterval(timer)
       if (sucesso.value) limpar()
     }
-  }, 160) // 8 segundos no total
+  }, 160)
 })
 
 const completo = computed(() => gs.value && cf.value && cs.value && um.value)
 const descricaoNovoServico = computed(() => preview.value?.codigoServico?.nome || '')
 
 // SEMPRE há pelo menos uma opção para o usuário escolher
-const itensBloqueio = computed<CandidatoSimilar[]>(() => {
+const itensBloqueio = computed<ItemBloqueio[]>(() => {
   const p = preview.value
   if (!p) return []
 
-  // caso 1: a composição inteira já existe — o próprio registro é a opção
-  if (p.idCompletoJaExiste) {
-    return [{
-      posicao: 1,
-      id: p.idCompleto,
-      codigoOriginal: null,
-      descricao: p.descricaoSnapshot,
-      score: 1,
-      scoreTokens: 0,
-      scoreCaracteres: 0,
-      tokensEmComum: [],
-      motivo: 'Este código completo (Grupo de Serviço + Código de Fornecedor + Código de Serviço + Unidade de Medida) já está cadastrado.'
-    }]
-  }
-
-  // caso 2: itens semelhantes encontrados + alertas de componentes novos
-  const lista: CandidatoSimilar[] = [...(p.similares || [])]
+  // itens semelhantes encontrados + alertas de componentes novos
+  const lista: ItemBloqueio[] = (p.similares || []).map((c) => ({ ...c, tipoComponente: 'CS' }))
   for (const a of p.alertasComponentes || []) {
     lista.push({
       posicao: 0,
@@ -369,7 +410,8 @@ const itensBloqueio = computed<CandidatoSimilar[]>(() => {
       scoreTokens: 0,
       scoreCaracteres: 0,
       tokensEmComum: [],
-      motivo: `${nomeComponente(a.tipo)}: “${a.descricaoInformada}” é semelhante a este item.`
+      motivo: `${nomeComponente(a.tipo)}: “${a.descricaoInformada}” é semelhante a este item.`,
+      tipoComponente: a.tipo
     })
   }
   return lista
@@ -386,9 +428,7 @@ function nomeComponente(tipo: string): string {
 }
 
 const motivoBloqueio = computed(() =>
-  preview.value?.idCompletoJaExiste
-    ? 'Esta composição já existe na base. Reutilize o registro existente ou envie para governança.'
-    : 'O sistema identificou itens semelhantes cadastrados. Escolha um item para reutilizar ou justifique a criação.')
+  'O sistema identificou itens semelhantes cadastrados. Escolha um item para reutilizar ou justifique a criação.')
 
 function irParaCadastro(tipo: string, texto: string): void {
   router.push({ path: '/cadastrar-item', query: { tipo, descricao: texto } })
@@ -410,8 +450,8 @@ async function vincular(): Promise<void> {
   try {
     preview.value = await api.preview(payload())
     if (preview.value.idCompletoJaExiste) {
-      // vínculo repetido: aviso simples e direto (o alerta de duplicidade é do cadastro)
-      vinculoExistente.value = true
+      // vínculo é livre: composição já registrada = ação confirmada usando o registro existente
+      registrarVinculo(preview.value.idCompleto, preview.value.descricaoSnapshot)
     } else if (preview.value.decisao === 'PERMITIR') {
       modalPreview.value = true
     } else {
@@ -424,17 +464,24 @@ async function vincular(): Promise<void> {
   }
 }
 
+/** Confirmação de vínculo (novo ou já existente) — feedback de sucesso igual nos dois casos. */
+function registrarVinculo(idCompleto: string, descricaoSnapshot: string): void {
+  toast.sucesso(`Enviado com sucesso! Serviço ${idCompleto} vinculado.`)
+  sucesso.value = { titulo: `Serviço ${idCompleto} vinculado!`, mensagem: descricaoSnapshot }
+  atualizarPendentes()
+}
+
 async function confirmarVinculo(): Promise<void> {
   processando.value = true
   try {
     const r = await api.criarCodigoCompleto(payload({ acao: 'CRIAR' }))
     modalPreview.value = false
-    sucesso.value = { titulo: `Serviço ${r.idCompleto} vinculado!`, mensagem: r.descricaoSnapshot }
-    atualizarPendentes()
+    registrarVinculo(r.idCompleto, r.descricaoSnapshot)
   } catch (e) {
-    if ((e as { status?: number }).status === 409) {
+    if ((e as { status?: number }).status === 409 && preview.value) {
+      // composição já registrada (ex.: criada entre a prévia e a confirmação) — vínculo é livre
       modalPreview.value = false
-      modalBloqueio.value = true
+      registrarVinculo(preview.value.idCompleto, preview.value.descricaoSnapshot)
     } else {
       toast.erro((e as Error).message)
     }
@@ -443,25 +490,30 @@ async function confirmarVinculo(): Promise<void> {
   }
 }
 
-function reutilizarItem(item: CandidatoSimilar): void {
+function reutilizarItem(itemCandidato: CandidatoSimilar): void {
+  const item = itemCandidato as ItemBloqueio
   modalBloqueio.value = false
-  const p = preview.value
 
-  // opção: a própria composição existente — mantém os 4 componentes já selecionados
-  if (p?.idCompletoJaExiste && item.id === p.idCompleto) {
-    sucesso.value = {
-      titulo: 'Registro existente em uso',
-      mensagem: `O código completo ${item.id} já estava cadastrado — ele será usado como está.`
+  // item semelhante escolhido — assume o painel do componente correspondente
+  const escolhido: Item = { id: item.id, descricao: item.descricao, nome: item.descricao }
+  switch (item.tipoComponente) {
+    case 'GS':
+      gs.value = escolhido
+      break
+    case 'CF':
+      cf.value = escolhido
+      break
+    case 'UM': {
+      const [sigla, ...resto] = String(item.descricao || '').split(' - ')
+      um.value = { ...escolhido, sigla, nome: resto.join(' - ') || sigla }
+      break
     }
-    return
+    default:
+      cs.value = escolhido
   }
-
-  // opção: item semelhante escolhido — assume o C.S. (ou o componente correspondente)
-  cs.value = { id: item.id, descricao: item.descricao }
-  sucesso.value = {
-    titulo: 'Código existente reutilizado',
-    mensagem: `${item.id} - ${item.descricao} selecionado como Código de Serviço.`
-  }
+  toast.sucesso(`Código existente reutilizado: ${item.id} — ${item.descricao}. Confirme a vinculação.`)
+  // refaz a prévia com o item existente — o vínculo é gravado na confirmação
+  void vincular()
 }
 
 function abrirGovernanca(): void {
@@ -472,8 +524,13 @@ function abrirGovernanca(): void {
 async function confirmarGovernanca(justificativa: string): Promise<void> {
   processando.value = true
   try {
-    const r = await api.criarCodigoCompleto(payload({ acao: 'ENVIAR_VALIDACAO', justificativa }), 'gov-' + Date.now())
+    const corpo = payload({ acao: 'ENVIAR_VALIDACAO', justificativa })
+    const r = await api.criarCodigoCompleto(
+      corpo,
+      chaveIdempotente('gov-', corpo.gsId, corpo.cfId, corpo.csId, corpo.umId, justificativa)
+    )
     modalGovernanca.value = false
+    toast.sucesso('Enviado com sucesso! O cadastro foi para a fila de validação da Governança.')
     sucesso.value = {
       titulo: 'Enviado para Governança',
       mensagem: `O cadastro ${r.idCompleto} passará por validação humana pela Equipe de Governança de Dados.`
@@ -494,12 +551,42 @@ function limpar(): void {
   gs.value = cf.value = cs.value = um.value = null
   preview.value = null
   sucesso.value = null
-  vinculoExistente.value = false
   modalPreview.value = modalBloqueio.value = modalGovernanca.value = false
-  toast.sucesso('Pronto para um novo registro — selecione os componentes.')
 }
 
-onMounted(carregarResumoAdmin)
+/**
+ * Item reutilizado vindo do "Cadastrar Novo Item" (?reutilizar=<id>): seleciona o
+ * item existente no painel correspondente e avisa o usuário (toast).
+ */
+function aplicarReutilizacao(): void {
+  const id = route.query.reutilizar
+  if (!id) return
+  const tipoItem = String(route.query.tipo || 'CS').toUpperCase()
+  const texto = String(route.query.descricao || '')
+  const item: Item = { id: String(id), descricao: texto, nome: texto }
+  let painel = 'Código de Serviço'
+  if (tipoItem === 'GS') {
+    gs.value = item
+    painel = 'Grupo de Serviço'
+  } else if (tipoItem === 'CF') {
+    cf.value = item
+    painel = 'Código de Fornecedor'
+  } else if (tipoItem === 'UM') {
+    const [sigla, ...resto] = texto.split(' - ')
+    um.value = { ...item, sigla, nome: resto.join(' - ') || sigla }
+    painel = 'Unidade de Medida'
+  } else {
+    cs.value = item
+  }
+  toast.sucesso(`${String(id)} — ${texto} selecionado como ${painel}. Complete a vinculação.`)
+  // limpa a query para o refresh não repetir a seleção/toast
+  void router.replace({ query: {} })
+}
+
+onMounted(() => {
+  carregarResumoAdmin()
+  aplicarReutilizacao()
+})
 watch(() => props.papel, carregarResumoAdmin)
 </script>
 

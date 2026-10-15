@@ -19,6 +19,7 @@ import java.util.List;
 public class EventoAuditoria {
 
     public static final String ACAO_CRIACAO_COMPONENTE = "CRIACAO_COMPONENTE";
+    public static final String ACAO_EXCLUSAO_COMPONENTE = "EXCLUSAO_COMPONENTE";
     public static final String ACAO_CRIACAO_CODIGO_COMPLETO = "CRIACAO_CODIGO_COMPLETO";
     public static final String ACAO_BLOQUEIO = "BLOQUEIO";
     public static final String ACAO_EXCECAO = "EXCECAO";

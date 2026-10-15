@@ -70,8 +70,11 @@ async function carregarBancoAtivo(): Promise<void> {
     const r = await fetch('/api/v1/health')
     const dados = await r.json()
     bancoAtivo.value = dados?.banco || ''
+    // backend respondeu: o aviso de "indisponível" deve sumir sozinho
+    apiFora.value = false
   } catch {
     bancoAtivo.value = ''
+    apiFora.value = true
   }
 }
 
@@ -110,7 +113,11 @@ onMounted(() => {
   atualizarPendentes()
   carregarBancoAtivo()
 })
-setInterval(atualizarPendentes, 30000)
+// a cada 30s: fila de pendentes + verificação de que o backend está no ar
+setInterval(() => {
+  void atualizarPendentes()
+  void carregarBancoAtivo()
+}, 30000)
 </script>
 
 <style scoped>

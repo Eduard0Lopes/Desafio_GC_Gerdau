@@ -45,7 +45,7 @@ function icone(tipo: string): string {
   position: relative;
   overflow: hidden;
 }
-/* barrinha de tempo do toast (encolhe conforme o toast fecha) */
+
 .toast::after {
   content: '';
   position: absolute;

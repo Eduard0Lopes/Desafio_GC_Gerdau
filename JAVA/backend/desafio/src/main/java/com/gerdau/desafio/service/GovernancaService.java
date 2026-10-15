@@ -66,28 +66,34 @@ public class GovernancaService {
         List<ItemGovernancaResponse> itens = new ArrayList<>();
         boolean incluiHistorico = origem == null || origem.isBlank()
                 || "TODOS".equalsIgnoreCase(origem) || "HISTORICO".equalsIgnoreCase(origem);
-        boolean incluiNovos = origem == null || origem.isBlank()
-                || "TODOS".equalsIgnoreCase(origem) || "NOVOS".equalsIgnoreCase(origem);
-
-        String statusMatriz = (status == null || status.isBlank() || "TODOS".equalsIgnoreCase(status))
-                ? MatrizDePara.STATUS_PENDENTE
-                : status.trim().toUpperCase();
+        // visões por decisão (DUPLICIDADE/ALERTA) são do histórico — novos cadastros não entram
         String decisao = (decision == null || decision.isBlank() || "TODOS".equalsIgnoreCase(decision))
                 ? null : decision.trim().toUpperCase();
+        boolean incluiNovos = (origem == null || origem.isBlank()
+                || "TODOS".equalsIgnoreCase(origem) || "NOVOS".equalsIgnoreCase(origem))
+                && decisao == null;
+
+        // null = sem filtro de status (visões "TODOS" — ex.: todos os quase repetidos)
+        String statusMatriz = (status == null || status.isBlank() || "TODOS".equalsIgnoreCase(status))
+                ? null : status.trim().toUpperCase();
         Pageable paginacao = PageRequest.of(Math.max(pagina, 0), limite);
 
         if (incluiHistorico) {
             List<MatrizDePara> matriz;
             if (query != null && !query.isBlank()) {
                 matriz = matrizDeParaRepository.buscarPorTexto(regex(query), PageRequest.of(0, limite)).stream()
-                        .filter(m -> statusMatriz.equals(m.getStatusRevisao()))
+                        .filter(m -> statusMatriz == null || statusMatriz.equals(m.getStatusRevisao()))
                         .filter(m -> decisao == null || decisao.equals(m.getDecision()))
                         .limit(limite).toList();
-            } else if (decisao != null) {
+            } else if (decisao != null && statusMatriz != null) {
                 matriz = matrizDeParaRepository.findByDecisionAndStatusRevisaoOrderByScoreDesc(
                         decisao, statusMatriz, paginacao);
-            } else {
+            } else if (decisao != null) {
+                matriz = matrizDeParaRepository.findByDecisionOrderByScoreDesc(decisao, paginacao);
+            } else if (statusMatriz != null) {
                 matriz = matrizDeParaRepository.findByStatusRevisaoOrderByScoreDesc(statusMatriz, paginacao);
+            } else {
+                matriz = matrizDeParaRepository.findAll(paginacao).getContent();
             }
             matriz.forEach(m -> itens.add(paraItemHistorico(m)));
         }
@@ -135,23 +141,25 @@ public class GovernancaService {
         return grupos;
     }
 
-    /** Revisão humana do histórico (seção 9.6): reviewedBy/reviewedAt. */
+    /**
+     * Revisão humana do histórico (seção 9.6): reviewedBy/reviewedAt + motivo.
+     * A decisão pode ser refeita (o histórico de decisões fica na auditoria).
+     */
     public ItemGovernancaResponse revisarHistorico(String id, RevisaoMatrizRequest request) {
         MatrizDePara doc = matrizDeParaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Registro da matriz", id));
-        if (!MatrizDePara.STATUS_PENDENTE.equals(doc.getStatusRevisao())) {
-            throw new BusinessException("O registro " + doc.getNewId()
-                    + " não está pendente de revisão (status: " + doc.getStatusRevisao() + ").");
+        String motivo = request.observacao() == null ? "" : request.observacao().trim();
+        if (motivo.isBlank()) {
+            throw new BusinessException("Informe o motivo da decisão — ele é obrigatório.");
         }
         doc.setStatusRevisao(MatrizDePara.STATUS_REVISADO);
         doc.setReviewedBy(request.revisadoPor());
         doc.setReviewedAt(Instant.now());
-        doc.setObservacaoRevisao(request.acao() == null ? request.observacao()
-                : request.acao() + (request.observacao() == null ? "" : " — " + request.observacao()));
+        doc.setObservacaoRevisao((request.acao() == null ? "" : request.acao() + " — ") + motivo);
         MatrizDePara salvo = matrizDeParaRepository.save(doc);
         auditoriaService.registrar(EventoAuditoria.ACAO_REVISAO_HISTORICA, "MATRIZ_DE_PARA",
                 salvo.getNewId(), salvo.getDecision(),
-                request.acao() + (request.observacao() == null ? "" : " — " + request.observacao()),
+                doc.getObservacaoRevisao(),
                 java.util.List.of(salvo.getNewId()),
                 java.util.List.of(salvo.getScore() == null ? 0.0 : salvo.getScore()),
                 request.revisadoPor());
@@ -266,35 +274,6 @@ public class GovernancaService {
         return saida;
     }
 
-    /**
-     * Ação em massa na revisão do histórico: consolida todos os pendentes de uma
-     * decisão (ex.: DUPLICIDADE) de uma só vez — evita revisar milhares um a um.
-     */
-    public Map<String, Object> consolidarEmMassa(String decision, RevisaoMatrizRequest request) {
-        String decisao = (decision == null || decision.isBlank()) ? "DUPLICIDADE" : decision.trim().toUpperCase();
-        List<MatrizDePara> pendentes = matrizDeParaRepository
-                .findByDecisionAndStatusRevisaoOrderByScoreDesc(decisao, MatrizDePara.STATUS_PENDENTE,
-                        org.springframework.data.domain.PageRequest.of(0, 100_000));
-        int total = 0;
-        for (MatrizDePara doc : pendentes) {
-            doc.setStatusRevisao(MatrizDePara.STATUS_REVISADO);
-            doc.setReviewedBy(request.revisadoPor());
-            doc.setReviewedAt(Instant.now());
-            doc.setObservacaoRevisao("Consolidado em massa (" + decisao + ")"
-                    + (request.observacao() == null ? "" : " — " + request.observacao()));
-            total++;
-        }
-        if (!pendentes.isEmpty()) {
-            matrizDeParaRepository.saveAll(pendentes);
-        }
-        auditoriaService.registrar(EventoAuditoria.ACAO_REVISAO_HISTORICA, "MATRIZ_DE_PARA",
-                "CONSOLIDACAO_EM_MASSA", decisao, "Consolidação em massa de " + total + " registros",
-                List.of(), List.of(), request.revisadoPor());
-        log.info("[GOVERNANCA] Consolidação em massa: {} registros de {} por {}",
-                total, decisao, request.revisadoPor());
-        return Map.of("total", total, "decision", decisao);
-    }
-
     /** Códigos de serviço mais consolidados (quantos legados cada canônico absorveu). */
     private List<Map<String, Object>> servicosMaisConsolidados() {
         var agg = org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation(
@@ -355,13 +334,16 @@ public class GovernancaService {
 
     /** Contagem total da fila (para a paginação informar "Página X de Y"). */
     public long contarFila(String origem, String status, String decision, String query) {
+        // null = sem filtro de status (visões "TODOS" — ex.: todos os quase repetidos)
         String statusMatriz = (status == null || status.isBlank() || "TODOS".equalsIgnoreCase(status))
-                ? MatrizDePara.STATUS_PENDENTE : status.trim().toUpperCase();
+                ? null : status.trim().toUpperCase();
         String decisao = (decision == null || decision.isBlank() || "TODOS".equalsIgnoreCase(decision))
                 ? null : decision.trim().toUpperCase();
 
-        var criterios = new org.springframework.data.mongodb.core.query.Criteria()
-                .and("statusRevisao").is(statusMatriz);
+        var criterios = new org.springframework.data.mongodb.core.query.Criteria();
+        if (statusMatriz != null) {
+            criterios = criterios.and("statusRevisao").is(statusMatriz);
+        }
         if (decisao != null) {
             criterios = criterios.and("decision").is(decisao);
         }
@@ -376,9 +358,10 @@ public class GovernancaService {
         long totalHistorico = mongoTemplate.count(
                 new org.springframework.data.mongodb.core.query.Query(criterios), MatrizDePara.class);
 
-        boolean incluiNovos = origem == null || origem.isBlank()
-                || "TODOS".equalsIgnoreCase(origem) || "NOVOS".equalsIgnoreCase(origem);
-        long totalNovos = incluiNovos && MatrizDePara.STATUS_PENDENTE.equals(statusMatriz)
+        boolean incluiNovos = (origem == null || origem.isBlank()
+                || "TODOS".equalsIgnoreCase(origem) || "NOVOS".equalsIgnoreCase(origem))
+                && decisao == null;
+        long totalNovos = incluiNovos && (statusMatriz == null || MatrizDePara.STATUS_PENDENTE.equals(statusMatriz))
                 ? codigoCompletoRepository.findByStatusOrderByCreatedAtDesc(CodigoCompleto.STATUS_PENDENTE).size()
                 : 0;
         return totalHistorico + totalNovos;

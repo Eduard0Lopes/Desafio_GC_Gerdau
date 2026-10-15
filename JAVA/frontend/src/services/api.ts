@@ -61,6 +61,18 @@ const criar = <T>(caminho: string, dados: unknown, idempotencyKey?: string) =>
     headers: idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}
   })
 
+/**
+ * Chave de idempotência estável por conteúdo: reenviar a MESMA solicitação
+ * (ex.: repetir o envio para Governança) devolve o resultado original em vez
+ * de duplicar o cadastro. Conteúdo diferente gera chave diferente.
+ */
+export function chaveIdempotente(prefixo: string, ...partes: (string | null | undefined)[]): string {
+  const texto = partes.map((p) => (p ?? '').trim()).join('|')
+  let hash = 5381
+  for (let i = 0; i < texto.length; i++) hash = ((hash << 5) + hash + texto.charCodeAt(i)) >>> 0
+  return prefixo + hash.toString(36) + '-' + texto.length.toString(36)
+}
+
 export const api = {
   // catálogos (seção 10.1 — autocomplete + cadastro com anti-duplicidade)
   gruposServico: {
@@ -82,6 +94,19 @@ export const api = {
     listar: (query = '', limite = 20) =>
       lista<UnidadeMedida>(`/unidades-medida?query=${encodeURIComponent(query)}&limite=${limite}`),
     criar: (dados: { sigla: string; nome?: string }) => criar<UnidadeMedida>('/unidades-medida', dados)
+  },
+
+  // exclusão de componentes do catálogo — permitida apenas ao perfil ADMIN (seção 12.2)
+  componentes: {
+    excluir: (tipo: 'GS' | 'CF' | 'CS' | 'UM', id: string) => {
+      const caminhos = {
+        GS: 'grupos-servico',
+        CF: 'codigos-fornecedor',
+        CS: 'codigos-servico',
+        UM: 'unidades-medida'
+      } as const
+      return requisitar<void>(`/${caminhos[tipo]}/${encodeURIComponent(id)}`, { method: 'DELETE' })
+    }
   },
 
   // código completo + governança
@@ -111,10 +136,6 @@ export const api = {
     requisitar<ItemGovernanca>(`/governanca/historico/${id}/revisar`, { method: 'POST', body: JSON.stringify(corpo) }),
   reverterRevisao: (id: string, corpo: { revisadoPor: string; observacao?: string | null }) =>
     requisitar<ItemGovernanca>(`/governanca/historico/${id}/reverter`, { method: 'POST', body: JSON.stringify(corpo) }),
-  consolidarEmMassa: (decision: string, corpo: { revisadoPor: string; observacao?: string | null }) =>
-    requisitar<{ total: number; decision: string }>(
-      `/governanca/historico/consolidar-em-massa?decision=${decision}`, { method: 'POST', body: JSON.stringify(corpo) }
-    ),
   aprovar: (id: string, corpo: { aprovadoPor: string; observacao?: string | null }) =>
     requisitar<ItemGovernanca>(`/governanca/pendentes/${id}/aprovar`, { method: 'POST', body: JSON.stringify(corpo) }),
   rejeitar: (id: string, corpo: { aprovadoPor: string; observacao?: string | null }) =>

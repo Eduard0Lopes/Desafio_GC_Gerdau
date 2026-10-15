@@ -20,7 +20,7 @@
 
         <dt>Justificativa da Solicitação:</dt>
         <dd>
-          <textarea v-model="justificativa" placeholder="Descreva o motivo da solicitação…"></textarea>
+          <textarea v-model="justificativa" placeholder="Descreva o motivo da solicitação…(Minimo 10 caracteres)"></textarea>
         </dd>
       </dl>
 

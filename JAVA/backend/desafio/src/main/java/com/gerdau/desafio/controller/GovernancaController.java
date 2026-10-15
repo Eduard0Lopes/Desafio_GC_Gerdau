@@ -86,15 +86,6 @@ public class GovernancaController {
         return ResponseEntity.ok(service.reverterRevisao(id, request));
     }
 
-    @PostMapping("/historico/consolidar-em-massa")
-    @Operation(summary = "Consolidar em massa os pendentes de uma decisão (evita revisão um a um)",
-            description = "body: { revisadoPor, acao?, observacao? } · query decision: DUPLICIDADE | ALERTA")
-    public ResponseEntity<Map<String, Object>> consolidarEmMassa(
-            @RequestParam(defaultValue = "DUPLICIDADE") String decision,
-            @Valid @RequestBody RevisaoMatrizRequest request) {
-        return ResponseEntity.ok(service.consolidarEmMassa(decision, request));
-    }
-
     @PostMapping("/pendentes/{id}/aprovar")
     public ResponseEntity<ItemGovernancaResponse> aprovarNovo(
             @PathVariable String id, @Valid @RequestBody GovernancaDecisaoRequest request) {

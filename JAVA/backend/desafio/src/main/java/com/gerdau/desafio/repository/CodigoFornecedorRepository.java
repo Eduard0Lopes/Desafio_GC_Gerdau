@@ -14,4 +14,7 @@ public interface CodigoFornecedorRepository extends MongoRepository<CodigoFornec
             + " { 'nome': { $regex: ?0, $options: 'i' } },"
             + " { '_id': { $regex: ?0, $options: 'i' } } ] }")
     List<CodigoFornecedor> buscarPorTexto(String termo);
+
+    /** Itens com exatamente este nome normalizado (identidade — reutilização anti-duplicidade). */
+    List<CodigoFornecedor> findByNomeNormalizado(String nomeNormalizado);
 }

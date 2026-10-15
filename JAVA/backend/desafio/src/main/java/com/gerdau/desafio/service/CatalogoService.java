@@ -28,6 +28,7 @@ public class CatalogoService {
     private final CodigoFornecedorRepository codigoFornecedorRepository;
     private final CodigoServicoRepository codigoServicoRepository;
     private final UnidadeMedidaRepository unidadeMedidaRepository;
+    private final CodigoCompletoRepository codigoCompletoRepository;
     private final SimilaridadeService similaridadeService;
     private final AuditoriaService auditoriaService;
     private final SequenceService sequenceService;
@@ -36,6 +37,7 @@ public class CatalogoService {
                            CodigoFornecedorRepository codigoFornecedorRepository,
                            CodigoServicoRepository codigoServicoRepository,
                            UnidadeMedidaRepository unidadeMedidaRepository,
+                           CodigoCompletoRepository codigoCompletoRepository,
                            SimilaridadeService similaridadeService,
                            AuditoriaService auditoriaService,
                            SequenceService sequenceService) {
@@ -43,6 +45,7 @@ public class CatalogoService {
         this.codigoFornecedorRepository = codigoFornecedorRepository;
         this.codigoServicoRepository = codigoServicoRepository;
         this.unidadeMedidaRepository = unidadeMedidaRepository;
+        this.codigoCompletoRepository = codigoCompletoRepository;
         this.similaridadeService = similaridadeService;
         this.auditoriaService = auditoriaService;
         this.sequenceService = sequenceService;
@@ -94,10 +97,7 @@ public class CatalogoService {
     public GrupoServicoResponse criarGrupo(String nome) {
         GrupoServico g = new GrupoServico();
         g.setId(DataSeeder.slug(nome));
-        if (grupoServicoRepository.existsById(g.getId())) {
-            throw new ConflictException("Já existe um Grupo de Serviço com este nome (\"" + nome.trim()
-                    + "\"). Reutilize o item existente.");
-        }
+        exigirGrupoLivre(nome);
         g.setNome(nome.trim());
         g.setNomeNormalizado(TextoUtil.normalizar(nome));
         g.setOrigem("SISTEMA");
@@ -157,10 +157,7 @@ public class CatalogoService {
     public UnidadeMedidaResponse criarUnidade(String sigla, String nome) {
         UnidadeMedida u = new UnidadeMedida();
         u.setId(sigla.trim().toUpperCase());
-        if (unidadeMedidaRepository.existsById(u.getId())) {
-            throw new ConflictException("Já existe uma Unidade de Medida com a sigla " + u.getId()
-                    + ". Reutilize o item existente.");
-        }
+        exigirUnidadeLivre(sigla);
         u.setSigla(sigla.trim().toUpperCase());
         u.setNome((nome == null || nome.isBlank()) ? sigla.trim().toUpperCase() : nome.trim());
         u.setNomeNormalizado(TextoUtil.normalizar(u.getNome()));
@@ -173,6 +170,88 @@ public class CatalogoService {
         log.info("[CATALOGO] Unidade criada: {}", salva.getId());
         return new UnidadeMedidaResponse(salva.getId(), salva.getSigla(), salva.getNome(),
                 salva.getNomeNormalizado(), salva.getOrigem());
+    }
+
+    // ---------- pré-validação anti-duplicidade (antes de gravar QUALQUER coisa) ----------
+
+    /**
+     * Garante que o grupo pode ser criado. Usado ANTES de gravar componentes de uma
+     * composição: se qualquer um dos novos não puder ser criado, nada é gravado —
+     * nunca fica cadastro parcial no banco (ex.: só o Grupo de Serviço).
+     */
+    public void exigirGrupoLivre(String nome) {
+        if (grupoServicoRepository.existsById(DataSeeder.slug(nome))) {
+            throw new ConflictException("Já existe um Grupo de Serviço com este nome (\"" + nome.trim()
+                    + "\"). Reutilize o item existente.");
+        }
+    }
+
+    /** Garante que o código SAP do fornecedor ainda não está em uso. */
+    public void exigirFornecedorLivre(String codigoSap) {
+        if (codigoSap != null && !codigoSap.isBlank() && codigoFornecedorRepository.existsById(codigoSap.trim())) {
+            throw new ConflictException("Já existe um fornecedor com o código " + codigoSap.trim()
+                    + ". Reutilize o item existente.");
+        }
+    }
+
+    /** Garante que a sigla da unidade ainda não está em uso. */
+    public void exigirUnidadeLivre(String sigla) {
+        if (sigla != null && unidadeMedidaRepository.existsById(sigla.trim().toUpperCase())) {
+            throw new ConflictException("Já existe uma Unidade de Medida com a sigla "
+                    + sigla.trim().toUpperCase() + ". Reutilize o item existente.");
+        }
+    }
+
+    // ---------- exclusão de componentes (apenas ADMIN — ação auditada) ----------
+
+    /** Exclui um Grupo de Serviço — bloqueado enquanto houver vínculos (códigos completos). */
+    public void excluirGrupo(String id) {
+        GrupoServico g = grupoServicoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Grupo de Serviço", id));
+        exigirSemVinculos("o Grupo de Serviço", g.getNome(), codigoCompletoRepository.countByGsId(g.getId()));
+        grupoServicoRepository.delete(g);
+        concluirExclusao("GRUPO_SERVICO", g.getId(), g.getNome());
+    }
+
+    /** Exclui um Código de Fornecedor — bloqueado enquanto houver vínculos (códigos completos). */
+    public void excluirFornecedor(String id) {
+        CodigoFornecedor f = codigoFornecedorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Código de Fornecedor", id));
+        exigirSemVinculos("o Código de Fornecedor", f.getNome(), codigoCompletoRepository.countByCfId(f.getId()));
+        codigoFornecedorRepository.delete(f);
+        concluirExclusao("CODIGO_FORNECEDOR", f.getId(), f.getNome());
+    }
+
+    /** Exclui um Código de Serviço — bloqueado enquanto houver vínculos (códigos completos). */
+    public void excluirServico(String id) {
+        CodigoServico cs = codigoServicoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Código de Serviço", id));
+        exigirSemVinculos("o Código de Serviço", cs.getDescricao(), codigoCompletoRepository.countByCsId(cs.getId()));
+        codigoServicoRepository.delete(cs);
+        concluirExclusao("CODIGO_SERVICO", cs.getId(), cs.getDescricao());
+    }
+
+    /** Exclui uma Unidade de Medida — bloqueada enquanto houver vínculos (códigos completos). */
+    public void excluirUnidade(String id) {
+        UnidadeMedida u = unidadeMedidaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Unidade de Medida", id));
+        exigirSemVinculos("a Unidade de Medida", u.getSigla(), codigoCompletoRepository.countByUmId(u.getId()));
+        unidadeMedidaRepository.delete(u);
+        concluirExclusao("UNIDADE_MEDIDA", u.getId(), u.getNome());
+    }
+
+    /** Integridade: um componente usado por vínculos não é excluído (nada de referência órfã). */
+    private void exigirSemVinculos(String rotulo, String nome, long vinculos) {
+        if (vinculos > 0) {
+            throw new ConflictException("Não é possível excluir " + rotulo + " \"" + nome + "\": está vinculado(a) a "
+                    + vinculos + " código(s) completo(s). Exclua ou revise os vínculos antes.");
+        }
+    }
+
+    private void concluirExclusao(String entityType, String id, String descricao) {
+        similaridadeService.invalidarCache();
+        auditar(EventoAuditoria.ACAO_EXCLUSAO_COMPONENTE, entityType, id, descricao);
+        log.info("[CATALOGO] Excluído: {} {}", entityType, id);
     }
 
     /** Registro de auditoria da criação de componente (ator vem do header quando não explícito). */

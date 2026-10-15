@@ -26,6 +26,16 @@
         <span v-if="idDe(item)" class="cb-item-id">{{ idDe(item) }} -</span>
         <span class="cb-item-nome">{{ nomeDe(item) }}</span>
         <span v-if="sapDe(item)" class="cb-sap">{{ sapDe(item) }}</span>
+        <button
+          v-if="permiteExcluir"
+          class="cb-excluir"
+          type="button"
+          title="Excluir este item do catálogo (ADMIN)"
+          @mousedown.stop.prevent
+          @click.stop="emit('excluir', item)"
+        >
+          ✕
+        </button>
       </li>
 
       <li
@@ -58,6 +68,7 @@ const props = withDefaults(defineProps<{
   idDe?: (i: Item) => string
   sapDe?: (i: Item) => string
   permiteCriar?: boolean
+  permiteExcluir?: boolean
   modelValue?: Item | string | null
 }>(), {
   placeholder: 'Digite para buscar…',
@@ -65,12 +76,14 @@ const props = withDefaults(defineProps<{
   idDe: (i: Item) => (i?.id ? String(i.id) : ''),
   sapDe: () => '',
   permiteCriar: true,
+  permiteExcluir: false,
   modelValue: null
 })
 
 const emit = defineEmits<{
   (e: 'update:modelValue', v: Item | null): void
   (e: 'criarNovo', texto: string): void
+  (e: 'excluir', item: Item): void
 }>()
 
 const texto = ref('')
@@ -184,6 +197,10 @@ defineExpose({
   campo,
   definirTexto(t: string): void {
     texto.value = t
+  },
+  /** Recarrega a lista com o termo atual (ex.: após excluir um item). */
+  recarregar(): void {
+    void buscar(texto.value.trim())
   }
 })
 </script>
