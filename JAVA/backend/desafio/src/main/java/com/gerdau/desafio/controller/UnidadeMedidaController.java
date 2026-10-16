@@ -36,7 +36,7 @@ public class UnidadeMedidaController {
     public ResponseEntity<List<UnidadeMedidaResponse>> listar(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "20") int limite) {
-        return ResponseEntity.ok(service.unidades(query, Math.min(Math.max(limite, 1), 100)));
+        return ResponseEntity.ok(service.unidades(query, Math.min(Math.max(limite, 1), 20000)));
     }
 
     @PostMapping

@@ -35,7 +35,7 @@ public class CodigoServicoController {
     public ResponseEntity<List<CodigoServicoResponse>> listar(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "20") int limite) {
-        return ResponseEntity.ok(service.servicos(query, Math.min(Math.max(limite, 1), 100)));
+        return ResponseEntity.ok(service.servicos(query, Math.min(Math.max(limite, 1), 20000)));
     }
 
     @GetMapping("/{id}")

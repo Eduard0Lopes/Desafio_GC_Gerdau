@@ -34,7 +34,7 @@ public class CodigoFornecedorController {
     public ResponseEntity<List<CodigoFornecedorResponse>> listar(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "20") int limite) {
-        return ResponseEntity.ok(service.fornecedores(query, Math.min(Math.max(limite, 1), 100)));
+        return ResponseEntity.ok(service.fornecedores(query, Math.min(Math.max(limite, 1), 20000)));
     }
 
     @PostMapping

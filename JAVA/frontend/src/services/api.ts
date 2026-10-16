@@ -76,22 +76,22 @@ export function chaveIdempotente(prefixo: string, ...partes: (string | null | un
 export const api = {
   // catálogos (seção 10.1 — autocomplete + cadastro com anti-duplicidade)
   gruposServico: {
-    listar: (query = '', limite = 20) =>
+    listar: (query = '', limite = 20000) =>
       lista<GrupoServico>(`/grupos-servico?query=${encodeURIComponent(query)}&limite=${limite}`),
     criar: (dados: { nome: string }) => criar<GrupoServico>('/grupos-servico', dados)
   },
   codigosFornecedor: {
-    listar: (query = '', limite = 20) =>
+    listar: (query = '', limite = 20000) =>
       lista<CodigoFornecedor>(`/codigos-fornecedor?query=${encodeURIComponent(query)}&limite=${limite}`),
     criar: (dados: { nome: string; codigoSap?: string | null }) => criar<CodigoFornecedor>('/codigos-fornecedor', dados)
   },
   codigosServico: {
-    listar: (query = '', limite = 20) =>
+    listar: (query = '', limite = 20000) =>
       lista<CodigoServico>(`/codigos-servico?query=${encodeURIComponent(query)}&limite=${limite}`),
     criar: (dados: { descricao: string }) => criar<CodigoServico>('/codigos-servico', dados)
   },
   unidadesMedida: {
-    listar: (query = '', limite = 20) =>
+    listar: (query = '', limite = 20000) =>
       lista<UnidadeMedida>(`/unidades-medida?query=${encodeURIComponent(query)}&limite=${limite}`),
     criar: (dados: { sigla: string; nome?: string }) => criar<UnidadeMedida>('/unidades-medida', dados)
   },

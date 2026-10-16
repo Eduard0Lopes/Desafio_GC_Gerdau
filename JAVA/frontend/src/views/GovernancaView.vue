@@ -154,21 +154,12 @@
 
         <div class="linha-botoes" style="margin-top: 12px">
           <template v-if="item.origem === 'HISTORICO'">
-            <!-- QUASE REPETIDO (DUPLICIDADE): resolver ou dizer que está tudo bem -->
-            <!-- EM ATENÇÃO (ALERTA e demais): manter, resolver ou excluir -->
+            <!-- apenas duas ações: aceitar (o item está ok) ou apagar (tira da lista ativa) -->
             <button class="botao botao-verde" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'manter')">
-              {{ item.decision === 'DUPLICIDADE' ? '✓ Está tudo bem' : '✓ Manter' }}
+              ✓ Aceitar
             </button>
-            <button class="botao botao-escuro" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'resolver')">
-              🔧 Resolver
-            </button>
-            <button
-              v-if="item.decision !== 'DUPLICIDADE'"
-              class="botao botao-vermelho"
-              :disabled="processando === item.id"
-              @click="pedirConfirmacao(item, 'excluir')"
-            >
-              ✕ Excluir
+            <button class="botao botao-vermelho" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'excluir')">
+              ✕ Apagar
             </button>
           </template>
           <template v-else>
@@ -334,20 +325,15 @@ function pedirConfirmacao(item: ItemGovernanca, acao: string): void {
   const ehDuplicidade = item.decision === 'DUPLICIDADE'
   const textos: Record<string, { titulo: string; mensagem: string; rotulo: string; perigosa: boolean }> = {
     manter: {
-      titulo: ehDuplicidade ? 'Está tudo bem?' : 'Manter no catálogo?',
-      mensagem: `O item ${item.identificador} será mantido como válido${ehDuplicidade
-        ? ' — a possível repetição está aceitável' : ' (não é um problema)'}. O motivo informado fica registrado na auditoria.`,
-      rotulo: ehDuplicidade ? '✓ Está tudo bem' : '✓ Manter', perigosa: false
-    },
-    resolver: {
-      titulo: 'Resolver a repetição?',
-      mensagem: `O item ${item.identificador} será marcado como resolvido — a repetição fica unificada no código padrão. O motivo informado fica registrado na auditoria.`,
-      rotulo: '🔧 Resolver', perigosa: false
+      titulo: 'Aceitar este item?',
+      mensagem: `O item ${item.identificador} será aceito como válido${ehDuplicidade
+        ? ' — a possível repetição está aceitável' : ''}. O motivo informado fica registrado na auditoria.`,
+      rotulo: '✓ Aceitar', perigosa: false
     },
     excluir: {
-      titulo: 'Excluir do catálogo?',
-      mensagem: `O item ${item.identificador} será excluído do catálogo ativo (o registro original continua preservado no histórico). O motivo informado fica registrado na auditoria.`,
-      rotulo: '✕ Excluir', perigosa: true
+      titulo: 'Apagar do catálogo?',
+      mensagem: `O item ${item.identificador} será apagado da lista ativa (o registro original continua preservado no histórico). O motivo informado fica registrado na auditoria.`,
+      rotulo: '✕ Apagar', perigosa: true
     },
     aprovar: {
       titulo: 'Aprovar cadastro?',
@@ -365,9 +351,8 @@ function pedirConfirmacao(item: ItemGovernanca, acao: string): void {
 
 /** Ações do histórico → ação registrada no banco e na auditoria. */
 const ACAO_HISTORICO: Record<string, { acao: string; passado: string }> = {
-  manter: { acao: 'MANTER', passado: 'mantido' },
-  resolver: { acao: 'RESOLVER', passado: 'resolvido' },
-  excluir: { acao: 'EXCLUIR', passado: 'excluído' }
+  manter: { acao: 'MANTER', passado: 'aceito' },
+  excluir: { acao: 'EXCLUIR', passado: 'apagado' }
 }
 
 async function executarConfirmacao(): Promise<void> {
