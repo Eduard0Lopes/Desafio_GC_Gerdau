@@ -1,7 +1,7 @@
-/* ==========================================================================
-   Gerdau — Padronização de Códigos de Serviço
-   Identidade visual Gerdau: azul institucional + amarelo, tema claro
-   ========================================================================== */
+
+
+
+
 :root {
   --azul: #005eb8;
   --azul-escuro: #00205b;
@@ -22,49 +22,65 @@
   --amarelo-alerta: #b97d00;
   --sombra: 0 6px 22px rgba(0, 32, 91, 0.10);
   --raio: 12px;
+  --texto-sobre-azul: #ffffff;
+  --texto-sobre-verde: #ffffff;
+  --texto-sobre-vermelho: #ffffff;
+  --barra-1: #005eb8;
+  --barra-2: #ffc72c;
+  --barra-3: #00205b;
+  --barra-4: #4d9be6;
 }
 
-/* ==========================================================================
-   Tema escuro (alternável) — mesmas variáveis, outra paleta
-   ========================================================================== */
+
+
+
 html[data-tema='escuro'] {
-  --azul: #4d9be6;
+  /* Paleta Gerdau em azul profundo: o fundo nasce do azul-marinho da marca (#00205b),
+     com os acentos no azul Gerdau (#005eb8) e no amarelo Gerdau (#ffc72c). */
+  --azul: #4fa3e8;
   --azul-escuro: #9cc8f2;
-  --azul-medio: #2f7fd1;
-  --azul-claro: rgba(77, 155, 230, 0.18);
-  --amarelo: #ffd45e;
+  --azul-medio: #3b8cd4;
+  --azul-claro: rgba(79, 163, 232, 0.18);
+  --amarelo: #ffc72c;
   --amarelo-fundo: rgba(255, 199, 44, 0.14);
-  --fundo: #101827;
-  --cartao: #1a2432;
-  --campo: #212c3c;
-  --borda: #33445a;
-  --texto: #e9eef5;
-  --texto-suave: #9db0c3;
+  --fundo: #041c3d;
+  --cartao: #0a264e;
+  --campo: #0f2f5e;
+  --borda: #224e88;
+  --texto: #e8f1fb;
+  --texto-suave: #a3c0e0;
   --verde: #4cc98a;
   --verde-fundo: rgba(76, 201, 138, 0.14);
   --vermelho: #f07167;
   --vermelho-fundo: rgba(240, 113, 103, 0.14);
-  --amarelo-alerta: #f0c14b;
-  --sombra: 0 6px 22px rgba(0, 0, 0, 0.35);
-  /* botões secundários escuros: fundo azulado, texto branco (nada de branco puro) */
-  --botao-secundario-bg: #23374d;
-  --botao-secundario-texto: #e9eef5;
-  --botao-secundario-borda: #3b5875;
+  --amarelo-alerta: #ffd45e;
+  --sombra: 0 6px 22px rgba(1, 12, 32, 0.45);
+  
+  --botao-secundario-bg: #0f2f5e;
+  --botao-secundario-texto: #e8f1fb;
+  --botao-secundario-borda: #2a5c97;
+  --texto-sobre-azul: #04203f;
+  --texto-sobre-verde: #04271a;
+  --texto-sobre-vermelho: #3d0f0b;
+  --barra-1: #4fa3e8;
+  --barra-2: #ffc72c;
+  --barra-3: #9cc8f2;
+  --barra-4: #2f7fd1;
 }
 html[data-tema='claro'] {
   --botao-secundario-bg: #ffffff;
   --botao-secundario-texto: #00205b;
   --botao-secundario-borda: #d5dfe8;
 }
-/* texto forte para superfícies claras/ coloridas (amarelo, branco) — igual nos dois temas */
+
 :root {
   --texto-forte: #00205b;
 }
 html[data-tema='escuro'] .barra-sistema {
-  background: #0c1422;
+  background: #021430;
 }
 html[data-tema='escuro'] .modal-fundo {
-  background: rgba(4, 8, 16, 0.66);
+  background: rgba(1, 10, 28, 0.66);
 }
 
 * { box-sizing: border-box; }
@@ -82,7 +98,7 @@ html, body {
 #app { min-height: 100vh; display: flex; flex-direction: column; }
 a { color: inherit; text-decoration: none; }
 
-/* ---------- barra do sistema ---------- */
+
 .barra-sistema {
   background: var(--azul-escuro);
   border-bottom: 4px solid var(--amarelo);
@@ -115,7 +131,7 @@ a { color: inherit; text-decoration: none; }
   color: var(--texto-forte); background: #ffffff; border-color: #ffffff; font-weight: 800;
 }
 
-/* ---------- área principal ---------- */
+
 .area { flex: 1; width: 100%; max-width: 1240px; margin: 0 auto; padding: 30px 26px 64px; }
 
 .grade-seletores {
@@ -138,7 +154,7 @@ a { color: inherit; text-decoration: none; }
   border-top: 3px solid var(--azul);
 }
 
-/* grade de gráficos: 3 × 2, centralizada e com cartões do mesmo tamanho */
+
 .grade-graficos {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
   max-width: 1180px; margin: 22px auto 0;
@@ -157,7 +173,7 @@ a { color: inherit; text-decoration: none; }
   .grade-graficos .painel { height: auto; min-height: 420px; }
 }
 
-/* ---------- barra de rolagem minimalista e temática (claro/escuro) ---------- */
+
 * { scrollbar-width: thin; scrollbar-color: var(--borda) transparent; }
 ::-webkit-scrollbar { width: 9px; height: 9px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -170,7 +186,7 @@ a { color: inherit; text-decoration: none; }
   display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: var(--azul-escuro);
 }
 
-/* ---------- combobox (dropdown sobreposto — não desloca o layout) ---------- */
+
 .combobox { position: relative; }
 .cb-campo {
   display: flex; align-items: center; gap: 8px; background: var(--campo);
@@ -194,7 +210,7 @@ a { color: inherit; text-decoration: none; }
   display: flex; align-items: baseline; gap: 10px; color: var(--texto);
 }
 .cb-lista li.ativo, .cb-lista li:hover { background: var(--azul-claro); outline: 1px solid var(--azul); }
-/* id minimalista — a ênfase é sempre no nome */
+
 .cb-item-id {
   color: var(--texto-suave); font-variant-numeric: tabular-nums; white-space: nowrap;
   font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; opacity: 0.75;
@@ -214,20 +230,28 @@ a { color: inherit; text-decoration: none; }
   cursor: pointer;
 }
 .cb-excluir:hover { background: var(--vermelho-fundo); border-color: var(--vermelho); }
+.cb-limpar {
+  width: 22px; height: 22px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: none; border-radius: 50%;
+  background: transparent; color: var(--texto-suave);
+  font-size: 0.72rem; line-height: 1; cursor: pointer; padding: 0;
+}
+.cb-limpar:hover { background: var(--vermelho-fundo); color: var(--vermelho); }
 .cb-criar {
   border-top: 1px dashed var(--borda); margin-top: 4px;
   padding-top: 9px !important; color: var(--verde); font-weight: 700;
 }
 .cb-vazio { color: var(--texto-suave); cursor: default !important; justify-content: center; font-size: 0.83rem; }
 
-/* ---------- botões ---------- */
+
 .botao {
   border: none; border-radius: 9px; padding: 11px 22px; font-size: 0.93rem;
   font-weight: 700; cursor: pointer; transition: filter 0.15s, transform 0.05s;
 }
 .botao:active { transform: translateY(1px); }
 .botao:disabled { opacity: 0.55; cursor: not-allowed; filter: none; }
-.botao-roxo { background: var(--azul); color: #fff; }
+.botao-roxo { background: var(--azul); color: var(--texto-sobre-azul); }
 .botao-roxo:hover:not(:disabled) { background: var(--azul-medio); }
 .botao-escuro {
   background: var(--botao-secundario-bg);
@@ -238,13 +262,13 @@ a { color: inherit; text-decoration: none; }
   border-color: var(--azul);
   color: var(--azul);
 }
-.botao-verde { background: var(--verde); color: #fff; }
+.botao-verde { background: var(--verde); color: var(--texto-sobre-verde); }
 .botao-verde:hover:not(:disabled) { filter: brightness(1.08); }
-.botao-vermelho { background: var(--vermelho); color: #fff; }
+.botao-vermelho { background: var(--vermelho); color: var(--texto-sobre-vermelho); }
 .botao-vermelho:hover:not(:disabled) { filter: brightness(1.08); }
 .linha-botoes { display: flex; gap: 14px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
 
-/* ---------- cartão central ---------- */
+
 .cartao-central {
   max-width: 640px; margin: 26px auto; background: var(--cartao);
   border: 1px solid var(--borda); border-radius: 16px; padding: 34px 38px; box-shadow: var(--sombra);
@@ -267,7 +291,7 @@ a { color: inherit; text-decoration: none; }
 }
 .contador-sap.estourado { background: var(--vermelho); color: #fff; }
 
-/* ---------- modais ---------- */
+
 .modal-fundo {
   position: fixed; inset: 0; background: rgba(0, 32, 91, 0.45);
   display: grid; place-items: center; z-index: 100; padding: 22px;
@@ -296,7 +320,7 @@ a { color: inherit; text-decoration: none; }
 .match { margin-left: auto; color: var(--verde); font-weight: 800; }
 .match.alerta { color: var(--amarelo-alerta); }
 
-/* ---------- tabelas ---------- */
+
 .tabela { width: 100%; border-collapse: collapse; font-size: 0.89rem; }
 .tabela th {
   text-align: left; padding: 9px 12px; color: var(--texto-suave);
@@ -311,7 +335,7 @@ textarea {
 }
 textarea:focus { border-color: var(--azul); }
 
-/* ---------- badges ---------- */
+
 .badge {
   display: inline-flex; align-items: center; gap: 5px; padding: 3px 11px;
   border-radius: 999px; font-size: 0.76rem; font-weight: 800;
@@ -319,8 +343,81 @@ textarea:focus { border-color: var(--azul); }
 .badge-permitir { background: var(--verde-fundo); color: var(--verde); border: 1px solid var(--verde); }
 .badge-alertar { background: var(--amarelo-fundo); color: var(--amarelo-alerta); border: 1px solid var(--amarelo); }
 .badge-revisar { background: var(--vermelho-fundo); color: var(--vermelho); border: 1px solid var(--vermelho); }
+/* ============================================================================
+   MODO APRESENTAÇÃO — fora da tela, mas mantidos no código:
+   o badge "(!)", o botão de marcar manualmente, o filtro "Casos especiais",
+   a legenda explicativa, o "📋 Alterações" e o realce das linhas marcadas.
+   Nada é apagado — só não aparece.
+   Para REEXIBIR qualquer um: troque `display: none` por `display: inline-flex`
+   (ou remova o item do seletor) — e, no caso do realce, remova a neutralização.
+   ========================================================================== */
+.badge-excecao,
+.btn-marcar-excecao,
+.botao-filtro-excecao,
+.btn-alteracoes,
+.legenda-excecao {
+  display: none !important;
+}
+.linha-excecao {
+  background: transparent !important;
+  box-shadow: none !important;
+}
 
-/* ---------- indicadores clicáveis ---------- */
+
+/* ============================================================================
+   CASOS ESPECIAIS (badge "(!)")
+   - .badge-excecao      → o círculo amarelo com "!" (hover mostra o motivo);
+   - .btn-marcar-excecao → o "!" tracejado para marcar um item manualmente;
+   - .botao-filtro-excecao → filtro "Casos especiais" e o atalho "📋 Alterações".
+   ========================================================================== */
+.badge-excecao {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; padding: 0;
+  background: var(--amarelo); color: var(--texto-forte);
+  border: 1.5px solid var(--amarelo-alerta); border-radius: 50%;
+  font-size: 0.8rem; font-weight: 900; line-height: 1;
+  cursor: help; flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+
+/* barras de busca: campo com botão (✕) de limpar */
+.campo-busca-wrap {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 240px;
+  align-items: center;
+}
+.campo-busca-wrap > input {
+  width: 100%;
+  padding-right: 32px;
+}
+.btn-limpar-busca {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texto-suave);
+  font-size: 0.72rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+.btn-limpar-busca:hover {
+  background: var(--vermelho-fundo);
+  color: var(--vermelho);
+}
+
+
 .indicadores {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
   gap: 16px; margin-bottom: 26px;
@@ -336,14 +433,14 @@ textarea:focus { border-color: var(--azul); }
 }
 .indicador .valor { font-size: 1.75rem; font-weight: 800; font-variant-numeric: tabular-nums; margin-top: 4px; }
 
-/* ---------- gráfico ---------- */
+
 .grafico-area { display: flex; gap: 26px; align-items: center; flex-wrap: wrap; }
 .grafico-legenda { display: flex; flex-direction: column; gap: 8px; }
 .grafico-legenda .item { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; }
 .grafico-legenda .cor { width: 13px; height: 13px; border-radius: 4px; }
 .grafico-legenda .valor { margin-left: auto; font-weight: 700; font-variant-numeric: tabular-nums; }
 
-/* ---------- utilidades ---------- */
+
 .linha {
   display: flex;
   align-items: center;
@@ -367,7 +464,7 @@ textarea:focus { border-color: var(--azul); }
   color: var(--vermelho); border-radius: 10px; padding: 14px 18px; margin-bottom: 22px; font-size: 0.92rem;
 }
 
-/* ---------- guia rápido (acordeão) ---------- */
+
 .guia {
   margin-top: 96px;
 }
@@ -403,7 +500,7 @@ textarea:focus { border-color: var(--azul); }
   border-radius: 8px;
 }
 
-/* ---------- paginação ---------- */
+
 .paginacao {
   display: flex;
   align-items: center;
@@ -434,7 +531,7 @@ textarea:focus { border-color: var(--azul); }
   cursor: not-allowed;
 }
 
-/* ---------- justificativa em destaque (governança) ---------- */
+
 .justificativa-destaque {
   background: var(--azul-claro);
   border-left: 4px solid var(--azul);
@@ -462,7 +559,7 @@ textarea:focus { border-color: var(--azul); }
   color: var(--texto-suave);
 }
 
-/* ---------- barra de tempo do balão de sucesso ---------- */
+
 .barra-tempo {
   height: 6px;
   background: var(--fundo);
@@ -477,7 +574,7 @@ textarea:focus { border-color: var(--azul); }
   transition: width 0.16s linear;
 }
 
-/* ---------- filtro de período ---------- */
+
 .campo-data {
   background: var(--campo);
   border: 1px solid var(--borda);

@@ -36,7 +36,7 @@ function largura(valor: number): string {
 }
 
 function corBarra(indice: number): string {
-  return ['#005eb8', '#ffc72c', '#00205b', '#4d9be6'][indice % 4]
+  return ['var(--barra-1)', 'var(--barra-2)', 'var(--barra-3)', 'var(--barra-4)'][indice % 4]
 }
 </script>
 
@@ -68,8 +68,8 @@ function corBarra(indice: number): string {
   flex-shrink: 0;
 }
 .posicao-1 { background: var(--amarelo); color: var(--texto-forte); }
-.posicao-2 { background: var(--azul); color: #fff; }
-.posicao-3 { background: var(--azul-escuro); color: #fff; }
+.posicao-2 { background: var(--barra-1); color: var(--texto-sobre-azul); }
+.posicao-3 { background: var(--barra-3); color: var(--texto-sobre-azul); }
 .info { flex: 1; min-width: 0; }
 .linha {
   display: flex;

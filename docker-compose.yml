@@ -28,7 +28,7 @@ services:
       retries: 12
 
   backend:
-    build: ./JAVA/backend/desafio
+    build: ./JAVA/backend
     container_name: gerdau-backend
     depends_on:
       mongo:

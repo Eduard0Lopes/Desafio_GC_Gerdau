@@ -1,6 +1,5 @@
-/**
- * Tema reativo (claro/escuro) — compartilhado entre App, gráficos e componentes.
- */
+
+
 import { reactive } from 'vue'
 
 export type Tema = 'claro' | 'escuro'
@@ -19,7 +18,6 @@ function alternar(): void {
   aplicar()
 }
 
-/** Cor de variável CSS do tema atual (para os gráficos do Chart.js). */
 function cor(nome: string, padrao: string): string {
   try {
     const valor = getComputedStyle(document.documentElement).getPropertyValue(nome).trim()

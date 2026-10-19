@@ -83,7 +83,7 @@ com rastreabilidade total (nenhum legado é apagado).
 
 ## 4. O que é cada arquivo
 
-### 4.1 Backend (`JAVA/backend/desafio/`)
+### 4.1 Backend (`JAVA/backend//`)
 
 ```
 pom.xml                      Spring Boot 4.1.1, Lombok, POI (ler xlsx), springdoc (Swagger)
@@ -230,7 +230,7 @@ codigos_completos (7.554 composições únicas)
 
 | Suíte | Comando | Cobertura |
 |---|---|---|
-| Backend (23) | `cd JAVA/backend/desafio && ./mvnw test` | motor (paridade difflib), política, ranking determinístico, **limite SAP (39/40/41)**, idempotência (mesmo/diferente conteúdo), auditoria (criação/bloqueio), contexto |
+| Backend (23) | `cd JAVA/backend/ && ./mvnw test` | motor (paridade difflib), política, ranking determinístico, **limite SAP (39/40/41)**, idempotência (mesmo/diferente conteúdo), auditoria (criação/bloqueio), contexto |
 | Frontend (10) | `cd JAVA/frontend && npm test` | combobox (opções, "criar novo" por último, seleção, vazio), modal de bloqueio (% Match + ações), permissões (admin vê Painel Admin, usuário não) |
 | Tipos | `npm run typecheck` | strict TypeScript |
 | Build | `npm run build` / `./mvnw package` | produção |

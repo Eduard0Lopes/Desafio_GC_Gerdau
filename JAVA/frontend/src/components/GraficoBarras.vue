@@ -34,7 +34,7 @@ const props = withDefaults(defineProps<{
 
 const altura = computed(() => Math.max(200, props.dados.length * 42 + 70))
 
-// cores reativas ao tema (evita "auréola branca" ao trocar para o modo escuro)
+
 const corTexto = computed(() => {
   void tema.estado.tema
   return tema.cor('--texto', '#1c2b3a')
@@ -47,6 +47,11 @@ const corGrade = computed(() => {
   void tema.estado.tema
   return tema.estado.tema === 'escuro' ? 'rgba(157, 176, 195, 0.18)' : 'rgba(128, 148, 168, 0.14)'
 })
+const corBarra = computed(() => {
+  void tema.estado.tema
+  // o azul-marinho da marca some no fundo escuro; lá usamos o azul Gerdau claro
+  return tema.estado.tema === 'escuro' && props.cor.toLowerCase() === '#00205b' ? '#4fa3e8' : props.cor
+})
 
 const dadosGrafico = computed(() => ({
   labels: props.dados.map((i) => i.nome.length > 22 ? i.nome.slice(0, 21) + '…' : i.nome),
@@ -54,7 +59,7 @@ const dadosGrafico = computed(() => ({
     {
       label: props.rotulo,
       data: props.dados.map((i) => i.valor),
-      backgroundColor: props.dados.map((_, idx) => (idx % 2 === 0 ? props.cor : '#ffc72c')),
+      backgroundColor: props.dados.map((_, idx) => (idx % 2 === 0 ? corBarra.value : '#ffc72c')),
       borderRadius: 7,
       barThickness: 22
     }
@@ -73,7 +78,7 @@ const opcoes = computed<ChartOptions<'bar'>>(() => ({
       : undefined,
     tooltip: {
       callbacks: {
-        // valor real sempre (evita "0" no hover de gráficos horizontais)
+        
         label: (ctx) => {
           const valor = Number(ctx.dataset.data[ctx.dataIndex])
           return ` ${props.rotulo}: ${valor.toLocaleString('pt-BR')}`
@@ -93,7 +98,7 @@ const opcoes = computed<ChartOptions<'bar'>>(() => ({
       grid: { display: false }
     }
   },
-  // clique na barra oculta/mostra a categoria (clique novamente para voltar)
+  
   onClick: (_evento, elementos, grafico) => {
     if (!elementos.length) return
     const meta = grafico.getDatasetMeta(0)

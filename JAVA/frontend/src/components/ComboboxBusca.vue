@@ -12,6 +12,7 @@
         @keydown="aoTeclar"
       />
       <span v-if="carregando" class="suave" style="font-size: 0.78rem">…</span>
+      <button v-if="texto" type="button" class="cb-limpar" title="Limpar busca" @click="limparBusca">✕</button>
     </div>
 
     <ul v-if="aberto && (opcoes.length || mostrarCriar || (jaBuscou && !carregando))" class="cb-lista" role="listbox">
@@ -25,12 +26,17 @@
       >
         <span v-if="idDe(item)" class="cb-item-id">{{ idDe(item) }} -</span>
         <span class="cb-item-nome">{{ nomeDe(item) }}</span>
+        <span
+          v-if="item.casoIsolado"
+          class="badge-excecao"
+          :title="'Caso especial registrado.' + (String(item.motivoCasoIsolado || '') ? ' Motivo: ' + item.motivoCasoIsolado : '')"
+        >!</span>
         <span v-if="sapDe(item)" class="cb-sap">{{ sapDe(item) }}</span>
         <button
           v-if="permiteExcluir"
           class="cb-excluir"
           type="button"
-          title="Excluir este item do catálogo (ADMIN)"
+          title="Desativar este item (ADMIN) — sai das listas e pode ser reativado no Catálogo"
           @mousedown.stop.prevent
           @click.stop="emit('excluir', item)"
         >
@@ -49,7 +55,10 @@
         <span class="cb-item-nome">＋ Cadastrar Novo Item: “{{ texto.trim() }}”</span>
       </li>
 
-      <li v-if="!opcoes.length && !carregando && jaBuscou" class="cb-vazio">
+      <li v-if="erroBusca && !carregando" class="cb-vazio">
+        ⚠ Falha ao buscar — verifique a conexão e tente de novo.
+      </li>
+      <li v-else-if="!opcoes.length && !carregando && jaBuscou" class="cb-vazio">
         Nenhum resultado para “{{ texto }}”.
       </li>
     </ul>
@@ -92,6 +101,7 @@ const aberto = ref(false)
 const focado = ref(false)
 const carregando = ref(false)
 const jaBuscou = ref(false)
+const erroBusca = ref(false)
 const destaque = ref(-1)
 const raiz = ref<HTMLElement | null>(null)
 const campo = ref<HTMLInputElement | null>(null)
@@ -99,11 +109,12 @@ const campo = ref<HTMLInputElement | null>(null)
 let debounce: ReturnType<typeof setTimeout> | null = null
 let requisicaoId = 0
 
-const mostrarCriar = computed(() => props.permiteCriar && texto.value.trim().length > 0)
+const mostrarCriar = computed(() => props.permiteCriar && texto.value.trim().length > 0 && !erroBusca.value)
 
 async function buscar(termo: string): Promise<void> {
   const id = ++requisicaoId
   carregando.value = true
+  erroBusca.value = false
   try {
     const itens = await props.carregar(termo)
     if (id !== requisicaoId) return
@@ -115,6 +126,7 @@ async function buscar(termo: string): Promise<void> {
     if (id === requisicaoId) {
       opcoes.value = []
       jaBuscou.value = true
+      erroBusca.value = true
       aberto.value = true
     }
   } finally {
@@ -126,6 +138,12 @@ function aoDigitar(): void {
   emit('update:modelValue', null)
   if (debounce) clearTimeout(debounce)
   debounce = setTimeout(() => buscar(texto.value.trim()), 250)
+}
+
+function limparBusca(): void {
+  texto.value = ''
+  emit('update:modelValue', null)
+  void buscar('')
 }
 
 function aoFocar(): void {
@@ -173,7 +191,7 @@ function aoCliqueFora(e: MouseEvent): void {
   if (raiz.value && e.target instanceof Node && !raiz.value.contains(e.target)) aberto.value = false
 }
 
-// sincroniza o texto quando o valor vem de fora (ex.: botão "Limpar" da tela)
+
 watch(
   () => props.modelValue,
   (novo) => {
@@ -198,7 +216,7 @@ defineExpose({
   definirTexto(t: string): void {
     texto.value = t
   },
-  /** Recarrega a lista com o termo atual (ex.: após excluir um item). */
+  
   recarregar(): void {
     void buscar(texto.value.trim())
   }

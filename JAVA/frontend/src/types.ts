@@ -1,13 +1,13 @@
-/**
- * Contratos de dados da API (documento técnico, seções 7 e 10).
- * Nomes em português alinhados ao banco (ver docs/MODELO_DADOS.md).
- */
+
 
 export interface GrupoServico {
   id: string
   nome: string
   nomeNormalizado: string
   origem: string
+  status?: string
+  createdAt?: string | null
+  criadoPor?: string | null
 }
 
 export interface CodigoFornecedor {
@@ -16,6 +16,9 @@ export interface CodigoFornecedor {
   nome: string
   nomeNormalizado: string
   origem: string
+  status?: string
+  createdAt?: string | null
+  criadoPor?: string | null
 }
 
 export interface CodigoServico {
@@ -25,6 +28,11 @@ export interface CodigoServico {
   quantidadeCaracteres: number
   origem: string
   legacyIds: string[]
+  status?: string
+  createdAt?: string | null
+  criadoPor?: string | null
+  casoIsolado?: boolean
+  motivoCasoIsolado?: string | null
 }
 
 export interface UnidadeMedida {
@@ -33,6 +41,9 @@ export interface UnidadeMedida {
   nome: string
   nomeNormalizado: string
   origem: string
+  status?: string
+  createdAt?: string | null
+  criadoPor?: string | null
 }
 
 export interface CandidatoSimilar {
@@ -45,6 +56,8 @@ export interface CandidatoSimilar {
   scoreCaracteres: number
   tokensEmComum: string[]
   motivo: string
+  casoIsolado?: boolean
+  motivoCasoIsolado?: string | null
 }
 
 export interface SimilaridadeResponse {
@@ -74,6 +87,8 @@ export interface AlertaComponente {
   score: number
   decisao: string
   motivo: string
+  casoIsolado?: boolean
+  motivoCasoIsolado?: string | null
 }
 
 export interface PreviewResponse {
@@ -86,6 +101,7 @@ export interface PreviewResponse {
   quantidadeCaracteres: number
   excedeLimiteSap: boolean
   idCompletoJaExiste: boolean
+  statusExistente?: string | null
   status: string
   decisao: string
   acaoRecomendada: string
@@ -112,6 +128,8 @@ export interface CodigoCompletoResponse {
   createdAt: string | null
   aprovadoPor: string | null
   observacaoAprovacao: string | null
+  /** presente só em POST /codigos-completos: true = requisição repetida, nada novo foi criado */
+  requisicaoRepetida?: boolean
 }
 
 export interface ItemGovernanca {
@@ -132,6 +150,8 @@ export interface ItemGovernanca {
   status: string
   natureza: string | null
   similares: CandidatoSimilar[]
+  casoIsolado?: boolean
+  motivoCasoIsolado?: string | null
 }
 
 export interface ResumoGovernanca {
@@ -149,7 +169,6 @@ export interface ContagemItem {
   quantidade: number
 }
 
-/** Fechamentos (decisões humanas) por período — métrica mensal. */
 export interface Fechamentos {
   total: number
   porMes: { mes: string; quantidade: number }[]
@@ -158,7 +177,6 @@ export interface Fechamentos {
   ate: string
 }
 
-/** Estatísticas detalhadas do Painel Admin (gráficos e exportação). */
 export interface Estatisticas {
   catalogo: {
     grupos: number
@@ -192,7 +210,6 @@ export interface Estatisticas {
   }
 }
 
-/** Payload de criação de código completo (seção 10). */
 export interface CriarCodigoCompletoPayload {
   gsId?: string | null
   gsNovoNome?: string | null
@@ -209,7 +226,6 @@ export interface CriarCodigoCompletoPayload {
   usuarioCriacaoId?: string | null
 }
 
-/** Evento de auditoria (seções 5 e 9). */
 export interface EventoAuditoria {
   id: string
   actorId: string | null
@@ -226,7 +242,22 @@ export interface EventoAuditoria {
 
 export type TipoComponente = 'CS' | 'GS' | 'CF' | 'UM'
 
-/** Registro da matriz de-para (rastreabilidade — seção 9.6). */
+export interface ItemImportacao {
+  id?: string | null
+  nome?: string | null
+  descricao?: string | null
+  sigla?: string | null
+  codigoSap?: string | null
+}
+
+export interface ResultadoImportacao {
+  tipo: string
+  total: number
+  adicionados: number
+  idsAdicionados: string[]
+  ignorados: { linha: number; item: string; motivo: string }[]
+}
+
 export interface MatrizDePara {
   id: string
   newId: string

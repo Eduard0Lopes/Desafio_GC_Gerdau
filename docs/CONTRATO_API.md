@@ -6,15 +6,31 @@ Todas as respostas são JSON. Erros: `{ "timestamp", "status", "error", "message
 
 | Método | Rota | Descrição |
 |---|---|---|
-| GET | `/grupos-servico?query=&limite=` | busca de G.S. |
+| GET | `/grupos-servico?query=&limite=&incluirTodos=` | busca de G.S. |
 | POST | `/grupos-servico` | cadastro (com anti-duplicidade) |
-| GET | `/codigos-fornecedor?query=&limite=` | busca de C.F. |
+| GET | `/codigos-fornecedor?query=&limite=&incluirTodos=` | busca de C.F. |
 | POST | `/codigos-fornecedor` | cadastro |
-| GET | `/codigos-servico?query=&limite=` | busca de C.S. |
+| GET | `/codigos-servico?query=&limite=&incluirTodos=` | busca de C.S. |
 | GET | `/codigos-servico/{id}` | detalhe |
 | POST | `/codigos-servico` | cadastro (limite SAP de 40) |
-| GET | `/unidades-medida?query=&limite=` | busca de U.M. |
+| GET | `/unidades-medida?query=&limite=&incluirTodos=` | busca de U.M. |
 | POST | `/unidades-medida` | cadastro |
+| POST | `/catalogo/exclusao-em-massa` | exclusão em massa (apenas ADMIN) — `{ tipo: "GS\|CF\|CS\|UM", ids: [] }`, devolve relatório item a item |
+| POST | `/catalogo/situacao` | **desativar/reativar** (apenas ADMIN) — `{ tipo, ids, situacao: "DESATIVADO"\|"ATIVO" }`, devolve relatório item a item |
+| POST | `/catalogo/importacao` | importação (apenas ADMIN) — `{ tipo: "GS\|CF\|CS\|UM", itens: [{ id?, nome?, descricao?, sigla?, codigoSap? }] }`, **só adiciona** |
+
+**Importação:** o que já existe é **ignorado** (item mantido) e apenas o que é novo entra — nada é
+apagado ou alterado. A resposta é um relatório por linha (`adicionados` × `ignorados`, com o motivo).
+A **exportação CSV** é gerada na própria interface do Catálogo (colunas iguais às da importação:
+`id;nome;origem;status` em G.S., `id;codigoSap;nome;origem;status` em C.F.,
+`id;descricao;caracteres;origem;status` em C.S. e `id;sigla;nome;origem;status` em U.M.).
+
+**Status dos componentes:** o campo `status` (`ATIVO`, `PENDENTE_VALIDACAO`, `REJEITADO`, `DESATIVADO`)
+controla a visibilidade. Listas de uso (seletores, similaridade) retornam apenas `ATIVO`;
+enviar para Governança deixa os componentes novos fora das listas até a aprovação; **desativar**
+(soft delete) tira o item de circulação sem apagar nada — vínculos, histórico e auditoria
+continuam, e **reativar** devolve o item às listas. Com `incluirTodos=true` (catálogo em tela,
+somente leitura) todos aparecem com o selo de status.
 
 ## Similaridade e código completo
 
@@ -33,8 +49,8 @@ Todas as respostas são JSON. Erros: `{ "timestamp", "status", "error", "message
 | GET | `/governanca/pendentes?origem=HISTORICO\|NOVOS\|TODOS&query=&limite=` | fila de validação |
 | GET | `/governanca/resumo` | indicadores (pendências, duplicidades, revisados) |
 | POST | `/governanca/historico/{id}/revisar` | revisão do histórico (reviewedBy/reviewedAt) |
-| POST | `/governanca/pendentes/{id}/aprovar` | aprova novo cadastro |
-| POST | `/governanca/pendentes/{id}/rejeitar` | rejeita novo cadastro |
+| POST | `/governanca/pendentes/{id}/aprovar` | aprova novo cadastro (ativa os componentes criados no envio) |
+| POST | `/governanca/pendentes/{id}/rejeitar` | rejeita novo cadastro (componentes ficam fora de circulação) |
 | GET | `/governanca/excecoes` | auditoria (últimas 50) |
 
 ## Matriz de-para (seção 9.6)

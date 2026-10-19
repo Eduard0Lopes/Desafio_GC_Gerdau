@@ -14,7 +14,7 @@
       <button class="botao botao-roxo" @click="exportarDecisoes">⤓ Exportar decisões (CSV)</button>
     </div>
 
-    <!-- ===== destaque: CÓDIGOS DE SERVIÇO (o coração do catálogo) ===== -->
+    
     <div class="painel destaque-servicos">
       <div class="destaque-topo">
         <div>
@@ -34,7 +34,7 @@
 
     </div>
 
-    <!-- números do catálogo -->
+    
     <div class="indicadores" style="margin-top: 22px">
       <div class="indicador"><div class="rotulo">Grupos de Serviço</div>
         <div class="valor">{{ est.catalogo?.grupos ?? '…' }}</div></div>
@@ -46,7 +46,7 @@
         <div class="valor">{{ est.catalogo?.codigosCompletos?.toLocaleString('pt-BR') ?? '…' }}</div></div>
     </div>
 
-    <!-- gráficos operacionais (úteis no dia a dia da gestão) — grade 3×3 harmônica -->
+    
     <div class="grade-graficos">
       <div class="painel">
         <label class="painel-rotulo">Progresso da revisão</label>
@@ -110,7 +110,7 @@
       </div>
     </div>
 
-    <!-- auditoria renovada — cards clicáveis abrem os registros -->
+    
     <h3 style="margin: 28px 0 14px; font-size: 1.12rem; color: var(--azul-escuro)">Auditoria e rastreabilidade</h3>
     <p class="suave" style="margin: -6px 0 14px">Clique em um card para ver os registros.</p>
     <div class="indicadores">
@@ -151,7 +151,7 @@
       </div>
     </div>
 
-    <!-- registros da auditoria (aberto pelo clique no card) -->
+    
     <div v-if="painelAuditoria" class="painel" style="margin-top: 16px">
       <div class="linha" style="margin-bottom: 12px; flex-wrap: nowrap">
         <label class="painel-rotulo" style="margin: 0">
@@ -192,7 +192,7 @@ import type { Estatisticas, EventoAuditoria } from '../types'
 
 const est = ref<Partial<Estatisticas>>({})
 
-// painel de auditoria (aberto pelos cards clicáveis)
+
 const painelAuditoria = ref<string | null>(null)
 const eventosAuditoria = ref<EventoAuditoria[]>([])
 const carregandoEventos = ref(false)
@@ -250,7 +250,7 @@ onMounted(async () => {
   }
 })
 
-// ---------- exportação (controle interno) ----------
+
 function baixarCsv(nome: string, linhas: string[][]): void {
   const csv = linhas.map((l) => l.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(';')).join('\n')
   const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' })
@@ -340,7 +340,7 @@ async function exportarDecisoes(): Promise<void> {
 }
 .selo-consolidacao {
   background: var(--azul);
-  color: #fff;
+  color: var(--texto-sobre-azul);
   border-radius: 16px;
   padding: 18px 26px;
   text-align: center;

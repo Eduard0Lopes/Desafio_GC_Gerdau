@@ -9,24 +9,32 @@ filtro anti-duplicidade + interface web com governança (admin).
 ```
 ├── IA/                     Time de IA & Dados — planilhas oficiais e pipeline (NÃO alterado)
 │   └── data/processed/     base_saneada.xlsx × matriz_de_para_gerdau.xlsx  ← fonte do banco
-├── JAVA/backend/desafio/   API Spring Boot (Mongo, similaridade, governança, permissões, Swagger)
+├── JAVA/backend//   API Spring Boot (Mongo, similaridade, governança, permissões, Swagger)
 ├── JAVA/frontend/          Interface Vue 3 (fiel ao protótipo)
-└── docs/                   Documentação técnica
+├── docs/                   Documentação técnica
+└── start.bat / dev.bat     Atalhos para rodar — com Docker / sem Docker (Linux/macOS: start.sh / dev.sh)
 ```
 
 ## Rodando
 
-```bash
-docker compose up --build
-```
+| Sua máquina | Comando | Onde rodar |
+|---|---|---|
+| Tem **Docker Desktop** | `start.bat` (Windows, duplo clique) · `./start.sh` (Linux/macOS) | qualquer pasta |
+| **Não tem Docker** | `dev.bat` (Windows, duplo clique) · `./dev.sh` (Linux/macOS) | qualquer pasta |
 
-- **Aplicação:** http://localhost · **API:** http://localhost:8080
-- **Swagger:** http://localhost:8080/swagger-ui.html
+Os scripts ficam na raiz do repositório (a pasta do `docker-compose.yml`), funcionam de
+qualquer lugar, conferem os pré-requisitos e avisam o que falta instalar. Preferindo os
+comandos manuais, o caminho com Docker é `docker compose up --build` rodando **na raiz do
+repositório**.
+
+- **Aplicação:** http://localhost (com Docker) ou http://localhost:5173 (sem Docker)
+- **API:** http://localhost:8080 · **Swagger:** http://localhost:8080/swagger-ui.html
 
 Na primeira subida o backend **carrega automaticamente** os dados oficiais
 (merge de `base_saneada.xlsx` × `matriz_de_para_gerdau.xlsx`) e cria os índices.
 
-Sem Docker: [`docs/COMO-RODAR.md`](docs/COMO-RODAR.md).
+Comandos manuais **com a pasta exata de cada um**, problemas comuns e variáveis de
+ambiente: [`docs/COMO-RODAR.md`](docs/COMO-RODAR.md).
 
 ## O que a solução faz
 

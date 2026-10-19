@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<{
 
 const graficoRef = ref<InstanceType<typeof Doughnut> | null>(null)
 
-// dependem do tema (reativo) — garantem re-render correto ao troclar claro/escuro
+
 const corTexto = computed(() => {
   void tema.estado.tema
   return tema.cor('--texto', '#1c2b3a')
@@ -47,7 +47,7 @@ const corBorda = computed(() => {
 })
 
 const dadosGrafico = computed(() => {
-  // fatias com valor 0 criam arcos fantasmas no Chart.js — são filtradas
+  
   const fatias = props.dados.filter((f) => f.valor > 0)
   return {
     labels: fatias.map((f) => f.rotulo),
@@ -84,7 +84,7 @@ const opcoes = computed<ChartOptions<'doughnut'>>(() => ({
       }
     }
   },
-  // clique na fatia oculta/mostra — mesmo mecanismo da legenda (a "bolinha" restaura)
+  
   onClick: (_evento, elementos, grafico) => {
     if (!elementos.length) return
     grafico.toggleDataVisibility(elementos[0].index)

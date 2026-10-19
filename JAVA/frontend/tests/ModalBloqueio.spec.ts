@@ -35,11 +35,9 @@ describe('ModalBloqueio (Bloqueio de Duplicidade)', () => {
   it('emite as ações correspondentes (após escolher o item)', async () => {
     const wrapper = mount(ModalBloqueio, { props: { itens: ITENS } })
 
-    // o botão de reutilizar começa desabilitado (é preciso escolher o item)
     const botoes = wrapper.findAll('button')
     expect((botoes[0].element as HTMLButtonElement).disabled).toBe(true)
 
-    // seleciona o item pelo checkbox/radio
     await wrapper.find('input[type=radio]').trigger('change')
     expect((wrapper.findAll('button')[0].element as HTMLButtonElement).disabled).toBe(false)
 

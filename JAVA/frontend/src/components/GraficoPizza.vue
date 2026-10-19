@@ -2,22 +2,22 @@
   <div class="grafico-area">
     <svg :width="tamanho" :height="tamanho" :viewBox="`0 0 ${tamanho} ${tamanho}`" role="img"
          :aria-label="`Gráfico de pizza: ${total} registros`">
-      <!-- segmentos -->
+      
       <g :transform="`translate(${tamanho / 2}, ${tamanho / 2})`">
         <path
           v-for="(fatia, i) in fatias"
           :key="i"
           :d="caminho(fatia.inicio, fatia.fim)"
           :fill="fatia.cor"
-          stroke="#fff"
+          :stroke="corCentro"
           stroke-width="2"
         />
-        <!-- buraco central (donut) -->
-        <circle r="52" fill="#fff" />
-        <text y="-4" text-anchor="middle" font-size="26" font-weight="800" fill="#00205b">
+        
+        <circle r="52" :fill="corCentro" />
+        <text y="-4" text-anchor="middle" font-size="26" font-weight="800" :fill="corTitulo">
           {{ totalFormatado }}
         </text>
-        <text y="18" text-anchor="middle" font-size="11" fill="#5c6f81">{{ rotuloCentro }}</text>
+        <text y="18" text-anchor="middle" font-size="11" :fill="corSubtitulo">{{ rotuloCentro }}</text>
       </g>
     </svg>
 
@@ -33,6 +33,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { tema } from '../services/tema'
 
 interface Fatia {
   rotulo: string
@@ -52,6 +53,11 @@ const props = withDefaults(defineProps<{
 const total = computed(() => props.dados.reduce((s, f) => s + f.valor, 0))
 const totalFormatado = computed(() =>
   total.value >= 1000 ? (total.value / 1000).toFixed(1).replace('.', ',') + ' mil' : String(total.value))
+
+const escuro = computed(() => tema.estado.tema === 'escuro')
+const corCentro = computed(() => (escuro.value ? tema.cor('--cartao', '#0a264e') : '#ffffff'))
+const corTitulo = computed(() => (escuro.value ? tema.cor('--texto', '#e8f1fb') : '#00205b'))
+const corSubtitulo = computed(() => (escuro.value ? tema.cor('--texto-suave', '#a3c0e0') : '#5c6f81'))
 
 const fatias = computed(() => {
   const t = total.value || 1

@@ -8,7 +8,7 @@
         <div>{{ motivo || 'O sistema identificou itens semelhantes cadastrados.' }}</div>
       </div>
 
-      <!-- seleção obrigatória: escolher qual item reutilizar -->
+      
       <div v-if="itens.length" class="lista-selecao">
         <div
           v-for="c in itens"
@@ -28,6 +28,11 @@
               <span class="opcao-id">{{ c.id }}</span>
               <span class="separador">|</span>
               <strong>{{ (c.descricao || '').toUpperCase() }}</strong>
+              <span
+                v-if="c.casoIsolado"
+                class="badge-excecao"
+                :title="'Caso especial registrado.' + (c.motivoCasoIsolado ? ' Motivo: ' + c.motivoCasoIsolado : '')"
+              >!</span>
               <span class="match" :class="{ alerta: c.score < 0.88 }">{{ (c.score * 100).toFixed(0) }}% Match</span>
             </div>
             <div v-if="c.motivo" class="opcao-motivo">{{ c.motivo }}</div>
@@ -61,7 +66,7 @@ const emit = defineEmits<{
   (e: 'voltar'): void
 }>()
 
-// é preciso escolher explicitamente qual item reutilizar
+
 const selecionado = ref<CandidatoSimilar | null>(null)
 
 function reutilizar(): void {

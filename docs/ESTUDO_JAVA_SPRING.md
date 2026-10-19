@@ -250,7 +250,7 @@ Desafio_GC_Gerdau/
 ├── IA/                       # DO TIME DE IA — SOMENTE LEITURA
 │   └── data/processed/       # base_saneada.xlsx + matriz_de_para_gerdau.xlsx
 ├── JAVA/
-│   ├── backend/desafio/      # API Spring Boot
+│   ├── backend/              # API Spring Boot
 │   │   └── src/main/java/com/gerdau/desafio/
 │   │       ├── DesafioApplication.java      # ponto de partida
 │   │       ├── controller/   # 4 controllers (API REST)

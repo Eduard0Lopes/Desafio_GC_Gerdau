@@ -5,7 +5,7 @@
       <strong>Clique nos cartões</strong> para filtrar a fila.
     </p>
 
-    <!-- indicadores clicáveis -->
+    
     <div class="indicadores">
       <div class="indicador" :class="{ ativo: filtro === 'PENDENTES' }" @click="alternarFiltro('PENDENTES')">
         <div class="rotulo">Aguardando revisão</div>
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <!-- filtros -->
+    
     <div class="linha-campo" style="margin-bottom: 18px">
       <button
         class="botao"
@@ -50,13 +50,16 @@
         <span style="cursor: pointer; margin-left: 6px" @click="alternarFiltro('TODOS')">✕</span>
       </span>
       <span style="flex: 1"></span>
-      <input
-        v-model="busca"
-        placeholder="Buscar por código, descrição…"
-        style="background: var(--campo); border: 1px solid var(--borda); border-radius: 9px;
-               color: var(--texto); padding: 9px 12px; min-width: 260px"
-        @input="carregarComDebounce"
-      />
+      <div class="campo-busca-wrap" style="min-width: 260px">
+        <input
+          v-model="busca"
+          placeholder="Buscar por código, descrição…"
+          style="background: var(--campo); border: 1px solid var(--borda); border-radius: 9px;
+                 color: var(--texto); padding: 9px 12px; width: 100%"
+          @input="carregarComDebounce"
+        />
+        <button v-if="busca" type="button" class="btn-limpar-busca" title="Limpar busca" @click="busca = ''; carregar()">✕</button>
+      </div>
     </div>
 
     <div v-if="!itensFiltrados.length" class="aviso aviso-verde">
@@ -64,23 +67,28 @@
       <div>Nenhum item {{ rotuloFiltro === 'revisados' ? 'revisado' : 'aguardando decisão' }} neste filtro.</div>
     </div>
 
-    <!-- fila em cards (4 por página) -->
+    
     <div class="grade-cards">
       <div v-for="item in itensFiltrados" :key="item.origem + item.id" class="painel card-item">
 
-        <!-- cabeçalho do card -->
+        
         <div class="card-cabecalho">
           <span class="badge" :class="item.origem === 'HISTORICO' ? 'badge-alertar' : 'badge-permitir'">
             {{ item.origem === 'HISTORICO' ? 'BASE ORIGINAL' : 'NOVO CADASTRO' }}
           </span>
           <span class="card-identificador">{{ item.identificador }}</span>
+          <span
+            v-if="item.casoIsolado"
+            class="badge-excecao"
+            :title="'Caso especial registrado.' + (item.motivoCasoIsolado ? ' Motivo: ' + item.motivoCasoIsolado : '')"
+          >!</span>
           <span class="match" :class="{ alerta: item.score < 0.88 }">
             {{ (item.score * 100).toFixed(0) }}% Match
           </span>
         </div>
         <div class="card-descricao">{{ item.descricao }}</div>
 
-        <!-- campos rotulados e legíveis -->
+        
         <div class="card-campos">
           <div class="campo">
             <span class="rotulo">Grupo de Serviço</span>
@@ -114,7 +122,7 @@
           </div>
         </div>
 
-        <!-- justificativa do solicitante em destaque -->
+        
         <div v-if="item.justificativa" class="justificativa-destaque">
           <div class="rotulo">Justificativa do solicitante</div>
           <blockquote>“{{ item.justificativa }}”</blockquote>
@@ -123,18 +131,23 @@
           </div>
         </div>
 
-        <!-- itens semelhantes (recolhidos para não poluir) -->
+        
         <details v-if="item.similares && item.similares.length" class="similares-detalhe">
           <summary>Itens semelhantes encontrados ({{ item.similares.length }})</summary>
           <div v-for="s in item.similares.slice(0, 3)" :key="s.id" class="item-similar">
             <span>ID: {{ s.id }}</span>
             <span class="suave">|</span>
             <span>{{ (s.descricao || '').toUpperCase() }}</span>
+            <span
+              v-if="s.casoIsolado"
+              class="badge-excecao"
+              :title="'Caso especial registrado.' + (s.motivoCasoIsolado ? ' Motivo: ' + s.motivoCasoIsolado : '')"
+            >!</span>
             <span class="match" :class="{ alerta: s.score < 0.88 }">{{ (s.score * 100).toFixed(0) }}% Match</span>
           </div>
         </details>
 
-        <!-- observação + ações -->
+        
         <div class="linha-campo" style="margin-top: 14px">
           <textarea
             v-model="observacoes[item.id]"
@@ -143,7 +156,7 @@
           ></textarea>
         </div>
 
-        <!-- decisão já registrada (pode ser refeita — sempre com novo motivo) -->
+        
         <div v-if="item.origem === 'HISTORICO' && item.status === 'REVISADO'" class="aviso aviso-verde" style="margin: 12px 0 0">
           <span class="icone">✓</span>
           <div>
@@ -152,29 +165,27 @@
           </div>
         </div>
 
-        <div class="linha-botoes" style="margin-top: 12px">
-          <template v-if="item.origem === 'HISTORICO'">
-            <!-- apenas duas ações: aceitar (o item está ok) ou apagar (tira da lista ativa) -->
+        <div v-if="podeDecidir(item) && item.origem === 'HISTORICO'" class="linha-botoes" style="margin-top: 12px">
+          
             <button class="botao botao-verde" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'manter')">
               ✓ Aceitar
             </button>
             <button class="botao botao-vermelho" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'excluir')">
               ✕ Apagar
             </button>
-          </template>
-          <template v-else>
+        </div>
+        <div v-else-if="podeDecidir(item)" class="linha-botoes" style="margin-top: 12px">
             <button class="botao botao-verde" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'aprovar')">
               ✓ Aprovar cadastro
             </button>
             <button class="botao botao-vermelho" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'rejeitar')">
               ✕ Rejeitar cadastro
             </button>
-          </template>
         </div>
       </div>
     </div>
 
-    <!-- paginação discreta -->
+    
     <div class="paginacao" style="margin-top: 20px">
       <button class="pulo" :disabled="pagina === 0" @click="irParaPagina(0)" title="Início">|‹</button>
       <button class="pulo" :disabled="pagina === 0" @click="paginaAnterior" title="Página anterior">‹</button>
@@ -184,7 +195,7 @@
       <button class="pulo" :disabled="pagina + 1 >= totalPaginas" @click="irParaPagina(totalPaginas - 1)" title="Fim">›|</button>
     </div>
 
-    <!-- confirmação obrigatória antes de decidir -->
+    
     <ModalConfirmacao
       v-if="confirmacao"
       :titulo="confirmacao.titulo"
@@ -211,6 +222,15 @@ interface ResumoCompleto extends Partial<ResumoGovernanca> {
 }
 
 const props = withDefaults(defineProps<{ usuario?: string }>(), { usuario: '' })
+
+// decisões são da governança: só ADMIN, e só enquanto o item está pendente
+const isAdmin = computed(() => (localStorage.getItem('papel') || 'USUARIO').toUpperCase() === 'ADMIN')
+function podeDecidir(item: ItemGovernanca): boolean {
+  if (!isAdmin.value) return false
+  return item.origem === 'HISTORICO'
+    ? item.status === 'PENDENTE'
+    : item.status === 'PENDENTE_VALIDACAO'
+}
 const emit = defineEmits<{
   (e: 'pendentes', n: number): void
   (e: 'api-fora', v: boolean): void
@@ -290,7 +310,7 @@ async function carregar(): Promise<void> {
     const statusServidor =
       filtro.value === 'REVISADOS' ? 'REVISADO'
       : filtro.value === 'SEM_PENDENCIA' ? 'SEM_PENDENCIA'
-      // as visões por decisão mostram TODOS os sinalizados (pendentes e já decididos)
+      
       : filtro.value === 'DUPLICIDADE' || filtro.value === 'ALERTA' ? 'TODOS'
       : 'PENDENTE'
     const decisaoServidor =
@@ -349,7 +369,7 @@ function pedirConfirmacao(item: ItemGovernanca, acao: string): void {
   confirmacao.value = { ...textos[acao], acao, item }
 }
 
-/** Ações do histórico → ação registrada no banco e na auditoria. */
+
 const ACAO_HISTORICO: Record<string, { acao: string; passado: string }> = {
   manter: { acao: 'MANTER', passado: 'aceito' },
   excluir: { acao: 'EXCLUIR', passado: 'apagado' }
@@ -360,7 +380,7 @@ async function executarConfirmacao(): Promise<void> {
   if (!c) return
   const { item, acao } = c
 
-  // toda decisão exige um motivo — em TODAS as ações
+  
   const motivo = (observacoes[item.id] || '').trim()
   if (!motivo) {
     toast.aviso('Informe o motivo da decisão — ele é obrigatório.')
@@ -384,6 +404,8 @@ async function executarConfirmacao(): Promise<void> {
       await api.rejeitar(item.id, { aprovadoPor: props.usuario || 'governanca', observacao: motivo })
       toast.sucesso(`Cadastro ${item.identificador} rejeitado.`)
     }
+    // a decisão sai da fila imediatamente — o card não fica na tela
+    itens.value = itens.value.filter((i) => i.id !== item.id)
     await carregar()
     atualizarPendentes()
   } catch (e) {

@@ -39,7 +39,7 @@ A primeira execução:
 
 ```bash
 # backend (http://localhost:8080)
-cd JAVA/backend/desafio
+cd JAVA/backend/
 ./mvnw spring-boot:run            # Windows: mvnw.cmd spring-boot:run
 
 # frontend (http://localhost:5173)
@@ -107,7 +107,7 @@ $env:MONGODB_URI="mongodb+srv://USUARIO:SENHA@SEU-CLUSTER.mongodb.net/gerdau_pro
 ```bash
 # backend — 23 testes (motor de similaridade, política, ranking, limite SAP,
 # idempotência, auditoria e carga do contexto)
-cd JAVA/backend/desafio
+cd JAVA/backend/
 ./mvnw test
 
 # frontend — 10 testes de interface (combobox, bloqueio de duplicidade, permissões)

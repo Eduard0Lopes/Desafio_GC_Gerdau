@@ -52,7 +52,7 @@
       </select>
     </div>
 
-    <!-- verificação de similaridade (na hora de criar — vale para todos os tipos) -->
+    
     <div v-if="verificacao">
       <div v-if="verificacao.candidatos.length" class="aviso aviso-amarelo">
         <span class="icone">⚠</span>
@@ -65,6 +65,11 @@
         <span>ID: {{ c.id }}</span>
         <span class="suave">|</span>
         <span>{{ (c.descricao || '').toUpperCase() }}</span>
+        <span
+          v-if="c.casoIsolado"
+          class="badge-excecao"
+          :title="'Caso especial registrado.' + (c.motivoCasoIsolado ? ' Motivo: ' + c.motivoCasoIsolado : '')"
+        >!</span>
         <span class="match" :class="{ alerta: c.score < 0.88 }">{{ (c.score * 100).toFixed(0) }}% Match</span>
       </div>
       <div v-if="!verificacao.candidatos.length" class="aviso aviso-verde">
@@ -88,7 +93,7 @@
       :itens="verificacao?.candidatos || []"
       motivo="O sistema identificou itens semelhantes cadastrados. Escolha um item para reutilizar ou envie para governança."
       @reutilizar="reutilizar"
-      @governanca="(modalGovernanca = true), (modalBloqueio = false)"
+      @governanca="abrirGovernanca"
       @voltar="modalBloqueio = false"
     />
 
@@ -98,6 +103,27 @@
       :descricao="descricao"
       @voltar="modalGovernanca = false"
       @confirmar="enviarGovernanca"
+    />
+
+    <ModalPedidoPendente
+      v-if="modalPedido"
+      :pedido="pedidoPendente"
+      :pode-gerenciar="podeGerenciarPedido"
+      :processando="processandoPedido"
+      :salvando="salvandoPedido"
+      @fechar="fecharPedido"
+      @cancelar="confirmandoCancelamento = true"
+      @salvar="salvarPedido"
+    />
+
+    <ModalConfirmacao
+      v-if="confirmandoCancelamento"
+      titulo="Cancelar o pedido?"
+      mensagem="O pedido sai da fila da governança e a composição fica livre para um novo envio. O histórico fica preservado."
+      rotulo-confirmar="✕ Cancelar pedido"
+      :acao-perigosa="true"
+      @confirmar="confirmarCancelamento"
+      @cancelar="confirmandoCancelamento = false"
     />
   </div>
 </template>
@@ -109,13 +135,15 @@ import { api, chaveIdempotente } from '../services/api'
 import { toast } from '../services/toast'
 import ModalBloqueio from '../components/ModalBloqueio.vue'
 import ModalGovernanca from '../components/ModalGovernanca.vue'
-import type { CandidatoSimilar, SimilaridadeResponse, TipoComponente, UnidadeMedida } from '../types'
+import ModalPedidoPendente from '../components/ModalPedidoPendente.vue'
+import ModalConfirmacao from '../components/ModalConfirmacao.vue'
+import type { CandidatoSimilar, CodigoCompletoResponse, CriarCodigoCompletoPayload, SimilaridadeResponse, TipoComponente, UnidadeMedida } from '../types'
 
 const props = withDefaults(defineProps<{ usuario?: string }>(), { usuario: '' })
 const route = useRoute()
 const router = useRouter()
 
-// chaves ASCII evitam qualquer problema de normalização de acentos
+
 const ROTULOS: Record<string, string> = { CS: 'Código de Serviço', GS: 'Grupo de Serviço', CF: 'Código de Fornecedor', UM: 'Unidade de Medida' }
 const PARA_TIPO: Record<string, TipoComponente> = { 'Código de Serviço': 'CS', 'Grupo de Serviço': 'GS', 'Código de Fornecedor': 'CF', 'Unidade de Medida': 'UM' }
 
@@ -152,7 +180,7 @@ onMounted(async () => {
   }
 })
 
-// ao trocar o tipo, refaz a verificação com o novo catálogo
+
 watch(tipo, () => {
   verificacao.value = null
   if (descricao.value.trim()) verificarSimilaridade()
@@ -189,6 +217,11 @@ async function salvar(): Promise<void> {
       return
     }
     await criarItem()
+    
+    const nome = tipo.value === 'UM' && nomeExtra.value.trim()
+      ? `${descricao.value.trim()} - ${nomeExtra.value.trim()}`
+      : descricao.value.trim()
+    toast.sucesso(`${ROTULOS[tipo.value]} “${nome}” cadastrado com sucesso!`)
     router.push({ path: '/', query: { criado: '1' } })
   } catch (e) {
     if ((e as { status?: number }).status === 409 && (verificacao.value?.candidatos.length ?? 0) > 0) {
@@ -226,28 +259,116 @@ function reutilizar(item: CandidatoSimilar): void {
   router.push({ path: '/', query: { reutilizar: item.id, tipo: tipo.value, descricao: item.descricao } })
 }
 
+// pedido pendente na governança (ver / editar / cancelar)
+const modalPedido = ref(false)
+const pedidoPendente = ref<CodigoCompletoResponse | null>(null)
+const salvandoPedido = ref(false)
+const processandoPedido = ref(false)
+const confirmandoCancelamento = ref(false)
+const chaveEnvio = ref('')
+
+const podeGerenciarPedido = computed(() => {
+  const p = pedidoPendente.value
+  if (!p) return false
+  const papel = (localStorage.getItem('papel') || 'USUARIO').toUpperCase()
+  return papel === 'ADMIN' || (p.usuarioCriacaoId ?? '') === (props.usuario || '')
+})
+
+function abrirGovernanca(): void {
+  modalBloqueio.value = false
+  modalGovernanca.value = true
+  // chave por tentativa: duplo clique não duplica, mas um novo envio é um novo pedido
+  chaveEnvio.value = chaveIdempotente('gov-', tipo.value, descricao.value, String(Date.now()))
+}
+
+function payloadGovernanca(justificativa: string): CriarCodigoCompletoPayload {
+  return {
+    gsNovoNome: 'Governança',
+    cfNovoNome: 'Governança',
+    csNovaDescricao: descricao.value.trim(),
+    umNovaSigla: 'UN',
+    acao: 'ENVIAR_VALIDACAO',
+    justificativa,
+    usuarioCriacaoId: props.usuario || null
+  } as CriarCodigoCompletoPayload
+}
+
 async function enviarGovernanca(justificativa: string): Promise<void> {
   salvando.value = true
   try {
-    await api.criarCodigoCompleto(
-      {
-        gsNovoNome: 'Governança',
-        cfNovoNome: 'Governança',
-        csNovaDescricao: descricao.value.trim(),
-        umNovaSigla: 'UN',
-        acao: 'ENVIAR_VALIDACAO',
-        justificativa,
-        usuarioCriacaoId: props.usuario || null
-      },
-      chaveIdempotente('gov-', tipo.value, descricao.value, justificativa)
+    const r = await api.criarCodigoCompleto(
+      payloadGovernanca(justificativa),
+      chaveEnvio.value || chaveIdempotente('gov-', tipo.value, descricao.value, justificativa)
     )
     modalGovernanca.value = false
-    toast.sucesso('Enviado para Governança — o cadastro passará por validação humana pela Equipe de Governança de Dados.')
+    if (r.requisicaoRepetida) {
+      // nada novo foi criado: ser honesto em vez de fingir um novo envio
+      toast.aviso(`Este pedido já havia sido enviado (${r.idCompleto}) — nada novo foi criado.`)
+    } else {
+      toast.sucesso('Enviado para Governança — o cadastro passará por validação humana pela Equipe de Governança de Dados.')
+    }
     router.push('/')
+  } catch (e) {
+    if ((e as { status?: number }).status === 409) {
+      // já existe pedido/composição igual: abre o popup do pedido em vez de fingir sucesso
+      modalGovernanca.value = false
+      await abrirPedidoPendente()
+    } else {
+      toast.erro((e as Error).message)
+    }
+  } finally {
+    salvando.value = false
+  }
+}
+
+async function abrirPedidoPendente(): Promise<void> {
+  try {
+    const preview = await api.preview(payloadGovernanca('') as never)
+    if (preview.idCompletoJaExiste && preview.statusExistente === 'PENDENTE_VALIDACAO') {
+      pedidoPendente.value = await api.codigosCompletos.buscar(preview.idCompleto)
+      modalPedido.value = true
+    } else {
+      toast.erro('Não foi possível enviar: houve conflito de requisição. Tente novamente em instantes.')
+    }
+  } catch (e) {
+    toast.erro((e as Error).message)
+  }
+}
+
+function fecharPedido(): void {
+  modalPedido.value = false
+  pedidoPendente.value = null
+  confirmandoCancelamento.value = false
+}
+
+async function salvarPedido(dados: { descricao: string; justificativa: string }): Promise<void> {
+  if (!pedidoPendente.value || salvandoPedido.value) return
+  salvandoPedido.value = true
+  try {
+    pedidoPendente.value = await api.codigosCompletos.atualizarPedido(pedidoPendente.value.id, {
+      descricao: dados.descricao || null,
+      justificativa: dados.justificativa || null
+    })
+    toast.sucesso('Pedido atualizado — a governança verá a versão mais nova.')
   } catch (e) {
     toast.erro((e as Error).message)
   } finally {
-    salvando.value = false
+    salvandoPedido.value = false
+  }
+}
+
+async function confirmarCancelamento(): Promise<void> {
+  if (!pedidoPendente.value || processandoPedido.value) return
+  processandoPedido.value = true
+  confirmandoCancelamento.value = false
+  try {
+    await api.codigosCompletos.cancelarPedido(pedidoPendente.value.id)
+    fecharPedido()
+    toast.sucesso('Pedido cancelado. A composição está livre para um novo envio.')
+  } catch (e) {
+    toast.erro((e as Error).message)
+  } finally {
+    processandoPedido.value = false
   }
 }
 </script>

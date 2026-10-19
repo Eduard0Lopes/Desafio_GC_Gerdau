@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- 4 painéis de seleção (print 1) -->
+    
     <section class="grade-seletores">
       <div class="painel">
         <label class="painel-rotulo">Grupo de Serviço</label>
@@ -64,7 +64,7 @@
       </div>
     </section>
 
-    <!-- botões principais (print 1) -->
+    
     <div class="linha-botoes">
       <button class="botao botao-roxo" :disabled="!completo || processando" @click="vincular">
         {{ processando ? 'Processando…' : 'Vincular Serviço' }}
@@ -75,7 +75,7 @@
       <button class="botao botao-escuro" @click="limpar">Limpar</button>
     </div>
 
-    <!-- confirmação de composição -->
+    
     <div v-if="modalPreview" class="modal-fundo" @click.self="modalPreview = false">
       <div class="modal">
         <h3>Vincular Serviço</h3>
@@ -90,7 +90,7 @@
             </span>
           </div>
 
-          <!-- alertas por componente (mesma regra anti-duplicidade em todos os campos) -->
+          
           <div
             v-for="a in preview.alertasComponentes || []"
             :key="a.tipo"
@@ -101,17 +101,49 @@
             <span>“{{ a.descricaoInformada }}”</span>
             <span class="suave">semelhante a</span>
             <span>{{ a.itemSimilarNome }}</span>
+            <span
+              v-if="a.casoIsolado"
+              class="badge-excecao"
+              :title="'Caso especial registrado.' + (a.motivoCasoIsolado ? ' Motivo: ' + a.motivoCasoIsolado : '')"
+            >!</span>
             <span class="match" :class="{ alerta: a.score < 0.88 }">{{ (a.score * 100).toFixed(0) }}% Match</span>
           </div>
         </div>
         <div class="linha-botoes">
           <button class="botao botao-escuro" @click="modalPreview = false">Voltar</button>
-          <button class="botao botao-roxo" @click="confirmarVinculo">Confirmar</button>
+          <button
+            v-if="preview?.statusExistente === 'PENDENTE_VALIDACAO'"
+            class="botao botao-escuro"
+            @click="gerenciarPendente"
+          >
+            Gerenciar pedido pendente
+          </button>
+          <button class="botao botao-roxo" :disabled="processando" @click="confirmarVinculo">Confirmar</button>
         </div>
       </div>
     </div>
 
-    <!-- Bloqueio de Duplicidade (print 3) — apenas em criação de item novo -->
+    <ModalPedidoPendente
+      v-if="modalPedido"
+      :pedido="pedidoPendente"
+      :pode-gerenciar="podeGerenciarPedido"
+      :processando="processandoPedido"
+      :salvando="salvandoPedido"
+      @fechar="fecharPedido"
+      @cancelar="confirmandoCancelamento = true"
+      @salvar="salvarPedido"
+    />
+
+    <ModalConfirmacao
+      v-if="confirmandoCancelamento"
+      titulo="Cancelar o pedido?"
+      mensagem="O pedido sai da fila da governança e a composição fica livre para um novo envio. O histórico fica preservado."
+      rotulo-confirmar="✕ Cancelar pedido"
+      :acao-perigosa="true"
+      @confirmar="confirmarCancelamento"
+      @cancelar="confirmandoCancelamento = false"
+    />
+
     <ModalBloqueio
       v-if="modalBloqueio"
       :itens="itensBloqueio"
@@ -121,7 +153,7 @@
       @voltar="modalBloqueio = false"
     />
 
-    <!-- Envio para Governança (print 4) -->
+    
     <ModalGovernanca
       v-if="modalGovernanca"
       classe="Código de Serviço"
@@ -130,19 +162,19 @@
       @confirmar="confirmarGovernanca"
     />
 
-    <!-- exclusão de componente do catálogo (ADMIN) -->
+    
     <ModalConfirmacao
       v-if="exclusao"
-      titulo="Excluir componente do catálogo?"
-      :mensagem="`${ROTULO_TIPO[exclusao.tipo]} “${exclusao.rotulo}” será excluído definitivamente. A ação fica registrada na auditoria.`"
-      rotulo-confirmar="✕ Excluir"
-      :acao-perigosa="true"
+      titulo="Desativar componente do catálogo?"
+      :mensagem="`${ROTULO_TIPO[exclusao.tipo]} “${exclusao.rotulo}” sairá de circulação: some das listas de uso e da similaridade, mas nada é perdido. É possível reativar no Catálogo quando quiser.`"
+      rotulo-confirmar="Desativar"
+      :acao-perigosa="false"
       @confirmar="executarExclusao"
       @cancelar="exclusao = null"
     />
 
-    <!-- sucesso (fecha automaticamente com barra de tempo) -->
-    <div v-if="sucesso" class="modal-fundo">
+    
+    <div v-if="sucesso" class="modal-fundo" @click.self="sucesso = null">
       <div class="modal">
         <div class="aviso aviso-verde">
           <span class="icone">✓</span>
@@ -152,7 +184,7 @@
           <div class="barra-tempo-fill" :style="{ width: tempoRestante + '%' }"></div>
         </div>
         <div class="suave centralizado" style="margin-top: 8px; font-size: 0.82rem">
-          Fecha automaticamente em {{ Math.ceil(tempoRestante / 100 * 8) }}s…
+          Fecha automaticamente em {{ Math.ceil(tempoRestante / 100 * 5) }}s…
         </div>
         <div class="linha-botoes" style="margin-top: 14px">
           <button class="botao botao-roxo" @click="limpar">Novo registro</button>
@@ -161,8 +193,8 @@
       </div>
     </div>
 
-    <!-- ===== conteúdo contextual por perfil ===== -->
-    <!-- ADMIN: resumo da base -->
+    
+    
     <div v-if="isAdmin" class="painel" style="margin-top: 34px">
       <label class="painel-rotulo">Resumo da base</label>
       <div class="indicadores" style="margin: 0">
@@ -188,7 +220,7 @@
       </div>
     </div>
 
-    <!-- USUÁRIO: guia rápido do fluxo (inicia fechado) -->
+    
     <div v-else class="guia">
       <button class="guia-cabecalho" :class="{ aberto: guiaAberto }" @click="guiaAberto = !guiaAberto">
         <span class="seta">{{ guiaAberto ? '▾' : '▸' }}</span>
@@ -254,7 +286,8 @@
         <div class="painel">
           <label class="painel-rotulo">5 · Dicas de busca</label>
           <p class="suave" style="margin: 0; line-height: 1.6">
-            A busca entende <strong>acentos ausentes</strong>, pequenos erros de digitação e
+            A busca entende <strong>acentos ausentes</strong>, <strong>plural e singular</strong>
+            (ex.: <em>telhados</em> acha <em>telhado</em> e vice-versa), pequenos erros de digitação e
             palavras invertidas (ex.: <em>mecanico manutencao</em>). Códigos legados também
             funcionam — digite <strong>4033776</strong> para achar o item original.
           </p>
@@ -282,14 +315,15 @@ import ComboboxBusca from '../components/ComboboxBusca.vue'
 import ModalBloqueio from '../components/ModalBloqueio.vue'
 import ModalConfirmacao from '../components/ModalConfirmacao.vue'
 import ModalGovernanca from '../components/ModalGovernanca.vue'
-import type { CandidatoSimilar, CriarCodigoCompletoPayload, PreviewResponse } from '../types'
+import ModalPedidoPendente from '../components/ModalPedidoPendente.vue'
+import type { CandidatoSimilar, CodigoCompletoResponse, CriarCodigoCompletoPayload, PreviewResponse } from '../types'
 
 type Item = Record<string, unknown>
 
-/** Candidato do modal de bloqueio — carrega o tipo do componente quando o item é de outro catálogo. */
+
 type ItemBloqueio = CandidatoSimilar & { tipoComponente?: string }
 
-/** Componentes do catálogo que o ADMIN pode excluir. */
+
 type TipoComponenteCatalogo = 'GS' | 'CF' | 'CS' | 'UM'
 
 const props = withDefaults(defineProps<{ usuario?: string; papel?: string }>(), { usuario: '', papel: 'USUARIO' })
@@ -322,7 +356,7 @@ const cf = ref<Item | null>(null)
 const cs = ref<Item | null>(null)
 const um = ref<Item | null>(null)
 
-// ---------- exclusão de componentes (apenas ADMIN — auditada; bloqueada se houver vínculos) ----------
+
 const cbGs = ref<InstanceType<typeof ComboboxBusca> | null>(null)
 const cbCf = ref<InstanceType<typeof ComboboxBusca> | null>(null)
 const cbCs = ref<InstanceType<typeof ComboboxBusca> | null>(null)
@@ -350,13 +384,19 @@ async function executarExclusao(): Promise<void> {
   if (!alvo) return
   exclusao.value = null
   try {
-    await api.componentes.excluir(alvo.tipo, alvo.id)
-    toast.sucesso(`${ROTULO_TIPO[alvo.tipo]} “${alvo.rotulo}” excluído com sucesso.`)
+    
+    const relatorio = await api.situacaoComponentes(alvo.tipo, [alvo.id], 'DESATIVADO')
+    const resultado = relatorio[0]
+    if (!resultado?.alterado) {
+      toast.aviso(resultado?.motivo || 'Nada foi alterado.')
+      return
+    }
+    toast.sucesso(`${ROTULO_TIPO[alvo.tipo]} “${alvo.rotulo}” desativado — fora de circulação. Reative no Catálogo se precisar.`)
     const selecoes: Record<TipoComponenteCatalogo, { value: Item | null }> = { GS: gs, CF: cf, CS: cs, UM: um }
     const paineis: Record<TipoComponenteCatalogo, { recarregar: () => void } | null> = {
       GS: cbGs.value, CF: cbCf.value, CS: cbCs.value, UM: cbUm.value
     }
-    // se o item excluído estava selecionado no painel, a seleção é limpa
+    
     const selecionado = selecoes[alvo.tipo]
     if (selecionado.value && String(selecionado.value.id) === alvo.id) selecionado.value = null
     paineis[alvo.tipo]?.recarregar()
@@ -372,9 +412,84 @@ const modalPreview = ref(false)
 const modalBloqueio = ref(false)
 const modalGovernanca = ref(false)
 const sucesso = ref<{ titulo: string; mensagem: string } | null>(null)
+
+// gestão do pedido pendente na governança (ver / editar / cancelar)
+const modalPedido = ref(false)
+const pedidoPendente = ref<CodigoCompletoResponse | null>(null)
+const salvandoPedido = ref(false)
+const confirmandoCancelamento = ref(false)
+const processandoPedido = ref(false)
+const chaveEnvio = ref('')
+
+// só quem enviou o pedido (ou um admin) pode editá-lo/cancelá-lo
+const podeGerenciarPedido = computed(() => {
+  const p = pedidoPendente.value
+  if (!p) return false
+  const papel = (localStorage.getItem('papel') || 'USUARIO').toUpperCase()
+  return papel === 'ADMIN' || (p.usuarioCriacaoId ?? '') === (props.usuario || '')
+})
+
+function formatarData(iso: string | null | undefined): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  return isNaN(d.getTime()) ? iso : d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+}
+
+async function abrirPedidoPendente(idCompleto: string): Promise<void> {
+  try {
+    pedidoPendente.value = await api.codigosCompletos.buscar(idCompleto)
+    modalPedido.value = true
+  } catch (e) {
+    toast.erro((e as Error).message)
+  }
+}
+
+function gerenciarPendente(): void {
+  const id = preview.value?.idCompleto
+  modalPreview.value = false
+  if (id) void abrirPedidoPendente(id)
+}
+
+function fecharPedido(): void {
+  modalPedido.value = false
+  pedidoPendente.value = null
+  confirmandoCancelamento.value = false
+}
+
+async function salvarPedido(dados: { descricao: string; justificativa: string }): Promise<void> {
+  if (!pedidoPendente.value || salvandoPedido.value) return
+  salvandoPedido.value = true
+  try {
+    pedidoPendente.value = await api.codigosCompletos.atualizarPedido(pedidoPendente.value.id, {
+      descricao: dados.descricao || null,
+      justificativa: dados.justificativa || null
+    })
+    toast.sucesso('Pedido atualizado — a governança verá a versão mais nova.')
+  } catch (e) {
+    toast.erro((e as Error).message)
+  } finally {
+    salvandoPedido.value = false
+  }
+}
+
+async function confirmarCancelamento(): Promise<void> {
+  if (!pedidoPendente.value || processandoPedido.value) return
+  processandoPedido.value = true
+  confirmandoCancelamento.value = false
+  try {
+    await api.codigosCompletos.cancelarPedido(pedidoPendente.value.id)
+    fecharPedido()
+    toast.sucesso('Pedido cancelado. A composição está livre para um novo envio.')
+    await vincular()
+  } catch (e) {
+    toast.erro((e as Error).message)
+  } finally {
+    processandoPedido.value = false
+  }
+}
 const tempoRestante = ref(100)
 
-// balão de sucesso: fecha sozinho com barra de tempo regressiva
+
 watch(sucesso, (novo) => {
   if (!novo) {
     tempoRestante.value = 100
@@ -385,20 +500,20 @@ watch(sucesso, (novo) => {
     tempoRestante.value -= 2
     if (tempoRestante.value <= 0) {
       clearInterval(timer)
-      if (sucesso.value) limpar()
+      if (sucesso.value) sucesso.value = null
     }
-  }, 160)
+  }, 100)
 })
 
 const completo = computed(() => gs.value && cf.value && cs.value && um.value)
 const descricaoNovoServico = computed(() => preview.value?.codigoServico?.nome || '')
 
-// SEMPRE há pelo menos uma opção para o usuário escolher
+
 const itensBloqueio = computed<ItemBloqueio[]>(() => {
   const p = preview.value
   if (!p) return []
 
-  // itens semelhantes encontrados + alertas de componentes novos
+  
   const lista: ItemBloqueio[] = (p.similares || []).map((c) => ({ ...c, tipoComponente: 'CS' }))
   for (const a of p.alertasComponentes || []) {
     lista.push({
@@ -417,7 +532,7 @@ const itensBloqueio = computed<ItemBloqueio[]>(() => {
   return lista
 })
 
-/** Nome completo do componente (sem abreviações). */
+
 function nomeComponente(tipo: string): string {
   return ({
     GS: 'Grupo de Serviço',
@@ -449,10 +564,15 @@ async function vincular(): Promise<void> {
   processando.value = true
   try {
     preview.value = await api.preview(payload())
+    // a composição pode já estar vinculada — isso não bloqueia: cada envio cria um novo vínculo
     if (preview.value.idCompletoJaExiste) {
-      // vínculo é livre: composição já registrada = ação confirmada usando o registro existente
-      registrarVinculo(preview.value.idCompleto, preview.value.descricaoSnapshot)
-    } else if (preview.value.decisao === 'PERMITIR') {
+      toast.aviso(`Este código já está vinculado (${preview.value.idCompleto}) — este envio criará mais um vínculo.`)
+    }
+    // Idempotency-Key por tentativa: duplo clique no Confirmar não duplica, mas cada
+    // clique em "Vincular Serviço" é uma nova tentativa — e cria um novo vínculo
+    const corpo = payload()
+    chaveEnvio.value = chaveIdempotente('criar-', corpo.gsId, corpo.cfId, corpo.csId, corpo.umId, String(Date.now()))
+    if (preview.value.decisao === 'PERMITIR') {
       modalPreview.value = true
     } else {
       modalBloqueio.value = true
@@ -464,7 +584,7 @@ async function vincular(): Promise<void> {
   }
 }
 
-/** Confirmação de vínculo (novo ou já existente) — feedback de sucesso igual nos dois casos. */
+
 function registrarVinculo(idCompleto: string, descricaoSnapshot: string): void {
   toast.sucesso(`Enviado com sucesso! Serviço ${idCompleto} vinculado.`)
   sucesso.value = { titulo: `Serviço ${idCompleto} vinculado!`, mensagem: descricaoSnapshot }
@@ -474,14 +594,26 @@ function registrarVinculo(idCompleto: string, descricaoSnapshot: string): void {
 async function confirmarVinculo(): Promise<void> {
   processando.value = true
   try {
-    const r = await api.criarCodigoCompleto(payload({ acao: 'CRIAR' }))
+    const corpo = payload({ acao: 'CRIAR' })
+    // Idempotency-Key por tentativa: duplo clique/rede não cria dois registros para o mesmo clique
+    const r = await api.criarCodigoCompleto(
+      corpo,
+      chaveEnvio.value || chaveIdempotente('criar-', corpo.gsId, corpo.cfId, corpo.csId, corpo.umId, String(Date.now()))
+    )
     modalPreview.value = false
-    registrarVinculo(r.idCompleto, r.descricaoSnapshot)
+    if (r.requisicaoRepetida) {
+      // nada novo foi criado: dizer isso em vez de fingir uma nova criação
+      toast.aviso(`O vínculo ${r.idCompleto} já estava registrado — nada novo foi criado.`)
+      sucesso.value = { titulo: 'Vínculo já registrado', mensagem: r.descricaoSnapshot }
+      atualizarPendentes()
+    } else {
+      registrarVinculo(r.idCompleto, r.descricaoSnapshot)
+    }
   } catch (e) {
     if ((e as { status?: number }).status === 409 && preview.value) {
-      // composição já registrada (ex.: criada entre a prévia e a confirmação) — vínculo é livre
+      // reavalia o que existe: pedido pendente (abre gestão), ativo (confirma) ou liberado para envio
       modalPreview.value = false
-      registrarVinculo(preview.value.idCompleto, preview.value.descricaoSnapshot)
+      await vincular()
     } else {
       toast.erro((e as Error).message)
     }
@@ -494,7 +626,7 @@ function reutilizarItem(itemCandidato: CandidatoSimilar): void {
   const item = itemCandidato as ItemBloqueio
   modalBloqueio.value = false
 
-  // item semelhante escolhido — assume o painel do componente correspondente
+  
   const escolhido: Item = { id: item.id, descricao: item.descricao, nome: item.descricao }
   switch (item.tipoComponente) {
     case 'GS':
@@ -512,13 +644,16 @@ function reutilizarItem(itemCandidato: CandidatoSimilar): void {
       cs.value = escolhido
   }
   toast.sucesso(`Código existente reutilizado: ${item.id} — ${item.descricao}. Confirme a vinculação.`)
-  // refaz a prévia com o item existente — o vínculo é gravado na confirmação
+  
   void vincular()
 }
 
 function abrirGovernanca(): void {
   modalBloqueio.value = false
   modalGovernanca.value = true
+  // chave por tentativa: duplo clique/rede não duplica, mas um novo envio é um novo pedido
+  const corpo = payload()
+  chaveEnvio.value = chaveIdempotente('gov-', corpo.gsId, corpo.cfId, corpo.csId, corpo.umId, String(Date.now()))
 }
 
 async function confirmarGovernanca(justificativa: string): Promise<void> {
@@ -527,17 +662,30 @@ async function confirmarGovernanca(justificativa: string): Promise<void> {
     const corpo = payload({ acao: 'ENVIAR_VALIDACAO', justificativa })
     const r = await api.criarCodigoCompleto(
       corpo,
-      chaveIdempotente('gov-', corpo.gsId, corpo.cfId, corpo.csId, corpo.umId, justificativa)
+      chaveEnvio.value || chaveIdempotente('gov-', corpo.gsId, corpo.cfId, corpo.csId, corpo.umId, justificativa)
     )
     modalGovernanca.value = false
-    toast.sucesso('Enviado com sucesso! O cadastro foi para a fila de validação da Governança.')
-    sucesso.value = {
-      titulo: 'Enviado para Governança',
-      mensagem: `O cadastro ${r.idCompleto} passará por validação humana pela Equipe de Governança de Dados.`
+    if (r.requisicaoRepetida) {
+      toast.aviso(`Este pedido já havia sido enviado (${r.idCompleto}) — nada novo foi criado.`)
+      sucesso.value = {
+        titulo: 'Pedido já enviado',
+        mensagem: `O cadastro ${r.idCompleto} já estava na fila de validação da Governança.`
+      }
+    } else {
+      toast.sucesso('Enviado com sucesso! O cadastro foi para a fila de validação da Governança.')
+      sucesso.value = {
+        titulo: 'Enviado para Governança',
+        mensagem: `O cadastro ${r.idCompleto} passará por validação humana pela Equipe de Governança de Dados.`
+      }
     }
     atualizarPendentes()
   } catch (e) {
-    toast.erro((e as Error).message)
+    if ((e as { status?: number }).status === 409 && preview.value) {
+      modalGovernanca.value = false
+      await vincular()
+    } else {
+      toast.erro((e as Error).message)
+    }
   } finally {
     processando.value = false
   }
@@ -552,12 +700,13 @@ function limpar(): void {
   preview.value = null
   sucesso.value = null
   modalPreview.value = modalBloqueio.value = modalGovernanca.value = false
+  fecharPedido()
 }
 
-/**
- * Item reutilizado vindo do "Cadastrar Novo Item" (?reutilizar=<id>): seleciona o
- * item existente no painel correspondente e avisa o usuário (toast).
- */
+
+
+
+
 function aplicarReutilizacao(): void {
   const id = route.query.reutilizar
   if (!id) return
@@ -579,15 +728,15 @@ function aplicarReutilizacao(): void {
     cs.value = item
   }
   toast.sucesso(`${String(id)} — ${texto} selecionado como ${painel}. Complete a vinculação.`)
-  // limpa a query para o refresh não repetir a seleção/toast
+  
   void router.replace({ query: {} })
 }
 
 onMounted(() => {
   carregarResumoAdmin()
   aplicarReutilizacao()
+  
+  if (route.query.criado) void router.replace({ query: {} })
 })
 watch(() => props.papel, carregarResumoAdmin)
 </script>
-
-

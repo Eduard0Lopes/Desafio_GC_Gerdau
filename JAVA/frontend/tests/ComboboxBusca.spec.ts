@@ -22,7 +22,7 @@ describe('ComboboxBusca', () => {
     const input = wrapper.get('input')
     await input.setValue('sv')
     await input.trigger('focus')
-    // 2 opções + "Cadastrar Novo Item" (sempre por último)
+    
     await vi.waitFor(() => expect(wrapper.findAll('li').length).toBe(3))
 
     const itens = wrapper.findAll('li')
@@ -55,7 +55,7 @@ describe('ComboboxBusca', () => {
     })
 
     await wrapper.get('input').trigger('focus')
-    // sem texto digitado não há a opção "criar novo" — apenas os 2 resultados
+    
     await vi.waitFor(() => expect(wrapper.findAll('li').length).toBe(2))
     await wrapper.findAll('li')[0].trigger('mousedown')
 

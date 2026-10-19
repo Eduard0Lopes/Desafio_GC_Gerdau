@@ -1,7 +1,5 @@
-/**
- * Toasts elegantes — substituem os alerts nativos do navegador.
- * Uso: importar { toast } e chamar toast.sucesso('...') / toast.erro('...') / toast.aviso('...').
- */
+
+
 import { reactive } from 'vue'
 
 export interface Toast {

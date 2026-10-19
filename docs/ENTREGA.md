@@ -7,7 +7,7 @@ documento técnico e nos critérios da Sprint).
 
 | Item | Onde está | Status |
 |---|---|---|
-| Backend (API Spring Boot + testes) | `JAVA/backend/desafio/` | ✅ |
+| Backend (API Spring Boot + testes) | `JAVA/backend//` | ✅ |
 | Frontend (Vue 3) | `JAVA/frontend/` | ✅ |
 | Dados oficiais (Time de IA) | `IA/data/processed/` | ✅ (preservado, não alterado) |
 | Execução em uma linha | `docker-compose.yml` | ✅ |

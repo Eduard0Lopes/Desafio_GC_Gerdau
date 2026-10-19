@@ -9,20 +9,26 @@ também (e principalmente) **no servidor**.
 | Perfil | O que pode fazer | Observação |
 |---|---|---|
 | **USUARIO** (padrão) | consultar catálogos, verificar similaridade, cadastrar itens, vincular código completo (fluxo com bloqueio/justificativa/envio à governança) | comprador/solicitante |
-| **ADMIN** | tudo o que o usuário faz **+ esteira de governança**: fila de validação, aprovar/rejeitar novos cadastros, revisar o histórico da matriz, auditoria de exceções | admin de dados |
+| **ADMIN** | tudo o que o usuário faz **+ esteira de governança**: fila de validação, aprovar/rejeitar novos cadastros, revisar o histórico da matriz, auditoria de exceções **+ exclusão de componentes do catálogo** (unitária e em massa) | admin de dados |
 
 ## Como funciona nesta versão (demonstração)
 
 ### Frontend
 - Seletor **Perfil: Usuário | Admin** na barra superior (persistido em `localStorage`).
-- Com perfil **Usuário**: a interface é minimalista — apenas as telas dos fluxos
-  (vinculação e cadastro); o link de Governança **não aparece**.
-- Com perfil **Admin**: o menu exibe **Governança** (com o contador de pendências).
+- Com perfil **Usuário**: a interface é minimalista — as telas dos fluxos (vinculação e
+  cadastro) e o **Catálogo** (somente leitura); o link de Governança **não aparece**.
+- Com perfil **Admin**: o menu exibe também **Painel Admin** (com o contador de
+  pendências) e o **Catálogo** ganha checkboxes para exclusão em massa.
 
 ### Backend (a garantia real)
 - Todo endpoint em `/api/v1/governanca/**` exige o header
   `X-Usuario-Papel: ADMIN` — sem ele, a resposta é **403 Forbidden** mesmo que
   a chamada venha de fora do frontend (curl, Swagger, outra aplicação).
+- `DELETE` em componentes do catálogo, `POST /api/v1/catalogo/exclusao-em-massa`,
+  `POST /api/v1/catalogo/situacao` (desativar/reativar) e `POST /api/v1/catalogo/importacao`
+  também exigem `ADMIN`. A interface usa **desativar/reativar** (soft delete: o item sai de
+  circulação, mas nada é perdido e ele pode voltar); a exclusão definitiva continua na API,
+  bloqueada enquanto houver vínculo.
 - Os demais endpoints são abertos ao perfil USUARIO nesta versão.
 - Headers de identidade:
 

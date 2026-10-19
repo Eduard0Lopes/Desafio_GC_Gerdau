@@ -5,7 +5,7 @@
       Área restrita de administração de dados — governança de cadastros e análise detalhada da base.
     </p>
 
-    <!-- abas do painel -->
+    
     <div class="abas">
       <button
         class="aba"
@@ -23,7 +23,7 @@
       </button>
     </div>
 
-    <!-- conteúdo -->
+    
     <div style="margin-top: 22px">
       <GovernancaView
         v-if="aba === 'governanca'"
@@ -72,6 +72,6 @@ const aba = ref<'governanca' | 'detalhes'>('governanca')
 }
 .aba.ativa {
   background: var(--azul);
-  color: #fff;
+  color: var(--texto-sobre-azul);
 }
 </style>

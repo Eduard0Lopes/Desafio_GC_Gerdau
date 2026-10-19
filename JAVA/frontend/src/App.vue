@@ -6,7 +6,7 @@
       <input v-model="usuario" placeholder="403921" @change="salvar" />
       <span>| Data: {{ dataHoje }}</span>
 
-      <!-- troca de perfil (demonstração) — em produção vem do login corporativo -->
+      
       <div class="troca-perfil">
         <span>Perfil:</span>
         <select v-model="papel" @change="salvar">
@@ -15,21 +15,23 @@
         </select>
       </div>
 
-      <!-- banco de dados ativo (evita confusão entre Mongo local e Atlas) -->
+      
       <span v-if="bancoAtivo" class="banco-ativo" title="Banco de dados que está recebendo os dados">
         ● dados em: <strong>{{ bancoAtivo }}</strong>
       </span>
 
-      <!-- painel admin é exclusivo do admin (seção 12.2) -->
-      <nav v-if="isAdmin" class="navegacao">
+      
+      <nav class="navegacao">
         <router-link to="/" exact-active-class="ativo">Início</router-link>
-        <router-link to="/admin" active-class="ativo">
+        <router-link to="/catalogo" active-class="ativo">Catálogo</router-link>
+        
+        <router-link v-if="isAdmin" to="/admin" active-class="ativo">
           Painel Admin
           <strong v-if="pendentes > 0">({{ pendentes }})</strong>
         </router-link>
       </nav>
 
-      <!-- alternância de tema claro/escuro -->
+      
       <button class="troca-tema" :title="tema.estado.tema === 'claro' ? 'Ativar modo escuro' : 'Ativar modo claro'"
               @click="tema.alternar()">
         {{ tema.estado.tema === 'claro' ? '☾' : '☀' }}
@@ -70,7 +72,7 @@ async function carregarBancoAtivo(): Promise<void> {
     const r = await fetch('/api/v1/health')
     const dados = await r.json()
     bancoAtivo.value = dados?.banco || ''
-    // backend respondeu: o aviso de "indisponível" deve sumir sozinho
+    
     apiFora.value = false
   } catch {
     bancoAtivo.value = ''
@@ -97,7 +99,7 @@ async function atualizarPendentes(): Promise<void> {
   }
 }
 
-// ao trocar de perfil, volta à tela inicial (painel admin fica restrito)
+
 watch(papel, () => {
   salvar()
   if (router.currentRoute.value.path === '/admin' && papel.value !== 'ADMIN') {
@@ -113,7 +115,7 @@ onMounted(() => {
   atualizarPendentes()
   carregarBancoAtivo()
 })
-// a cada 30s: fila de pendentes + verificação de que o backend está no ar
+
 setInterval(() => {
   void atualizarPendentes()
   void carregarBancoAtivo()
