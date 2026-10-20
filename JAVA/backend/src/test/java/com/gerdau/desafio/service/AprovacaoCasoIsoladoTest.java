@@ -34,7 +34,8 @@ class AprovacaoCasoIsoladoTest {
         catalogoService = Mockito.mock(CatalogoService.class);
         service = new GovernancaService(matrizDeParaRepository, codigoCompletoRepository,
                 Mockito.mock(ExcecaoRepository.class), Mockito.mock(EventoAuditoriaRepository.class),
-                Mockito.mock(AuditoriaService.class), catalogoService, Mockito.mock(MongoTemplate.class));
+                Mockito.mock(AuditoriaService.class), catalogoService, Mockito.mock(PreviewService.class),
+                Mockito.mock(MongoTemplate.class));
     }
 
     private CodigoCompleto pendente(String decisao) {

@@ -1,6 +1,8 @@
 package com.gerdau.desafio.controller;
 
+import com.gerdau.desafio.dto.request.SimilaridadeLoteRequest;
 import com.gerdau.desafio.dto.request.SimilaridadeRequest;
+import com.gerdau.desafio.dto.response.LoteSimilaridadeResponse;
 import com.gerdau.desafio.dto.response.SimilaridadeResponse;
 import com.gerdau.desafio.service.SimilaridadeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,5 +35,15 @@ public class SimilaridadeController {
             @RequestParam(required = false) Integer limite,
             @RequestParam(required = false, defaultValue = "CS") String tipo) {
         return ResponseEntity.ok(service.consultar(descricao, limite, tipo));
+    }
+
+    @PostMapping("/lote")
+    @Operation(summary = "Avaliar uma lista de códigos (criação em massa)",
+            description = "Para cada linha diz se o código já está DISPONÍVEL na base (reutilizar), "
+                    + "se PRECISA SER CRIADO ou se está BLOQUEADA — o resumo traz "
+                    + "\"há X disponíveis, porém Y precisam ser criados\".")
+    public ResponseEntity<LoteSimilaridadeResponse> avaliarLote(
+            @Valid @RequestBody SimilaridadeLoteRequest request) {
+        return ResponseEntity.ok(service.avaliarLote(request.textos(), request.limite(), request.tipo()));
     }
 }

@@ -12,10 +12,12 @@ import type {
   GrupoServico,
   ItemGovernanca,
   ItemImportacao,
+  LoteSimilaridade,
   MatrizDePara,
   PreviewResponse,
   ResumoGovernanca,
   ResultadoImportacao,
+  ResultadoVinculacaoLote,
   SimilaridadeResponse,
   TipoComponente,
   UnidadeMedida
@@ -59,6 +61,15 @@ async function requisitar<T>(caminho: string, opcoes: RequestInit = {}): Promise
 }
 
 const lista = <T>(caminho: string) => requisitar<T[]>(caminho)
+
+/**
+ * Segmento de caminho da URL. IDs de vínculo podem conter "#" (sufixo #2, #3...,
+ * de composições repetidas) — SEMPRE codificar: sem isso o navegador trata o
+ * resto da URL como fragmento e a rota chega cortada no backend (404 "Rota não
+ * encontrada" ao aprovar/rejeitar na governança).
+ */
+const seg = (valor: string) => encodeURIComponent(valor)
+
 const criar = <T extends object>(caminho: string, dados: unknown, idempotencyKey?: string) =>
   // 200 = requisição repetida (nada novo criado); 201 = criação real
   requisitarDetalhe<T>(caminho, {
@@ -107,7 +118,7 @@ export const api = {
         CS: 'codigos-servico',
         UM: 'unidades-medida'
       } as const
-      return requisitar<void>(`/${caminhos[tipo]}/${encodeURIComponent(id)}`, { method: 'DELETE' })
+      return requisitar<void>(`/${caminhos[tipo]}/${seg(id)}`, { method: 'DELETE' })
     }
   },
 
@@ -132,7 +143,7 @@ export const api = {
       }),
     /** quantos códigos completos referenciam o componente */
     vinculos: (tipo: 'GS' | 'CF' | 'CS' | 'UM', id: string) =>
-      requisitar<{ total: number }>(`/catalogo/vinculos?tipo=${tipo}&id=${encodeURIComponent(id)}`),
+      requisitar<{ total: number }>(`/catalogo/vinculos?tipo=${tipo}&id=${seg(id)}`),
     /** transfere os vínculos para outro componente e (opcionalmente) exclui o de origem */
     transferirVinculos: (dados: { tipo: 'GS' | 'CF' | 'CS' | 'UM'; de: string; para: string; excluirOrigem?: boolean }) =>
       requisitar<{ transferidos: number; mesclados: number; conflitos: string[]; excluido: boolean }>('/catalogo/transferir-vinculos', {
@@ -160,14 +171,14 @@ export const api = {
 
   codigosCompletos: {
     buscar: (id: string) =>
-      requisitar<CodigoCompletoResponse>(`/codigos-completos/${encodeURIComponent(id)}`),
+      requisitar<CodigoCompletoResponse>(`/codigos-completos/${seg(id)}`),
     atualizarPedido: (id: string, dados: { descricao?: string | null; justificativa?: string | null }) =>
-      requisitar<CodigoCompletoResponse>(`/codigos-completos/${encodeURIComponent(id)}`, {
+      requisitar<CodigoCompletoResponse>(`/codigos-completos/${seg(id)}`, {
         method: 'PATCH',
         body: JSON.stringify(dados)
       }),
     cancelarPedido: (id: string) =>
-      requisitar<CodigoCompletoResponse>(`/codigos-completos/${encodeURIComponent(id)}/cancelar`, {
+      requisitar<CodigoCompletoResponse>(`/codigos-completos/${seg(id)}/cancelar`, {
         method: 'POST'
       })
   },
@@ -189,18 +200,41 @@ export const api = {
       `${decision ? `&decision=${decision}` : ''}&query=${encodeURIComponent(query)}`
     ),
   revisarHistorico: (id: string, corpo: { revisadoPor: string; acao?: string; observacao?: string | null }) =>
-    requisitar<ItemGovernanca>(`/governanca/historico/${id}/revisar`, { method: 'POST', body: JSON.stringify(corpo) }),
+    requisitar<ItemGovernanca>(`/governanca/historico/${seg(id)}/revisar`, { method: 'POST', body: JSON.stringify(corpo) }),
   reverterRevisao: (id: string, corpo: { revisadoPor: string; observacao?: string | null }) =>
-    requisitar<ItemGovernanca>(`/governanca/historico/${id}/reverter`, { method: 'POST', body: JSON.stringify(corpo) }),
+    requisitar<ItemGovernanca>(`/governanca/historico/${seg(id)}/reverter`, { method: 'POST', body: JSON.stringify(corpo) }),
   aprovar: (id: string, corpo: { aprovadoPor: string; observacao?: string | null }) =>
-    requisitar<ItemGovernanca>(`/governanca/pendentes/${id}/aprovar`, { method: 'POST', body: JSON.stringify(corpo) }),
+    requisitar<ItemGovernanca>(`/governanca/pendentes/${seg(id)}/aprovar`, { method: 'POST', body: JSON.stringify(corpo) }),
   rejeitar: (id: string, corpo: { aprovadoPor: string; observacao?: string | null }) =>
-    requisitar<ItemGovernanca>(`/governanca/pendentes/${id}/rejeitar`, { method: 'POST', body: JSON.stringify(corpo) }),
+    requisitar<ItemGovernanca>(`/governanca/pendentes/${seg(id)}/rejeitar`, { method: 'POST', body: JSON.stringify(corpo) }),
+  /** a Governança escolhe um dos matches ignorados pelo usuário e o pedido segue por ele */
+  reutilizarNovo: (id: string, corpo: { escolhidoId: string; escolhidoTipo?: string | null; aprovadoPor: string; observacao?: string | null }) =>
+    requisitar<ItemGovernanca>(`/governanca/pendentes/${seg(id)}/reutilizar`, { method: 'POST', body: JSON.stringify(corpo) }),
 
   similaridade: (descricao: string, limite = 5, tipo: TipoComponente | string = 'CS') =>
     requisitar<SimilaridadeResponse>(
-      `/itens/similaridade?descricao=${encodeURIComponent(descricao)}&limite=${limite}&tipo=${tipo}`
+      `/itens/similaridade?descricao=${seg(descricao)}&limite=${limite}&tipo=${tipo}`
     ),
+  /** avalia uma lista de códigos e diz o que já está disponível e o que precisa ser criado */
+  similaridadeLote: (textos: string[], tipo: TipoComponente | string = 'CS', limite = 3) =>
+    requisitar<LoteSimilaridade>('/itens/similaridade/lote', {
+      method: 'POST',
+      body: JSON.stringify({ textos, tipo, limite })
+    }),
+
+  /** vinculação em massa: GS/CF/UM fixos + vários Códigos de Serviço de uma vez */
+  vincularLote: (corpo: {
+    gsId: string
+    cfId: string
+    umId: string
+    itens: { csId?: string | null; texto?: string | null }[]
+    usuarioCriacaoId?: string | null
+  }, idempotencyKey?: string) =>
+    requisitar<ResultadoVinculacaoLote>('/codigos-completos/lote', {
+      method: 'POST',
+      body: JSON.stringify(corpo),
+      headers: idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}
+    }),
 
   eventos: (acao?: string) =>
     lista<EventoAuditoria>(`/governanca/eventos${acao ? `?acao=${acao}` : ''}`),

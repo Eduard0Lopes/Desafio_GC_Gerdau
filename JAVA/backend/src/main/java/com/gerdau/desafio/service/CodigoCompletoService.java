@@ -2,6 +2,7 @@ package com.gerdau.desafio.service;
 
 import com.gerdau.desafio.dto.request.CriarCodigoCompletoRequest;
 import com.gerdau.desafio.dto.request.PreviewRequest;
+import com.gerdau.desafio.dto.response.AlertaComponenteResponse;
 import com.gerdau.desafio.dto.response.CodigoCompletoResponse;
 import com.gerdau.desafio.dto.response.PreviewResponse;
 import com.gerdau.desafio.dto.response.SimilaridadeResponse;
@@ -69,9 +70,19 @@ public class CodigoCompletoService {
             SimilaridadeResponse sim = similaridadeService.consultar(descricao.trim(), 5, "CS");
             model.setDecisaoSimilaridade(sim.decisao());
             model.setMelhorScore(sim.candidatos().isEmpty() ? 0.0 : sim.candidatos().get(0).score());
-            model.setSimilaresRegistrados(sim.candidatos().stream()
+            // a descrição mudou: refaz os matches do CS, mas os matches dos demais
+            // componentes continuam valendo — são o que o usuário não escolheu
+            List<RegistroSimilar> matchesComponentes = (model.getSimilaresRegistrados() == null
+                    ? List.<RegistroSimilar>of() : model.getSimilaresRegistrados())
+                    .stream()
+                    .filter(s -> !"CS".equals(s.getTipo()))
+                    .toList();
+            List<RegistroSimilar> matchesServico = sim.candidatos().stream()
                     .map(c -> new RegistroSimilar(c.posicao(), c.id(), c.codigoOriginal(), c.descricao(), c.score(),
-                            c.motivo(), c.casoIsolado(), c.motivoCasoIsolado()))
+                            c.motivo(), c.casoIsolado(), c.motivoCasoIsolado(), c.tipo()))
+                    .toList();
+            model.setSimilaresRegistrados(java.util.stream.Stream
+                    .concat(matchesServico.stream(), matchesComponentes.stream())
                     .toList());
             mudou = true;
         }
@@ -274,10 +285,7 @@ public class CodigoCompletoService {
         model.setDecisaoSimilaridade(preview.decisao());
         model.setMelhorScore(preview.melhorScore());
         model.setJustificativa(request.justificativa());
-        model.setSimilaresRegistrados(preview.similares().stream()
-                .map(c -> new RegistroSimilar(c.posicao(), c.id(), c.codigoOriginal(), c.descricao(), c.score(), c.motivo(),
-                        c.casoIsolado(), c.motivoCasoIsolado()))
-                .toList());
+        model.setSimilaresRegistrados(similaresDoPedido(preview));
         model.setIdempotencyKey(chave);
         model.setIdempotencyHash(chave != null ? hashConteudo : null);
 
@@ -371,6 +379,24 @@ public class CodigoCompletoService {
         ex.setObservacao(preview.acaoRecomendada());
         ex.setCodigoCompletoId(salvo.getIdCompleto());
         excecaoRepository.save(ex);
+    }
+
+    /**
+     * O que o usuário viu no radio do bloqueio de duplicidade e NÃO escolheu: os
+     * matches do Código de Serviço e os alertas dos demais componentes (GS/CF/UM).
+     * Fica guardado no pedido para a Governança decidir por ele, se preciso.
+     */
+    private static List<RegistroSimilar> similaresDoPedido(PreviewResponse preview) {
+        List<RegistroSimilar> similares = new java.util.ArrayList<>(preview.similares().stream()
+                .map(c -> new RegistroSimilar(c.posicao(), c.id(), c.codigoOriginal(), c.descricao(), c.score(), c.motivo(),
+                        c.casoIsolado(), c.motivoCasoIsolado(), c.tipo()))
+                .toList());
+        for (AlertaComponenteResponse a : preview.alertasComponentes()) {
+            similares.add(new RegistroSimilar(similares.size() + 1, a.itemSimilarId(), null, a.itemSimilarNome(),
+                    a.score(), PreviewService.nomeComponente(a.tipo()) + ": “" + a.descricaoInformada()
+                    + "” é semelhante a este item.", a.casoIsolado(), a.motivoCasoIsolado(), a.tipo()));
+        }
+        return similares;
     }
 
     private static PreviewRequest paraPreview(CriarCodigoCompletoRequest r) {

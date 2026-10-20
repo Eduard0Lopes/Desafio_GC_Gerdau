@@ -132,20 +132,47 @@
         </div>
 
         
-        <details v-if="item.similares && item.similares.length" class="similares-detalhe">
-          <summary>Itens semelhantes encontrados ({{ item.similares.length }})</summary>
-          <div v-for="s in item.similares.slice(0, 3)" :key="s.id" class="item-similar">
-            <span>ID: {{ s.id }}</span>
-            <span class="suave">|</span>
-            <span>{{ (s.descricao || '').toUpperCase() }}</span>
-            <span
-              v-if="s.casoIsolado"
-              class="badge-excecao"
-              :title="'Caso especial registrado.' + (s.motivoCasoIsolado ? ' Motivo: ' + s.motivoCasoIsolado : '')"
-            >!</span>
-            <span class="match" :class="{ alerta: s.score < 0.88 }">{{ (s.score * 100).toFixed(0) }}% Match</span>
+        <div v-if="item.similares && item.similares.length" class="nao-escolhidos">
+          <div class="nao-escolhidos-cabecalho">
+            <strong>O que o usuário não escolheu</strong>
+            <span class="suave">
+              — matches do bloqueio de duplicidade que ele ignorou ao enviar para a Governança.
+              <template v-if="podeDecidir(item)">Se algum deles atende, escolha e siga por ele.</template>
+            </span>
           </div>
-        </details>
+          <div class="lista-selecao">
+            <div
+              v-for="s in item.similares.slice(0, 5)"
+              :key="chaveEscolha(s)"
+              class="opcao-item"
+              :class="{ selecionada: escolhidos[item.id] === chaveEscolha(s), clicavel: podeDecidir(item) }"
+              @click="escolherMatch(item, s)"
+            >
+              <input
+                v-if="podeDecidir(item)"
+                type="radio"
+                :name="`match-${item.id}`"
+                :checked="escolhidos[item.id] === chaveEscolha(s)"
+                @change="escolherMatch(item, s)"
+              />
+              <div class="opcao-conteudo">
+                <div class="opcao-linha">
+                  <span class="opcao-id">{{ s.id }}</span>
+                  <span class="badge badge-permitir">{{ rotuloTipoMatch(s.tipo) }}</span>
+                  <span class="suave">|</span>
+                  <strong>{{ (s.descricao || '').toUpperCase() }}</strong>
+                  <span
+                    v-if="s.casoIsolado"
+                    class="badge-excecao"
+                    :title="'Caso especial registrado.' + (s.motivoCasoIsolado ? ' Motivo: ' + s.motivoCasoIsolado : '')"
+                  >!</span>
+                  <span class="match" :class="{ alerta: s.score < 0.88 }">{{ (s.score * 100).toFixed(0) }}% Match</span>
+                </div>
+                <div v-if="s.motivo" class="opcao-motivo">{{ s.motivo }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         
         <div class="linha-campo" style="margin-top: 14px">
@@ -175,6 +202,15 @@
             </button>
         </div>
         <div v-else-if="podeDecidir(item)" class="linha-botoes" style="margin-top: 12px">
+            <button
+              v-if="item.similares && item.similares.length"
+              class="botao botao-roxo"
+              :disabled="processando === item.id || !escolhidos[item.id]"
+              :title="escolhidos[item.id] ? 'O pedido segue reutilizando o código escolhido' : 'Escolha um dos matches acima'"
+              @click="pedirReutilizacao(item)"
+            >
+              ⇄ Reutilizar escolhido
+            </button>
             <button class="botao botao-verde" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'aprovar')">
               ✓ Aprovar cadastro
             </button>
@@ -205,6 +241,16 @@
       @confirmar="executarConfirmacao"
       @cancelar="confirmacao = null"
     />
+
+    <ModalConfirmacao
+      v-if="reutilizacao"
+      titulo="Reutilizar o código escolhido?"
+      :mensagem="`O pedido ${reutilizacao.item.identificador} será resolvido reutilizando ${reutilizacao.candidato.id} — ${reutilizacao.candidato.descricao}. A composição passa a apontar para este código, o código novo do pedido não entra no catálogo e a decisão fica registrada na auditoria.`"
+      rotulo-confirmar="⇄ Reutilizar e seguir"
+      :acao-perigosa="false"
+      @confirmar="executarReutilizacao"
+      @cancelar="reutilizacao = null"
+    />
   </div>
 </template>
 
@@ -213,7 +259,7 @@ import { computed, inject, onMounted, reactive, ref } from 'vue'
 import { api } from '../services/api'
 import { toast } from '../services/toast'
 import ModalConfirmacao from '../components/ModalConfirmacao.vue'
-import type { ItemGovernanca, ResumoGovernanca } from '../types'
+import type { CandidatoSimilar, ItemGovernanca, ResumoGovernanca } from '../types'
 
 interface GrupoUso { nome: string; quantidade: number }
 interface ResumoCompleto extends Partial<ResumoGovernanca> {
@@ -250,6 +296,65 @@ const temMais = ref(false)
 const totalFila = ref(0)
 const totalPaginas = computed(() => Math.max(1, Math.ceil(totalFila.value / tamanhoPagina)))
 const confirmacao = ref<{ titulo: string; mensagem: string; rotulo: string; perigosa: boolean; acao: string; item: ItemGovernanca } | null>(null)
+
+/* ============================================================================
+   O QUE O USUÁRIO NÃO ESCOLHEU — o radio do bloqueio de duplicidade que foi
+   ignorado ao enviar para a Governança. Quem decide vê os matches e pode
+   escolher um deles e seguir: o pedido é resolvido reutilizando o código
+   existente, em vez de criar outro igual.
+   ========================================================================== */
+const escolhidos = reactive<Record<string, string>>({})
+const reutilizacao = ref<{ item: ItemGovernanca; candidato: CandidatoSimilar } | null>(null)
+
+const TIPOS_MATCH: Record<string, string> = { CS: 'Serviço', GS: 'Grupo', CF: 'Fornecedor', UM: 'Unidade' }
+
+function rotuloTipoMatch(tipo?: string | null): string {
+  return TIPOS_MATCH[(tipo || 'CS').toUpperCase()] || 'Serviço'
+}
+
+function chaveEscolha(s: CandidatoSimilar): string {
+  return `${(s.tipo || 'CS').toUpperCase()}:${s.id}`
+}
+
+function escolherMatch(item: ItemGovernanca, s: CandidatoSimilar): void {
+  if (!podeDecidir(item)) return
+  escolhidos[item.id] = chaveEscolha(s)
+}
+
+function pedirReutilizacao(item: ItemGovernanca): void {
+  const chave = escolhidos[item.id]
+  const candidato = (item.similares || []).find((s) => chaveEscolha(s) === chave)
+  if (!candidato) {
+    toast.aviso('Escolha um dos matches acima para reutilizar.')
+    return
+  }
+  reutilizacao.value = { item, candidato }
+}
+
+async function executarReutilizacao(): Promise<void> {
+  const r = reutilizacao.value
+  if (!r || processando.value === r.item.id) return
+  reutilizacao.value = null
+  processando.value = r.item.id
+  try {
+    await api.reutilizarNovo(r.item.id, {
+      escolhidoId: r.candidato.id,
+      escolhidoTipo: r.candidato.tipo || 'CS',
+      aprovadoPor: props.usuario || 'governanca',
+      observacao: (observacoes[r.item.id] || '').trim() || null
+    })
+    toast.sucesso(
+      `Pedido ${r.item.identificador} resolvido reutilizando ${r.candidato.id} — ${r.candidato.descricao}.`
+    )
+    itens.value = itens.value.filter((i) => i.id !== r.item.id)
+    await carregar()
+    atualizarPendentes()
+  } catch (e) {
+    toast.erro((e as Error).message)
+  } finally {
+    processando.value = null
+  }
+}
 
 const rotuloFiltro = computed(() => ({
   PENDENTES: 'aguardando revisão', DUPLICIDADE: 'possíveis repetidos', ALERTA: 'em atenção',
@@ -468,15 +573,68 @@ onMounted(carregar)
   font-size: 0.95rem;
   line-height: 1.5;
 }
-.similares-detalhe {
+.nao-escolhidos {
   margin-top: 12px;
+  border: 1px dashed var(--borda);
+  border-radius: 10px;
+  padding: 12px 14px;
 }
-.similares-detalhe summary {
-  cursor: pointer;
-  color: var(--azul);
+.nao-escolhidos-cabecalho {
   font-size: 0.88rem;
-  font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.lista-selecao {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.opcao-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--fundo);
+  border: 1.5px solid var(--borda);
+  border-radius: 10px;
+  padding: 11px 14px;
+  transition: all 0.12s;
+}
+.opcao-item.clicavel {
+  cursor: pointer;
+}
+.opcao-item.clicavel:hover {
+  border-color: var(--azul);
+}
+.opcao-item.selecionada {
+  border-color: var(--azul);
+  background: var(--azul-claro);
+}
+.opcao-item input[type='radio'] {
+  margin-top: 3px;
+  accent-color: var(--azul);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.opcao-conteudo {
+  flex: 1;
+  min-width: 0;
+}
+.opcao-linha {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
+}
+.opcao-id {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em;
+  color: var(--texto-suave); opacity: 0.75;
+}
+.opcao-motivo {
+  margin-top: 5px;
+  color: var(--texto-suave);
+  font-size: 0.84rem;
 }
 @media (max-width: 1020px) {
   .grade-cards {

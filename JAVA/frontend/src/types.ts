@@ -58,6 +58,68 @@ export interface CandidatoSimilar {
   motivo: string
   casoIsolado?: boolean
   motivoCasoIsolado?: string | null
+  /** componente do match: CS, GS, CF ou UM (ausente = CS) */
+  tipo?: string | null
+}
+
+/** Linha da criação em massa — classificacao: DISPONIVEL | CRIAR | BLOQUEADA */
+export interface ItemLote {
+  linha: number
+  texto: string
+  classificacao: 'DISPONIVEL' | 'CRIAR' | 'BLOQUEADA'
+  situacao: string
+  motivo: string
+  decisao: string | null
+  melhorScore: number
+  similar: CandidatoSimilar | null
+}
+
+/** Resumo da criação em massa: "há X disponíveis, porém Y precisam ser criados" */
+export interface LoteSimilaridade {
+  tipo: string
+  total: number
+  disponiveis: number
+  aCriar: number
+  bloqueadas: number
+  itens: ItemLote[]
+}
+
+/**
+ * Código de Serviço escolhido na vinculação em massa (checkbox).
+ * csId presente = já existe no catálogo (reutilizado); ausente = precisa ser criado.
+ */
+export interface ItemCsMassa {
+  chave: string
+  texto: string
+  csId: string | null
+  classificacao: 'DISPONIVEL' | 'CRIAR'
+  situacao: string
+  motivo: string
+  match: { id: string; descricao: string; score: number } | null
+}
+
+export interface ItemVinculacaoLote {
+  linha: number
+  texto: string
+  classificacao: 'DISPONIVEL' | 'CRIAR' | 'BLOQUEADA' | 'FALHA'
+  situacao: string
+  motivo: string
+  csId: string | null
+  idCompleto: string | null
+  idRegistro: string | null
+  status: string | null
+  requisicaoRepetida: boolean
+}
+
+export interface ResultadoVinculacaoLote {
+  total: number
+  disponiveis: number
+  criados: number
+  vinculados: number
+  aguardandoValidacao: number
+  bloqueadas: number
+  falhas: number
+  itens: ItemVinculacaoLote[]
 }
 
 export interface SimilaridadeResponse {

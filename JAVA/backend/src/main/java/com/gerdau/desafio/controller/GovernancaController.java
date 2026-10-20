@@ -1,6 +1,7 @@
 package com.gerdau.desafio.controller;
 
 import com.gerdau.desafio.dto.request.GovernancaDecisaoRequest;
+import com.gerdau.desafio.dto.request.GovernancaReutilizarRequest;
 import com.gerdau.desafio.dto.request.RevisaoMatrizRequest;
 import com.gerdau.desafio.dto.response.ExcecaoResponse;
 import com.gerdau.desafio.dto.response.ItemGovernancaResponse;
@@ -96,6 +97,15 @@ public class GovernancaController {
     public ResponseEntity<ItemGovernancaResponse> rejeitarNovo(
             @PathVariable String id, @Valid @RequestBody GovernancaDecisaoRequest request) {
         return ResponseEntity.ok(service.rejeitarNovo(id, request));
+    }
+
+    @PostMapping("/pendentes/{id}/reutilizar")
+    @Operation(summary = "Reutilizar um dos matches ignorados pelo solicitante (decisão da Governança)",
+            description = "Resolve o pedido apontando a composição para o código existente escolhido "
+                    + "e aprova como reutilização — o código novo do pedido não entra no catálogo.")
+    public ResponseEntity<ItemGovernancaResponse> reutilizarNovo(
+            @PathVariable String id, @Valid @RequestBody GovernancaReutilizarRequest request) {
+        return ResponseEntity.ok(service.reutilizarNovo(id, request));
     }
 
     @GetMapping("/excecoes")

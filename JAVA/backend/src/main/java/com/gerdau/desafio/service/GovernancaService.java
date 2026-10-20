@@ -1,6 +1,8 @@
 package com.gerdau.desafio.service;
 
 import com.gerdau.desafio.dto.request.GovernancaDecisaoRequest;
+import com.gerdau.desafio.dto.request.GovernancaReutilizarRequest;
+import com.gerdau.desafio.dto.request.PreviewRequest;
 import com.gerdau.desafio.dto.request.RevisaoMatrizRequest;
 import com.gerdau.desafio.dto.response.CandidatoSimilarResponse;
 import com.gerdau.desafio.dto.response.ExcecaoResponse;
@@ -40,6 +42,7 @@ public class GovernancaService {
     private final EventoAuditoriaRepository eventoAuditoriaRepository;
     private final AuditoriaService auditoriaService;
     private final CatalogoService catalogoService;
+    private final PreviewService previewService;
     private final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate;
 
     public GovernancaService(MatrizDeParaRepository matrizDeParaRepository,
@@ -48,6 +51,7 @@ public class GovernancaService {
                              EventoAuditoriaRepository eventoAuditoriaRepository,
                              AuditoriaService auditoriaService,
                              CatalogoService catalogoService,
+                             PreviewService previewService,
                              org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
         this.matrizDeParaRepository = matrizDeParaRepository;
         this.codigoCompletoRepository = codigoCompletoRepository;
@@ -55,6 +59,7 @@ public class GovernancaService {
         this.eventoAuditoriaRepository = eventoAuditoriaRepository;
         this.auditoriaService = auditoriaService;
         this.catalogoService = catalogoService;
+        this.previewService = previewService;
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -232,6 +237,87 @@ public class GovernancaService {
                 salvo.getIdCompleto(), salvo.getDecisaoSimilaridade(), request.observacao(),
                 java.util.List.of(), java.util.List.of(), request.aprovadoPor());
         log.info("[GOVERNANCA] Rejeitado: idCompleto={} por {}", salvo.getIdCompleto(), request.aprovadoPor());
+        return paraItemNovo(salvo);
+    }
+
+    /**
+     * Decide um pedido novo reutilizando um dos matches que o solicitante NÃO escolheu
+     * (o radio do bloqueio de duplicidade que foi ignorado ao enviar para a Governança).
+     *
+     * "A Governança escolhe e segue": em vez de aprovar/rejeitar às cegas, quem decide
+     * pode apontar o código existente certo e o pedido continua por ele:
+     *   - a composição passa a referenciar o código existente escolhido;
+     *   - o componente que nasceu com o pedido e ficou sem uso sai de cena (não vira órfão);
+     *   - o pedido é aprovado como REUTILIZAÇÃO — o catálogo não ganha duplicata.
+     */
+    public ItemGovernancaResponse reutilizarNovo(String id, GovernancaReutilizarRequest request) {
+        CodigoCompleto model = exigirPendenteNovo(id);
+        String escolhidoId = request.escolhidoId() == null ? "" : request.escolhidoId().trim();
+        RegistroSimilar escolhido = (model.getSimilaresRegistrados() == null
+                ? List.<RegistroSimilar>of() : model.getSimilaresRegistrados())
+                .stream()
+                .filter(s -> escolhidoId.equals(s.getId()))
+                .findFirst()
+                .orElseThrow(() -> new BusinessException("O item " + escolhidoId
+                        + " não está entre os similares registrados deste pedido — "
+                        + "só é possível reutilizar um dos matches apresentados ao solicitante."));
+        String tipo = request.escolhidoTipo() == null || request.escolhidoTipo().isBlank()
+                ? escolhido.getTipo()
+                : request.escolhidoTipo().trim().toUpperCase(java.util.Locale.ROOT);
+
+        // o componente que nasceu com o pedido (e não serve mais) não pode ficar órfão
+        boolean gsEmUso = codigoCompletoRepository.contarOutrosGs(model.getGsId(), model.getId()) > 0;
+        boolean cfEmUso = codigoCompletoRepository.contarOutrosCf(model.getCfId(), model.getId()) > 0;
+        boolean csEmUso = codigoCompletoRepository.contarOutrosCs(model.getCsId(), model.getId()) > 0;
+        boolean umEmUso = codigoCompletoRepository.contarOutrosUm(model.getUmId(), model.getId()) > 0;
+        catalogoService.desativarPendentesNaoUsados(model, gsEmUso, cfEmUso, csEmUso, umEmUso);
+
+        // a composição passa a apontar para o código existente escolhido
+        String substituido = switch (tipo) {
+            case "GS" -> {
+                String antes = model.getGsId();
+                model.setGsId(escolhido.getId());
+                yield antes;
+            }
+            case "CF" -> {
+                String antes = model.getCfId();
+                model.setCfId(escolhido.getId());
+                yield antes;
+            }
+            case "UM" -> {
+                String antes = model.getUmId();
+                model.setUmId(escolhido.getId());
+                yield antes;
+            }
+            default -> {
+                String antes = model.getCsId();
+                model.setCsId(escolhido.getId());
+                yield antes;
+            }
+        };
+        PreviewService.ComponentesResolvidos resolvidos = previewService.resolver(new PreviewRequest(
+                model.getGsId(), null, model.getCfId(), null, null,
+                model.getCsId(), null, model.getUmId(), null, null), false);
+        model.setIdCompleto(PreviewService.montarIdCompleto(resolvidos));
+        model.setDescricaoSnapshot(previewService.montarSnapshot(resolvidos));
+
+        String motivo = request.observacao() == null ? "" : request.observacao().trim();
+        String observacao = "Reutilização decidida na Governança — código " + escolhido.getId()
+                + " (" + escolhido.getDescricao() + ") no lugar de " + substituido
+                + (motivo.isEmpty() ? "" : " — " + motivo);
+        model.setStatus(CodigoCompleto.STATUS_ATIVO);
+        catalogoService.definirStatusComponentes(model, StatusComponente.ATIVO);
+        model.setAprovadoPor(request.aprovadoPor());
+        model.setObservacaoAprovacao(observacao);
+        model.setAprovadoEm(Instant.now());
+        CodigoCompleto salvo = codigoCompletoRepository.save(model);
+
+        auditoriaService.registrar(EventoAuditoria.ACAO_REUTILIZACAO, "CODIGO_COMPLETO",
+                salvo.getIdCompleto(), salvo.getDecisaoSimilaridade(), observacao,
+                java.util.List.of(escolhido.getId()), java.util.List.of(escolhido.getScore()),
+                request.aprovadoPor());
+        log.info("[GOVERNANCA] Reutilizado: idCompleto={} -> {} ({}) por {}",
+                salvo.getIdCompleto(), escolhido.getId(), tipo, request.aprovadoPor());
         return paraItemNovo(salvo);
     }
 
@@ -554,7 +640,8 @@ public class GovernancaService {
                 ? List.<RegistroSimilar>of() : c.getSimilaresRegistrados())
                 .stream()
                 .map(s -> new CandidatoSimilarResponse(s.getPosicao(), s.getId(), s.getCodigoOriginal(), s.getDescricao(),
-                        s.getScore(), 0.0, 0.0, List.of(), s.getMotivo(), s.isCasoIsolado(), s.getMotivoCasoIsolado()))
+                        s.getScore(), 0.0, 0.0, List.of(), s.getMotivo(), s.isCasoIsolado(), s.getMotivoCasoIsolado(),
+                        s.getTipo()))
                 .toList();
         CodigoServico csNovo = mongoTemplate.findById(c.getCsId(), CodigoServico.class);
         boolean casoIsolado = c.getDecisaoSimilaridade() != null && !"PERMITIR".equals(c.getDecisaoSimilaridade());

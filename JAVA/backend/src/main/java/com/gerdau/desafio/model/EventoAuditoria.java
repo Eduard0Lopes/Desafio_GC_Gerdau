@@ -22,6 +22,7 @@ public class EventoAuditoria {
     public static final String ACAO_EXCECAO = "EXCECAO";
     public static final String ACAO_APROVACAO = "APROVACAO";
     public static final String ACAO_REJEICAO = "REJEICAO";
+    public static final String ACAO_REUTILIZACAO = "REUTILIZACAO";
     public static final String ACAO_REVISAO_HISTORICA = "REVISAO_HISTORICA";
     public static final String ACAO_ALTERACAO_PEDIDO = "ALTERACAO_PEDIDO";
     public static final String ACAO_CANCELAMENTO_PEDIDO = "CANCELAMENTO_PEDIDO";

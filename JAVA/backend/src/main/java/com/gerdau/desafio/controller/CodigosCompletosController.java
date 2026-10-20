@@ -2,9 +2,12 @@ package com.gerdau.desafio.controller;
 
 import com.gerdau.desafio.dto.request.CriarCodigoCompletoRequest;
 import com.gerdau.desafio.dto.request.PreviewRequest;
+import com.gerdau.desafio.dto.request.VinculacaoLoteRequest;
 import com.gerdau.desafio.dto.response.CodigoCompletoResponse;
+import com.gerdau.desafio.dto.response.LoteVinculacaoResponse;
 import com.gerdau.desafio.dto.response.PreviewResponse;
 import com.gerdau.desafio.service.CodigoCompletoService;
+import com.gerdau.desafio.service.VinculacaoLoteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,9 +23,11 @@ import java.util.List;
 public class CodigosCompletosController {
 
     private final CodigoCompletoService service;
+    private final VinculacaoLoteService vinculacaoLoteService;
 
-    public CodigosCompletosController(CodigoCompletoService service) {
+    public CodigosCompletosController(CodigoCompletoService service, VinculacaoLoteService vinculacaoLoteService) {
         this.service = service;
+        this.vinculacaoLoteService = vinculacaoLoteService;
     }
 
     @GetMapping
@@ -58,6 +63,19 @@ public class CodigosCompletosController {
         return ResponseEntity
                 .status(resultado.requisicaoRepetida() ? HttpStatus.OK : HttpStatus.CREATED)
                 .body(resultado.resposta());
+    }
+
+    @PostMapping("/lote")
+    @Operation(summary = "Vincular vários Códigos de Serviço de uma vez (vinculação em massa)",
+            description = "Grupo de Serviço, Código de Fornecedor e Unidade de Medida fixos para toda a "
+                    + "lista. Cada item é resolvido pelas regras de negócio: código existente é "
+                    + "reutilizado, código novo é criado e, havendo similaridade alertada, o pedido vai "
+                    + "para a Governança. Uma linha que falha não derruba as demais.")
+    public ResponseEntity<LoteVinculacaoResponse> vincularEmLote(
+            @Valid @RequestBody VinculacaoLoteRequest request,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(vinculacaoLoteService.vincularEmLote(request, idempotencyKey));
     }
 
     @PatchMapping("/{id}")

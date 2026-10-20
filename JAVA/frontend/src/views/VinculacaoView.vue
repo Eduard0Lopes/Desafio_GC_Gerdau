@@ -1,6 +1,24 @@
 <template>
   <div>
-    
+    <div class="modos-vinculo">
+      <button
+        type="button"
+        class="aba"
+        :class="{ ativa: modoVinculo === 'unico' }"
+        @click="modoVinculo = 'unico'"
+      >
+        Vínculo único
+      </button>
+      <button
+        type="button"
+        class="aba"
+        :class="{ ativa: modoVinculo === 'massa' }"
+        @click="modoVinculo = 'massa'"
+      >
+        Vincular em massa
+      </button>
+    </div>
+
     <section class="grade-seletores">
       <div class="painel">
         <label class="painel-rotulo">Grupo de Serviço</label>
@@ -32,7 +50,7 @@
         />
       </div>
 
-      <div class="painel">
+      <div v-if="modoVinculo === 'unico'" class="painel">
         <label class="painel-rotulo">Código de Serviço</label>
         <ComboboxBusca
           ref="cbCs"
@@ -66,7 +84,12 @@
 
     
     <div class="linha-botoes">
-      <button class="botao botao-roxo" :disabled="!completo || processando" @click="vincular">
+      <button
+        v-if="modoVinculo === 'unico'"
+        class="botao botao-roxo"
+        :disabled="!completo || processando"
+        @click="vincular"
+      >
         {{ processando ? 'Processando…' : 'Vincular Serviço' }}
       </button>
       <button class="botao botao-escuro" @click="irParaCadastro('Código de Serviço', '')">
@@ -74,6 +97,16 @@
       </button>
       <button class="botao botao-escuro" @click="limpar">Limpar</button>
     </div>
+
+    <VinculacaoMassa
+      v-if="modoVinculo === 'massa'"
+      :key="chaveMassa"
+      :gs="gs"
+      :cf="cf"
+      :um="um"
+      :usuario="props.usuario"
+      @vinculado="aoVincularEmMassa"
+    />
 
     
     <div v-if="modalPreview" class="modal-fundo" @click.self="modalPreview = false">
@@ -241,6 +274,12 @@
             <strong>Vincular Serviço</strong>. Você verá uma prévia com o código completo e a
             decisão antes de confirmar.
           </p>
+          <p class="suave" style="margin: 10px 0 0; line-height: 1.6">
+            Para vários de uma vez, use a aba <strong>Vincular em massa</strong>: escolha Grupo,
+            Fornecedor e Unidade uma vez, marque os Códigos de Serviço com checkbox (buscando ou
+            colando a lista) e o sistema avisa quantos <strong>já estão disponíveis</strong> e quantos
+            <strong>precisam ser criados</strong> antes de vincular todos.
+          </p>
         </div>
 
         <div class="painel">
@@ -316,7 +355,8 @@ import ModalBloqueio from '../components/ModalBloqueio.vue'
 import ModalConfirmacao from '../components/ModalConfirmacao.vue'
 import ModalGovernanca from '../components/ModalGovernanca.vue'
 import ModalPedidoPendente from '../components/ModalPedidoPendente.vue'
-import type { CandidatoSimilar, CodigoCompletoResponse, CriarCodigoCompletoPayload, PreviewResponse } from '../types'
+import VinculacaoMassa from './VinculacaoMassa.vue'
+import type { CandidatoSimilar, CodigoCompletoResponse, CriarCodigoCompletoPayload, PreviewResponse, ResultadoVinculacaoLote } from '../types'
 
 type Item = Record<string, unknown>
 
@@ -333,6 +373,20 @@ const atualizarPendentes = inject<() => void>('atualizarPendentes', () => {})
 
 const isAdmin = computed(() => props.papel === 'ADMIN')
 const guiaAberto = ref(false)
+
+// vínculo único (o fluxo clássico) ou vinculação em massa (vários CS de uma vez)
+const modoVinculo = ref<'unico' | 'massa'>('unico')
+const chaveMassa = ref(0)
+
+function aoVincularEmMassa(resultado: ResultadoVinculacaoLote): void {
+  atualizarPendentes()
+  void carregarResumoAdmin()
+  if (resultado.aguardandoValidacao) {
+    toast.aviso(
+      `${resultado.aguardandoValidacao} pedido(s) aguardando validação da Governança — acompanhe no Painel Admin.`
+    )
+  }
+}
 const est = ref<Partial<import('../types').Estatisticas>>({})
 
 async function carregarResumoAdmin(): Promise<void> {
@@ -700,6 +754,7 @@ function limpar(): void {
   preview.value = null
   sucesso.value = null
   modalPreview.value = modalBloqueio.value = modalGovernanca.value = false
+  chaveMassa.value++ // recomeça também a seleção da vinculação em massa
   fecharPedido()
 }
 
@@ -740,3 +795,30 @@ onMounted(() => {
 })
 watch(() => props.papel, carregarResumoAdmin)
 </script>
+
+<style scoped>
+.modos-vinculo {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 18px;
+  border-bottom: 2px solid var(--borda);
+  padding-bottom: 10px;
+}
+.modos-vinculo .aba {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 9px 18px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+.modos-vinculo .aba:hover {
+  color: var(--azul);
+}
+.modos-vinculo .aba.ativa {
+  background: var(--azul);
+  color: var(--texto-sobre-azul);
+}
+</style>

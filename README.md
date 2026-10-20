@@ -53,6 +53,7 @@ ambiente: [`docs/COMO-RODAR.md`](docs/COMO-RODAR.md).
 | Tela | Descrição |
 |---|---|
 | **Vinculação** | 4 seletores com busca incremental → *Vincular Serviço* / *Cadastrar Novo Item* / *Limpar* |
+| **Vincular em massa** | GS/CF/UM uma vez + Códigos de Serviço marcados com checkbox (busca ou lista colada) → aviso *"há X disponíveis — porém Y precisam ser criados"* → vincula todos; o que tem similaridade alertada vai para a Governança |
 | **Cadastrar Novo Item** | tipo, descrição (contador `n/40 Caracteres SAP`), unidade → *Salvar* / *Verificar Similaridade* / *Voltar* |
 | **Bloqueio de Duplicidade** | itens semelhantes com `% Match` → *Reutilizar* / *Enviar para Governança* / *Voltar* |
 | **Envio para Governança** | aviso de validação humana + justificativa → *Confirmar* |

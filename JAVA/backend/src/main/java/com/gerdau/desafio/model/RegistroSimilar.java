@@ -33,11 +33,23 @@ public class RegistroSimilar {
     @Field("motivoCasoIsolado")
     private String motivoCasoIsolado;
 
+    /**
+     * Componente ao qual o match pertence (CS, GS, CF ou UM). Documentos antigos
+     * ficam sem o campo e valem como "CS" (ver {@link #getTipo()}).
+     */
+    @Field("tipo")
+    private String tipo;
+
     public RegistroSimilar() {
     }
 
     public RegistroSimilar(int posicao, String id, String codigoOriginal, String descricao,
                            double score, String motivo, boolean casoIsolado, String motivoCasoIsolado) {
+        this(posicao, id, codigoOriginal, descricao, score, motivo, casoIsolado, motivoCasoIsolado, "CS");
+    }
+
+    public RegistroSimilar(int posicao, String id, String codigoOriginal, String descricao,
+                           double score, String motivo, boolean casoIsolado, String motivoCasoIsolado, String tipo) {
         this.posicao = posicao;
         this.id = id;
         this.codigoOriginal = codigoOriginal;
@@ -46,6 +58,7 @@ public class RegistroSimilar {
         this.motivo = motivo;
         this.casoIsolado = casoIsolado;
         this.motivoCasoIsolado = motivoCasoIsolado;
+        this.tipo = tipo;
     }
 
     public int getPosicao() {
@@ -110,5 +123,13 @@ public class RegistroSimilar {
 
     public void setMotivoCasoIsolado(String motivoCasoIsolado) {
         this.motivoCasoIsolado = motivoCasoIsolado;
+    }
+
+    public String getTipo() {
+        return tipo == null || tipo.isBlank() ? "CS" : tipo.trim().toUpperCase(java.util.Locale.ROOT);
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 }

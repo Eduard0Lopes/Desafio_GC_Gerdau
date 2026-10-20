@@ -37,8 +37,10 @@ somente leitura) todos aparecem com o selo de status.
 | Método | Rota | Descrição |
 |---|---|---|
 | GET/POST | `/itens/similaridade?descricao=&limite=&tipo=` | similares (tipo: CS/GS/CF/UM) |
+| POST | `/itens/similaridade/lote` | avaliação em massa: diz `disponiveis` / `aCriar` / `bloqueadas` por linha |
 | POST | `/codigos-completos/preview` | prévia com decisão (não grava) |
 | POST | `/codigos-completos` | cria com governança (aceita `Idempotency-Key`) |
+| POST | `/codigos-completos/lote` | vinculação em massa: GS/CF/UM fixos + vários CS (reutiliza o disponível, cria o novo, manda para a Governança o que tem similaridade alertada) |
 | GET | `/codigos-completos?status=` | lista por status |
 | GET | `/codigos-completos/{id}` | detalhe |
 
@@ -51,6 +53,7 @@ somente leitura) todos aparecem com o selo de status.
 | POST | `/governanca/historico/{id}/revisar` | revisão do histórico (reviewedBy/reviewedAt) |
 | POST | `/governanca/pendentes/{id}/aprovar` | aprova novo cadastro (ativa os componentes criados no envio) |
 | POST | `/governanca/pendentes/{id}/rejeitar` | rejeita novo cadastro (componentes ficam fora de circulação) |
+| POST | `/governanca/pendentes/{id}/reutilizar` | a Governança escolhe um dos matches ignorados (`escolhidoId`/`escolhidoTipo`) e o pedido segue reutilizando o código — o código novo não entra no catálogo |
 | GET | `/governanca/excecoes` | auditoria (últimas 50) |
 
 ## Matriz de-para (seção 9.6)
@@ -93,5 +96,42 @@ Headers: { "Idempotency-Key": "uuid" }          // opcional (seção 10.3)
 GET /api/v1/itens/similaridade?descricao=SV-EQUIPE TELHADO&limite=3
 → { "decisao": "REVISAR", "candidatos": [ { "id": "CS-130835", "score": 1.0, "motivo": "…" } ] }
 ```
+
+## Exemplo — vinculação em massa
+
+Primeiro a tela de informação avalia os códigos escolhidos:
+
+```
+POST /api/v1/itens/similaridade/lote
+{ "tipo": "CS", "textos": ["SV EQUIPE TELHADO", "SV MONTAGEM PIPA", "SV EQUIPE TELHADO"] }
+→ {
+    "total": 3, "disponiveis": 1, "aCriar": 1, "bloqueadas": 1,
+    "itens": [
+      { "linha": 1, "classificacao": "DISPONIVEL", "situacao": "JA_EXISTE", "similar": { "id": "CS-130835", … } },
+      { "linha": 2, "classificacao": "CRIAR", "situacao": "OK", … },
+      { "linha": 3, "classificacao": "BLOQUEADA", "situacao": "REPETIDA", … }
+    ]
+  }
+```
+
+`classificacao`: `DISPONIVEL` (já existe — reutilizar) | `CRIAR` (precisa ser criado) | `BLOQUEADA`
+(vazia, repetida na lista ou acima do limite SAP). É o aviso da tela de informação:
+**"há X disponíveis, porém Y precisam ser criados"**.
+
+Depois a vinculação em massa (GS/CF/UM fixos + vários CS):
+
+```
+POST /api/v1/codigos-completos/lote
+{ "gsId": "CIVIL", "cfId": "1440531", "umId": "UN",
+  "itens": [ { "csId": "CS-130835" }, { "texto": "SV MONTAGEM PIPA" } ] }
+→ {
+    "total": 2, "disponiveis": 1, "criados": 1, "vinculados": 2,
+    "aguardandoValidacao": 0, "bloqueadas": 0, "falhas": 0, "itens": [ … ]
+  }
+```
+
+Por linha: `csId` reutiliza o código existente; `texto` cria o código novo — e, havendo
+similaridade alertada, o pedido vai para a Governança (`aguardandoValidacao`), que vê os
+matches que o usuário não escolheu e pode decidir reutilizar um deles.
 
 Swagger interativo: **http://localhost:8080/swagger-ui.html**
