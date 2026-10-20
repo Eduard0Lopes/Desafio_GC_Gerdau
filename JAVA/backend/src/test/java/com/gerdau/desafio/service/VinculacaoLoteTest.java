@@ -116,7 +116,7 @@ class VinculacaoLoteTest {
     void codigoExistenteEscolhidoEhReutilizadoENadaEhCriado() {
         LoteVinculacaoResponse resposta = vincular(new ItemVinculacaoLote("CS-EXIST", null));
 
-        assertEquals(1, resposta.disponiveis());
+        assertEquals(1, resposta.reutilizados());
         assertEquals(0, resposta.criados());
         assertEquals(1, resposta.vinculados());
         assertEquals("CS-EXIST", enviados.get(0).csId());
@@ -144,6 +144,7 @@ class VinculacaoLoteTest {
 
         assertEquals(1, resposta.aguardandoValidacao());
         assertEquals(0, resposta.vinculados());
+        assertEquals("ALERTAR", resposta.itens().get(0).decisao());
         assertEquals(PreviewService.ACAO_ENVIAR_VALIDACAO, enviados.get(0).acao());
         assertNotNull(enviados.get(0).justificativa());
     }
@@ -154,7 +155,7 @@ class VinculacaoLoteTest {
 
         LoteVinculacaoResponse resposta = vincular(new ItemVinculacaoLote(null, "SV EQUIPE TELHADO 2"));
 
-        assertEquals(1, resposta.disponiveis());
+        assertEquals(1, resposta.reutilizados());
         assertEquals("CS-0001", resposta.itens().get(0).csId());
         assertEquals("CS-0001", enviados.get(0).csId());
     }
@@ -165,7 +166,8 @@ class VinculacaoLoteTest {
 
         LoteVinculacaoResponse resposta = vincular(new ItemVinculacaoLote(null, "SV REPETIDO"));
 
-        assertEquals(1, resposta.bloqueadas());
+        assertEquals("BLOQUEADA", resposta.itens().get(0).classificacao());
+        assertEquals(0, resposta.vinculados());
         verify(codigoCompletoService, never()).criar(any(), any());
     }
 
@@ -180,7 +182,22 @@ class VinculacaoLoteTest {
                 new ItemVinculacaoLote(null, "SV RUIM"));
 
         assertEquals(1, resposta.vinculados());
-        assertEquals(1, resposta.falhas());
         assertEquals("FALHA", resposta.itens().get(1).classificacao());
+    }
+
+    @Test
+    void linhasRepetidasNaoSaoBarradasEViramVinculosIndependentes() {
+        classificar("SV MONTAGEM PIPA", "CRIAR", "OK", "PERMITIR", null);
+
+        LoteVinculacaoResponse resposta = vincular(
+                new ItemVinculacaoLote(null, "SV MONTAGEM PIPA"),
+                new ItemVinculacaoLote(null, "SV MONTAGEM PIPA"),
+                new ItemVinculacaoLote("CS-EXIST", null),
+                new ItemVinculacaoLote("CS-EXIST", null));
+
+        // cada ocorrência vira um vínculo próprio — nada é barrado por repetição
+        assertEquals(2, resposta.criados());
+        assertEquals(2, resposta.reutilizados());
+        assertEquals(4, resposta.vinculados());
     }
 }

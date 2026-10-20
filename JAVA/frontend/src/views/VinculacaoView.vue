@@ -1,112 +1,148 @@
 <template>
   <div>
-    <div class="modos-vinculo">
+    <div class="modos-vinculo" role="tablist" aria-label="Modo de vinculação">
       <button
         type="button"
+        role="tab"
         class="aba"
         :class="{ ativa: modoVinculo === 'unico' }"
+        :aria-selected="modoVinculo === 'unico'"
         @click="modoVinculo = 'unico'"
       >
-        Vínculo único
+        <svg class="aba-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+        </svg>
+        <span class="aba-texto">
+          <strong>Vínculo único</strong>
+          <small>um serviço por vez</small>
+        </span>
       </button>
       <button
         type="button"
+        role="tab"
         class="aba"
         :class="{ ativa: modoVinculo === 'massa' }"
+        :aria-selected="modoVinculo === 'massa'"
         @click="modoVinculo = 'massa'"
       >
-        Vincular em massa
+        <svg class="aba-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
+          <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
+          <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
+        </svg>
+        <span class="aba-texto">
+          <strong>Vincular em massa</strong>
+          <small>vários de uma vez</small>
+        </span>
       </button>
     </div>
 
-    <section class="grade-seletores">
-      <div class="painel">
-        <label class="painel-rotulo">Grupo de Serviço</label>
-        <ComboboxBusca
-          ref="cbGs"
-          placeholder="Digite para buscar…"
-          :carregar="api.gruposServico.listar"
-          :nomeDe="(i: any) => String(i.nome)"
-          :idDe="() => ''"
-          :permiteExcluir="isAdmin"
-          v-model="gs"
-          @criarNovo="(t: string) => irParaCadastro('Grupo de Serviço', t)"
-          @excluir="(i: any) => pedirExclusao(i, 'GS')"
-        />
+    <p class="modos-dica">
+      <template v-if="modoVinculo === 'unico'">
+        Escolha Grupo, Fornecedor, Código de Serviço e Unidade — e veja a prévia antes de confirmar.
+      </template>
+      <template v-else>
+        Escolha Grupo, Fornecedor e Unidade <strong>uma vez</strong>: eles valem para todos os códigos
+        que você marcar na lista.
+      </template>
+    </p>
+
+    <!-- em massa, composição e códigos num fluxo só; no vínculo único, os 4 painéis clássicos -->
+    <div :class="modoVinculo === 'massa' ? 'painel painel-massa' : ''">
+      <label v-if="modoVinculo === 'massa'" class="painel-rotulo">1 · Composição do vínculo</label>
+
+      <section class="grade-seletores" :class="{ 'tres-colunas': modoVinculo === 'massa' }">
+        <div class="painel">
+          <label class="painel-rotulo">Grupo de Serviço</label>
+          <ComboboxBusca
+            ref="cbGs"
+            placeholder="Digite para buscar…"
+            :carregar="api.gruposServico.listar"
+            :nomeDe="(i: any) => String(i.nome)"
+            :idDe="() => ''"
+            :permiteExcluir="isAdmin"
+            v-model="gs"
+            @criarNovo="(t: string) => irParaCadastro('Grupo de Serviço', t)"
+            @excluir="(i: any) => pedirExclusao(i, 'GS')"
+          />
+        </div>
+
+        <div class="painel">
+          <label class="painel-rotulo">Código de Fornecedor</label>
+          <ComboboxBusca
+            ref="cbCf"
+            placeholder="Digite para buscar…"
+            :carregar="api.codigosFornecedor.listar"
+            :nomeDe="(i: any) => String(i.nome)"
+            :idDe="(i: any) => String(i.codigoFornecedorSAP || i.id)"
+            :permiteExcluir="isAdmin"
+            v-model="cf"
+            @criarNovo="(t: string) => irParaCadastro('Código de Fornecedor', t)"
+            @excluir="(i: any) => pedirExclusao(i, 'CF')"
+          />
+        </div>
+
+        <div v-if="modoVinculo === 'unico'" class="painel">
+          <label class="painel-rotulo">Código de Serviço</label>
+          <ComboboxBusca
+            ref="cbCs"
+            placeholder="Digite para buscar…"
+            :carregar="api.codigosServico.listar"
+            :nomeDe="(i: any) => String(i.descricao)"
+            :idDe="(i: any) => String(i.id)"
+            :sapDe="(i: any) => `${i.quantidadeCaracteres ?? String(i.descricao || '').length}/40 SAP`"
+            :permiteExcluir="isAdmin"
+            v-model="cs"
+            @criarNovo="(t: string) => irParaCadastro('Código de Serviço', t)"
+            @excluir="(i: any) => pedirExclusao(i, 'CS')"
+          />
+        </div>
+
+        <div class="painel">
+          <label class="painel-rotulo">Unidade de Medida</label>
+          <ComboboxBusca
+            ref="cbUm"
+            placeholder="Digite para buscar…"
+            :carregar="api.unidadesMedida.listar"
+            :nomeDe="(i: any) => `${i.sigla} - ${i.nome}`"
+            :idDe="() => ''"
+            :permiteExcluir="isAdmin"
+            v-model="um"
+            @criarNovo="(t: string) => irParaCadastro('Unidade de Medida', t)"
+            @excluir="(i: any) => pedirExclusao(i, 'UM')"
+          />
+        </div>
+      </section>
+
+      <div v-if="modoVinculo === 'unico'" class="linha-botoes">
+        <button
+          class="botao botao-roxo"
+          :disabled="!completo || processando"
+          @click="vincular"
+        >
+          {{ processando ? 'Processando…' : 'Vincular Serviço' }}
+        </button>
+        <button class="botao botao-escuro" @click="irParaCadastro('Código de Serviço', '')">
+          Cadastrar Novo Item
+        </button>
+        <button class="botao botao-escuro" @click="limpar">Limpar tudo</button>
       </div>
 
-      <div class="painel">
-        <label class="painel-rotulo">Código de Fornecedor</label>
-        <ComboboxBusca
-          ref="cbCf"
-          placeholder="Digite para buscar…"
-          :carregar="api.codigosFornecedor.listar"
-          :nomeDe="(i: any) => String(i.nome)"
-          :idDe="(i: any) => String(i.codigoFornecedorSAP || i.id)"
-          :permiteExcluir="isAdmin"
-          v-model="cf"
-          @criarNovo="(t: string) => irParaCadastro('Código de Fornecedor', t)"
-          @excluir="(i: any) => pedirExclusao(i, 'CF')"
+      <template v-if="modoVinculo === 'massa'">
+        <label class="painel-rotulo">2 · Códigos de Serviço</label>
+        <VinculacaoMassa
+          :key="chaveMassa"
+          :gs="gs"
+          :cf="cf"
+          :um="um"
+          :usuario="props.usuario"
+          @vinculado="aoVincularEmMassa"
+          @cadastrar="irParaCadastro('Código de Serviço', '')"
+          @limpar="limpar"
         />
-      </div>
-
-      <div v-if="modoVinculo === 'unico'" class="painel">
-        <label class="painel-rotulo">Código de Serviço</label>
-        <ComboboxBusca
-          ref="cbCs"
-          placeholder="Digite para buscar…"
-          :carregar="api.codigosServico.listar"
-          :nomeDe="(i: any) => String(i.descricao)"
-          :idDe="(i: any) => String(i.id)"
-          :sapDe="(i: any) => `${i.quantidadeCaracteres ?? String(i.descricao || '').length}/40 SAP`"
-          :permiteExcluir="isAdmin"
-          v-model="cs"
-          @criarNovo="(t: string) => irParaCadastro('Código de Serviço', t)"
-          @excluir="(i: any) => pedirExclusao(i, 'CS')"
-        />
-      </div>
-
-      <div class="painel">
-        <label class="painel-rotulo">Unidade de Medida</label>
-        <ComboboxBusca
-          ref="cbUm"
-          placeholder="Digite para buscar…"
-          :carregar="api.unidadesMedida.listar"
-          :nomeDe="(i: any) => `${i.sigla} - ${i.nome}`"
-          :idDe="() => ''"
-          :permiteExcluir="isAdmin"
-          v-model="um"
-          @criarNovo="(t: string) => irParaCadastro('Unidade de Medida', t)"
-          @excluir="(i: any) => pedirExclusao(i, 'UM')"
-        />
-      </div>
-    </section>
-
-    
-    <div class="linha-botoes">
-      <button
-        v-if="modoVinculo === 'unico'"
-        class="botao botao-roxo"
-        :disabled="!completo || processando"
-        @click="vincular"
-      >
-        {{ processando ? 'Processando…' : 'Vincular Serviço' }}
-      </button>
-      <button class="botao botao-escuro" @click="irParaCadastro('Código de Serviço', '')">
-        Cadastrar Novo Item
-      </button>
-      <button class="botao botao-escuro" @click="limpar">Limpar</button>
+      </template>
     </div>
-
-    <VinculacaoMassa
-      v-if="modoVinculo === 'massa'"
-      :key="chaveMassa"
-      :gs="gs"
-      :cf="cf"
-      :um="um"
-      :usuario="props.usuario"
-      @vinculado="aoVincularEmMassa"
-    />
 
     
     <div v-if="modalPreview" class="modal-fundo" @click.self="modalPreview = false">
@@ -798,27 +834,95 @@ watch(() => props.papel, carregarResumoAdmin)
 
 <style scoped>
 .modos-vinculo {
-  display: flex;
-  gap: 8px;
-  margin: 0 0 18px;
-  border-bottom: 2px solid var(--borda);
-  padding-bottom: 10px;
+  display: inline-flex;
+  gap: 6px;
+  margin: 0 0 8px;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  box-shadow: var(--sombra);
+  max-width: 100%;
+  flex-wrap: wrap;
 }
 .modos-vinculo .aba {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 9px;
+  border: 1.5px solid transparent;
+  border-radius: 10px;
   padding: 9px 18px;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--texto-suave);
   cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .modos-vinculo .aba:hover {
   color: var(--azul);
+  background: var(--azul-claro);
 }
 .modos-vinculo .aba.ativa {
   background: var(--azul);
+  border-color: var(--azul);
   color: var(--texto-sobre-azul);
+  box-shadow: 0 4px 12px rgba(0, 32, 91, 0.18);
+}
+.modos-vinculo .aba.ativa .aba-texto small {
+  color: var(--texto-sobre-azul);
+  opacity: 0.85;
+}
+.aba-icone {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.aba-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.25;
+}
+.aba-texto small {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+.modos-dica {
+  margin: 0 0 18px;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  line-height: 1.55;
+}
+/* em massa o fluxo é um painel só: composição, códigos e ação */
+.painel-massa {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* os campos da composição deixam de ser cards — viram um formulário só */
+.painel-massa .grade-seletores .painel {
+  background: transparent;
+  border: none;
+  border-top: none;
+  box-shadow: none;
+  padding: 0;
+}
+/* na vinculação em massa são só 3 campos (sem Código de Serviço) — sem coluna vazia */
+.grade-seletores.tres-colunas {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+@media (max-width: 1100px) {
+  .grade-seletores.tres-colunas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .grade-seletores.tres-colunas {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

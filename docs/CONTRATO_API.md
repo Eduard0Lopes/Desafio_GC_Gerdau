@@ -125,13 +125,19 @@ POST /api/v1/codigos-completos/lote
 { "gsId": "CIVIL", "cfId": "1440531", "umId": "UN",
   "itens": [ { "csId": "CS-130835" }, { "texto": "SV MONTAGEM PIPA" } ] }
 → {
-    "total": 2, "disponiveis": 1, "criados": 1, "vinculados": 2,
-    "aguardandoValidacao": 0, "bloqueadas": 0, "falhas": 0, "itens": [ … ]
+    "total": 2, "reutilizados": 1, "criados": 1, "vinculados": 2,
+    "aguardandoValidacao": 0, "itens": [
+      { "linha": 1, "classificacao": "DISPONIVEL", "decisao": null, "csId": "CS-130835", … },
+      { "linha": 2, "classificacao": "CRIAR", "decisao": "PERMITIR", "idCompleto": "…", … }
+    ]
   }
 ```
 
 Por linha: `csId` reutiliza o código existente; `texto` cria o código novo — e, havendo
 similaridade alertada, o pedido vai para a Governança (`aguardandoValidacao`), que vê os
-matches que o usuário não escolheu e pode decidir reutilizar um deles.
+matches que o usuário não escolheu e pode decidir reutilizar um deles. Cada linha traz
+`classificacao` (`DISPONIVEL` | `CRIAR` | `BLOQUEADA` | `FALHA`) e a decisão da mesma
+régua do vínculo único (`PERMITIR` | `ALERTAR` | `REVISAR`); as pendências ficam em
+`itens` (vazia, repetida, limite SAP ou recusa do servidor).
 
 Swagger interativo: **http://localhost:8080/swagger-ui.html**

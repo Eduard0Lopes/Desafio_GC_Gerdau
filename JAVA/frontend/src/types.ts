@@ -102,23 +102,20 @@ export interface ItemVinculacaoLote {
   linha: number
   texto: string
   classificacao: 'DISPONIVEL' | 'CRIAR' | 'BLOQUEADA' | 'FALHA'
-  situacao: string
+  /** mesma régua do vínculo único: PERMITIR | ALERTAR | REVISAR (null = não avaliado) */
+  decisao: string | null
   motivo: string
   csId: string | null
   idCompleto: string | null
-  idRegistro: string | null
-  status: string | null
   requisicaoRepetida: boolean
 }
 
 export interface ResultadoVinculacaoLote {
   total: number
-  disponiveis: number
+  reutilizados: number
   criados: number
   vinculados: number
   aguardandoValidacao: number
-  bloqueadas: number
-  falhas: number
   itens: ItemVinculacaoLote[]
 }
 
