@@ -26,10 +26,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-/**
- * Feedback Gerdau: quem aprova na Governança precisa ver o que o usuário não escolheu
- * (o radio do bloqueio de duplicidade) e, se preciso, escolher por ele e seguir.
- */
 class GovernancaReutilizacaoTest {
 
     private CodigoCompletoRepository codigoCompletoRepository;
@@ -78,7 +74,6 @@ class GovernancaReutilizacaoTest {
         model.setUmId("UN");
         model.setStatus(CodigoCompleto.STATUS_PENDENTE);
         model.setDecisaoSimilaridade("REVISAR");
-        // é o radio do ModalBloqueio: o que o usuário viu e NÃO escolheu ao enviar à Governança
         model.setSimilaresRegistrados(List.of(
                 new RegistroSimilar(1, "CS-000001", null, "SV EQUIPE TELHADO", 0.93,
                         "muito parecido", false, null, "CS"),
@@ -97,12 +92,10 @@ class GovernancaReutilizacaoTest {
                 new GovernancaReutilizarRequest("CS-000001", null, "ana", "é o mesmo serviço do pedido"));
 
         assertEquals(CodigoCompleto.STATUS_ATIVO, resposta.status());
-        // a composição passa a apontar para o código existente escolhido
         assertEquals("CS-000001", model.getCsId());
         assertTrue(model.getIdCompleto().contains("CS-000001"));
         assertTrue(model.getObservacaoAprovacao().contains("CS-000001"));
-        // o código novo que nasceu com o pedido não vira órfão nem entra no catálogo
-        verify(catalogoService).desativarPendentesNaoUsados(eq(model), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean());
+        verify(catalogoService).desativarPendentesNaoUsados(model);
         verify(catalogoService).definirStatusComponentes(model, StatusComponente.ATIVO);
         verify(auditoriaService).registrar(eq(EventoAuditoria.ACAO_REUTILIZACAO), eq("CODIGO_COMPLETO"),
                 any(), any(), any(), eq(List.of("CS-000001")), any(), eq("ana"));

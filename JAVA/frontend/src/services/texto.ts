@@ -1,101 +1,81 @@
-
-
-/**
- * Normalização e casamento tolerante a plural/singular para as buscas.
- * As regras de singularizar/variantesEspelho espelham `TextoUtil` no backend,
- * para que busca local e busca no servidor entendam o mesmo idioma.
- */
-
-export function normalizar(texto: string): string {
+export function normalize(texto: string): string {
   return (texto ?? '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
 }
 
-function semAcentoMinusculo(texto: string): string {
-  return normalizar(texto.trim())
+export function normalizeHeader(texto: string): string {
+  return normalize(texto).replace(/[^a-z0-9]/g, '')
 }
 
-function soLetras(texto: string): boolean {
+function lowercaseNoAccents(texto: string): string {
+  return normalize(texto.trim())
+}
+
+function lettersOnly(texto: string): boolean {
   return texto.length > 0 && /^[a-z]+$/.test(texto)
 }
 
-/**
- * Reduz uma palavra ao singular provável em português.
- * Ex.: "telhados" → "telhado", "solucoes" → "solucao", "papeis" → "papel".
- * Palavras curtas, com dígitos ou com pontuação passam intactas.
- */
-export function singularizar(palavra: string): string {
-  const p = semAcentoMinusculo(palavra)
-  if (p.length < 4 || !soLetras(p)) return p
+export function singularize(word: string): string {
+  const normalized = lowercaseNoAccents(word)
+  if (normalized.length < 4 || !lettersOnly(normalized)) return normalized
 
-  if (p.endsWith('oes') && p.length >= 5) return p.slice(0, -3) + 'ao' // solucoes → solucao
-  if (p.endsWith('ns')) return p.slice(0, -2) + 'm' // bens → bem
-  if (p.endsWith('zes') && p.length >= 5) return p.slice(0, -3) + 'z' // luzes → luz
-  if (p.endsWith('eis') && p.length >= 6) return p.slice(0, -3) + 'el' // papeis → papel
-  if (p.endsWith('ais') && p.length >= 6) return p.slice(0, -3) + 'al' // materiais → material
-  if (p.endsWith('ois') && p.length >= 5) return p.slice(0, -3) + 'ol' // farois → farol
-  if (p.endsWith('is') && p.length >= 5) return p.slice(0, -2) + 'il' // civis → civil
-  if (p.endsWith('ores') && p.length >= 6) return p.slice(0, -2) // tratores → trator
-  if (p.endsWith('s') && !p.endsWith('ss')) return p.slice(0, -1) // telhados → telhado
-  return p
+  if (normalized.endsWith('oes') && normalized.length >= 5) return normalized.slice(0, -3) + 'ao'
+  if (normalized.endsWith('ns')) return normalized.slice(0, -2) + 'm'
+  if (normalized.endsWith('zes') && normalized.length >= 5) return normalized.slice(0, -3) + 'z'
+  if (normalized.endsWith('eis') && normalized.length >= 6) return normalized.slice(0, -3) + 'el'
+  if (normalized.endsWith('ais') && normalized.length >= 6) return normalized.slice(0, -3) + 'al'
+  if (normalized.endsWith('ois') && normalized.length >= 5) return normalized.slice(0, -3) + 'ol'
+  if (normalized.endsWith('is') && normalized.length >= 5) return normalized.slice(0, -2) + 'il'
+  if (normalized.endsWith('ores') && normalized.length >= 6) return normalized.slice(0, -2)
+  if (normalized.endsWith('s') && !normalized.endsWith('ss')) return normalized.slice(0, -1)
+  return normalized
 }
 
-/** Formas plurais prováveis de uma palavra já no singular. */
-function plurais(singular: string): string[] {
-  if (singular.length < 4 || !soLetras(singular)) return []
+function pluralForms(singular: string): string[] {
+  if (singular.length < 4 || !lettersOnly(singular)) return []
   const formas: string[] = [singular + 's']
-  const fim = singular.slice(-1)
+  const end = singular.slice(-1)
 
   if (singular.endsWith('ao')) {
     const base = singular.slice(0, -2)
-    formas.push(base + 'oes', base + 'aes', base + 'os') // acao → acoes; mao → maos/maes
-  } else if (fim === 'm') {
-    formas.push(singular.slice(0, -1) + 'ns') // bem → bens
-  } else if (fim === 'z') {
-    formas.push(singular + 'zes') // luz → luzes
-  } else if (fim === 'r') {
-    formas.push(singular + 'es') // trator → tratores
+    formas.push(base + 'oes', base + 'aes', base + 'os')
+  } else if (end === 'm') {
+    formas.push(singular.slice(0, -1) + 'ns')
+  } else if (end === 'z') {
+    formas.push(singular + 'zes')
+  } else if (end === 'r') {
+    formas.push(singular + 'es')
   } else if (singular.endsWith('il')) {
-    // civil → civis; facil → faceis
     formas.push(singular.slice(0, -2) + 'is', singular.slice(0, -2) + 'eis')
   } else if (singular.endsWith('al') || singular.endsWith('el')
     || singular.endsWith('ol') || singular.endsWith('ul')) {
-    formas.push(singular.slice(0, -1) + 'is') // animal → animais; papel → papeis
+    formas.push(singular.slice(0, -1) + 'is')
   }
   return formas
 }
 
-/**
- * Formas de uma palavra que devem casar na busca: como digitada,
- * normalizada, no singular e nos plurais prováveis.
- */
-export function variantesPalavra(palavra: string): string[] {
-  const digitada = (palavra ?? '').trim()
+export function wordVariants(word: string): string[] {
+  const digitada = (word ?? '').trim()
   if (!digitada) return []
   const formas = new Set<string>([digitada])
 
-  const norm = semAcentoMinusculo(digitada)
+  const norm = lowercaseNoAccents(digitada)
   if (norm && !norm.includes(' ')) formas.add(norm)
-  if (soLetras(norm)) {
-    const singular = singularizar(norm)
+  if (lettersOnly(norm)) {
+    const singular = singularize(norm)
     formas.add(singular)
-    for (const plural of plurais(singular)) formas.add(plural)
+    for (const pluralize of pluralForms(singular)) formas.add(pluralize)
   }
   return [...formas]
 }
 
-/**
- * O texto (já normalizado) casa com o termo digitado?
- * Cada palavra do termo precisa aparecer no texto em alguma das suas formas
- * (digitada, normalizada, singular ou plural).
- */
-export function casaComTermo(texto: string, termo: string): boolean {
-  const alvo = normalizar(texto ?? '')
-  const palavras = normalizar(termo ?? '').trim().split(/\s+/).filter(Boolean)
+export function matchesTerm(texto: string, term: string): boolean {
+  const target = normalize(texto ?? '')
+  const palavras = normalize(term ?? '').trim().split(/\s+/).filter(Boolean)
   if (!palavras.length) return true
-  return palavras.every((palavra) =>
-    variantesPalavra(palavra).some((forma) => alvo.includes(forma))
+  return palavras.every((word) =>
+    wordVariants(word).some((forma) => target.includes(forma))
   )
 }

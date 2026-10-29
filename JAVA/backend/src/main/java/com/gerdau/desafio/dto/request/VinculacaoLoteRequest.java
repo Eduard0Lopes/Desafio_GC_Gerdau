@@ -6,10 +6,6 @@ import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
-/**
- * Vinculação em massa: Grupo de Serviço, Código de Fornecedor e Unidade de Medida
- * fixos para toda a lista e vários Códigos de Serviço escolhidos de uma vez.
- */
 public record VinculacaoLoteRequest(
 
         @NotBlank(message = "Informe o Grupo de Serviço.")
@@ -29,11 +25,6 @@ public record VinculacaoLoteRequest(
 
 ) {
 
-    /**
-     * Um item do lote: {@code csId} quando o código já existe e será reutilizado;
-     * senão {@code texto} é um código novo — o servidor aplica as regras
-     * (similaridade, limite SAP) e decide entre criar ou enviar para a Governança.
-     */
     public record ItemVinculacaoLote(String csId, String texto) {
     }
 }

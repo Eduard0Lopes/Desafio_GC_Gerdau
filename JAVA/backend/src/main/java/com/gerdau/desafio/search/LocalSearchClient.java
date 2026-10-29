@@ -89,7 +89,7 @@ public class LocalSearchClient implements SearchClient {
             case TIPO_UM -> unidadeMedidaRepository.findAll().stream()
                     .filter(u -> StatusComponente.ativo(u.getStatus()))
                     .map((UnidadeMedida u) -> RankingEngine.prepararItem(u.getId(), null, null,
-                            u.getSigla() + " - " + u.getNome(), null)) 
+                            u.getSigla() + " - " + u.getNome(), null))
                     .toList();
             default -> codigoServicoRepository.findAll().stream()
                     .filter(c -> StatusComponente.ativo(c.getStatus()))

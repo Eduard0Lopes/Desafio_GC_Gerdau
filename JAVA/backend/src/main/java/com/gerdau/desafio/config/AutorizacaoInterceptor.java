@@ -6,22 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-/**
- * NOTA PARA A EQUIPE DA GERDAU — ONDE ENTRAM AS PERMISSOES REAIS
- *
- * Este interceptor e o PONTO UNICO de autorizacao do backend. Hoje o perfil
- * (ADMIN/USUARIO) vem do header X-Usuario-Papel e o usuario do X-Usuario-Id,
- * porque esta e uma versao de demonstracao, sem autenticacao de verdade.
- *
- * Para producao, troque a leitura dos headers pela identidade do TOKEN
- * autenticado (OAuth 2.0/OIDC — SecurityFilterChain do Spring Security) e derive
- * o papel das claims do usuario. Os pontos de plug sao exatamente dois:
- *   1. preHandle() abaixo — as regras de quem pode o que ja estao centralizadas
- *      aqui (Governanca e alteracoes de catalogo exigem ADMIN; se forem criados
- *      novos perfis, mude so este metodo);
- *   2. AuditoriaService.usuarioAtual() — e o que preenche o "quem criou" dos itens.
- * Nenhum endpoint nem tela precisa mudar quando isso acontecer.
- */
 @Component
 public class AutorizacaoInterceptor implements HandlerInterceptor {
 
@@ -37,8 +21,6 @@ public class AutorizacaoInterceptor implements HandlerInterceptor {
         String metodo = request.getMethod() == null ? "" : request.getMethod().toUpperCase();
         String papel = request.getHeader(HEADER_PAPEL);
         boolean rotaGovernanca = uri.contains("/api/v1/governanca");
-        // edição de pedido próprio (PATCH /codigos-completos/{id}) é do dono — a
-        // propriedade é validada no serviço; o restante de PATCH continua exigindo ADMIN
         boolean edicaoDePedido = "PATCH".equals(metodo) && uri.contains("/api/v1/codigos-completos/");
         boolean alteracaoOuExclusao = (!edicaoDePedido
                 && ("DELETE".equals(metodo) || "PUT".equals(metodo) || "PATCH".equals(metodo)))
@@ -46,7 +28,7 @@ public class AutorizacaoInterceptor implements HandlerInterceptor {
                 || uri.contains("/catalogo/situacao") || uri.contains("/catalogo/marcar-excecao")
                 || uri.contains("/catalogo/transferir-vinculos");
         if (!rotaGovernanca && !alteracaoOuExclusao) {
-            
+
             return true;
         }
         if (PAPEL_ADMIN.equalsIgnoreCase(papel == null ? "" : papel.trim())) {

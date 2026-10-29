@@ -1,3 +1,17 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import GovernanceView from './GovernancaView.vue'
+import DetailsView from './DetalhesView.vue'
+
+withDefaults(defineProps<{ user?: string }>(), { user: '' })
+const emit = defineEmits<{
+  (event: 'pending', n: number): void
+  (event: 'apiUnavailable', v: boolean): void
+}>()
+
+const tab = ref<'governance' | 'detalhes'>('governance')
+</script>
+
 <template>
   <div>
     <h2 style="margin: 0 0 6px; font-size: 1.35rem; color: var(--azul-escuro)">Painel Admin</h2>
@@ -5,50 +19,34 @@
       Área restrita de administração de dados — governança de cadastros e análise detalhada da base.
     </p>
 
-    
     <div class="abas">
       <button
         class="aba"
-        :class="{ ativa: aba === 'governanca' }"
-        @click="aba = 'governanca'"
+        :class="{ ativa: tab === 'governance' }"
+        @click="tab = 'governance'"
       >
         Governança
       </button>
       <button
         class="aba"
-        :class="{ ativa: aba === 'detalhes' }"
-        @click="aba = 'detalhes'"
+        :class="{ ativa: tab === 'detalhes' }"
+        @click="tab = 'detalhes'"
       >
         Detalhes
       </button>
     </div>
 
-    
     <div style="margin-top: 22px">
-      <GovernancaView
-        v-if="aba === 'governanca'"
-        :usuario="usuario"
-        @pendentes="(n: number) => emit('pendentes', n)"
-        @api-fora="(v: boolean) => emit('api-fora', v)"
+      <GovernanceView
+        v-if="tab === 'governance'"
+        :user="user"
+        @pending="(count: number) => emit('pending', count)"
+        @apiUnavailable="(v: boolean) => emit('apiUnavailable', v)"
       />
-      <DetalhesView v-else />
+      <DetailsView v-else />
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-import GovernancaView from './GovernancaView.vue'
-import DetalhesView from './DetalhesView.vue'
-
-withDefaults(defineProps<{ usuario?: string }>(), { usuario: '' })
-const emit = defineEmits<{
-  (e: 'pendentes', n: number): void
-  (e: 'api-fora', v: boolean): void
-}>()
-
-const aba = ref<'governanca' | 'detalhes'>('governanca')
-</script>
 
 <style scoped>
 .abas {

@@ -3,6 +3,7 @@ package com.gerdau.desafio.service;
 import com.gerdau.desafio.dto.request.CriarCodigoCompletoRequest;
 import com.gerdau.desafio.dto.request.PreviewRequest;
 import com.gerdau.desafio.dto.response.AlertaComponenteResponse;
+import com.gerdau.desafio.dto.response.CandidatoSimilarResponse;
 import com.gerdau.desafio.dto.response.CodigoCompletoResponse;
 import com.gerdau.desafio.dto.response.PreviewResponse;
 import com.gerdau.desafio.dto.response.SimilaridadeResponse;
@@ -11,6 +12,7 @@ import com.gerdau.desafio.exception.ConflictException;
 import com.gerdau.desafio.exception.ResourceNotFoundException;
 import com.gerdau.desafio.model.*;
 import com.gerdau.desafio.repository.*;
+import com.gerdau.desafio.util.ComposicaoUtil;
 import com.gerdau.desafio.util.TextoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,31 +57,22 @@ public class CodigoCompletoService {
         return previewService.montarPreview(request);
     }
 
-    /**
-     * O dono do pedido pode ajustá-lo enquanto está pendente na governança:
-     * alterar a descrição (quando o código de serviço ainda é do pedido) e a justificativa.
-     */
     public CodigoCompletoResponse atualizarPedido(String id, String descricao, String justificativa) {
         CodigoCompleto model = exigirPedidoPendente(id);
         boolean mudou = false;
         if (descricao != null && !descricao.isBlank()) {
             catalogoService.atualizarDescricaoServico(model.getCsId(), descricao);
             model.setDescricaoSnapshot(reconstruirSnapshot(model));
-            // a descrição mudou: a similaridade precisa ser refeita, senão a governança
-            // decide com dados antigos (ex.: PERMITIR virando duplicidade em silêncio)
             SimilaridadeResponse sim = similaridadeService.consultar(descricao.trim(), 5, "CS");
             model.setDecisaoSimilaridade(sim.decisao());
             model.setMelhorScore(sim.candidatos().isEmpty() ? 0.0 : sim.candidatos().get(0).score());
-            // a descrição mudou: refaz os matches do CS, mas os matches dos demais
-            // componentes continuam valendo — são o que o usuário não escolheu
             List<RegistroSimilar> matchesComponentes = (model.getSimilaresRegistrados() == null
                     ? List.<RegistroSimilar>of() : model.getSimilaresRegistrados())
                     .stream()
                     .filter(s -> !"CS".equals(s.getTipo()))
                     .toList();
             List<RegistroSimilar> matchesServico = sim.candidatos().stream()
-                    .map(c -> new RegistroSimilar(c.posicao(), c.id(), c.codigoOriginal(), c.descricao(), c.score(),
-                            c.motivo(), c.casoIsolado(), c.motivoCasoIsolado(), c.tipo()))
+                    .map(CodigoCompletoService::paraRegistro)
                     .toList();
             model.setSimilaresRegistrados(java.util.stream.Stream
                     .concat(matchesServico.stream(), matchesComponentes.stream())
@@ -101,9 +94,6 @@ public class CodigoCompletoService {
         return paraResponse(salvo);
     }
 
-    /**
-     * Cancelar o pedido pendente libera a composição para um novo envio.
-     */
     public CodigoCompletoResponse cancelarPedido(String id) {
         String usuario = AuditoriaService.usuarioAtual();
         CodigoCompleto model = exigirPedidoPendente(id);
@@ -111,18 +101,10 @@ public class CodigoCompletoService {
         model.setAprovadoPor(usuario);
         model.setObservacaoAprovacao("Pedido cancelado pelo solicitante.");
         model.setAprovadoEm(Instant.now());
-        // libera a Idempotency-Key: o mesmo conteúdo pode (e deve) ser enviado de novo
         model.setIdempotencyKey(null);
         model.setIdempotencyHash(null);
         CodigoCompleto salvo = codigoCompletoRepository.save(model);
-
-        boolean gsEmUso = codigoCompletoRepository.contarOutrosGs(model.getGsId(), model.getId()) > 0;
-        boolean cfEmUso = codigoCompletoRepository.contarOutrosCf(model.getCfId(), model.getId()) > 0;
-        boolean csEmUso = codigoCompletoRepository.contarOutrosCs(model.getCsId(), model.getId()) > 0;
-        boolean umEmUso = codigoCompletoRepository.contarOutrosUm(model.getUmId(), model.getId()) > 0;
-        // componentes que nasceram com este pedido não podem ficar órfãos em validação
-        catalogoService.desativarPendentesNaoUsados(model, gsEmUso, cfEmUso, csEmUso, umEmUso);
-
+        catalogoService.desativarPendentesNaoUsados(model);
         auditoriaService.registrar(EventoAuditoria.ACAO_CANCELAMENTO_PEDIDO, "CODIGO_COMPLETO",
                 salvo.getIdCompleto(), salvo.getDecisaoSimilaridade(), "Pedido cancelado pelo solicitante.",
                 java.util.List.of(), java.util.List.of(), usuario);
@@ -155,17 +137,11 @@ public class CodigoCompletoService {
     }
 
     private String reconstruirSnapshot(CodigoCompleto model) {
-        PreviewService.ComponentesResolvidos r = previewService.resolver(new PreviewRequest(
-                model.getGsId(), null, model.getCfId(), null, null,
-                model.getCsId(), null, model.getUmId(), null, null), false);
+        PreviewService.ComponentesResolvidos r = previewService.resolver(PreviewRequest.deComposicao(
+                model.getGsId(), model.getCfId(), model.getCsId(), model.getUmId()), false);
         return previewService.montarSnapshot(r);
     }
 
-    /**
-     * Resultado da criação: além da resposta, a indicação honesta de que NADA novo
-     * foi criado — quando a Idempotency-Key revela uma requisição repetida (duplo
-     * clique/reenvio de rede), o registro já existia antes desta chamada.
-     */
     public record ResultadoCriacao(CodigoCompletoResponse resposta, boolean requisicaoRepetida) {
     }
 
@@ -180,8 +156,6 @@ public class CodigoCompletoService {
                 boolean mesmaComposicao = preview.idCompleto() != null
                         && preview.idCompleto().equals(existente.getIdCompleto());
                 if (!mesmaComposicao) {
-                    // a chave pertence a OUTRA composição (colisão de chave ou chave arrastada
-                    // por uma transferência de vínculos): não pode engolir este envio
                     log.warn("[CODIGO COMPLETO] Idempotency-Key '{}' pertence a outra composição ({}); "
                             + "ignorando a chave neste envio.", chave, existente.getIdCompleto());
                     chave = null;
@@ -191,13 +165,9 @@ public class CodigoCompletoService {
                             + "' já foi usada com um conteúdo diferente.");
                 } else if (!CodigoCompleto.STATUS_REJEITADO.equals(existente.getStatus())
                         && !CodigoCompleto.STATUS_CANCELADO.equals(existente.getStatus())) {
-                    // requisição repetida de verdade: o vínculo já existia — nada é criado agora
                     log.info("[CODIGO COMPLETO] Requisição repetida ignorada (key={})", chave);
                     return new ResultadoCriacao(paraResponse(existente), true);
                 } else {
-                    // registro cancelado/rejeitado que ainda guarda a chave: a composição está
-                    // livre — a chave é transferida para o novo registro (o índice único de
-                    // idempotencyKey não aceita duas linhas com a mesma chave)
                     existente.setIdempotencyKey(null);
                     existente.setIdempotencyHash(null);
                     codigoCompletoRepository.save(existente);
@@ -209,7 +179,7 @@ public class CodigoCompletoService {
                 ? PreviewService.ACAO_ENVIAR_VALIDACAO : PreviewService.ACAO_CRIAR;
 
         boolean justificado = request.justificativa() != null && !request.justificativa().isBlank();
-        
+
         String statusComponente = PreviewService.ACAO_ENVIAR_VALIDACAO.equals(acao)
                 ? StatusComponente.PENDENTE_VALIDACAO : StatusComponente.ATIVO;
         boolean bloqueado = modoEnforce
@@ -258,15 +228,11 @@ public class CodigoCompletoService {
             umId = catalogoService.criarUnidade(r.unidadeMedida().getSigla(), r.unidadeMedida().getNome(), statusComponente).id();
         }
 
-        // criado direto com justificativa apesar da similaridade: vira "caso isolado" (marcado)
         if (PreviewService.ACAO_CRIAR.equals(acao) && justificado && !"PERMITIR".equals(preview.decisao())) {
             catalogoService.marcarCasoIsolado(csId, request.justificativa());
         }
 
-        String idCompleto = gsId + "_" + cfId + "_" + csId + "_" + umId;
-        // cada clique em "Vincular Serviço" é um vínculo próprio: a composição pode ser
-        // usada quantas vezes forem necessárias — quando ela já tem registros, o _id novo
-        // ganha um sufixo (#2, #3, ...) para que todos coexistam no banco
+        String idCompleto = ComposicaoUtil.montarIdCompleto(gsId, cfId, csId, umId);
         String idRegistro = alocarIdRegistro(idCompleto);
         CodigoCompleto model = new CodigoCompleto();
         model.setId(idRegistro);
@@ -289,7 +255,6 @@ public class CodigoCompletoService {
         model.setIdempotencyKey(chave);
         model.setIdempotencyHash(chave != null ? hashConteudo : null);
 
-        // reenvio legítimo sobre decisão anterior: preserva o rastro do que passou
         CodigoCompleto anterior = codigoCompletoRepository.findByIdCompletoOrderByCreatedAtDesc(idCompleto).stream()
                 .filter(x -> CodigoCompleto.STATUS_REJEITADO.equals(x.getStatus())
                         || CodigoCompleto.STATUS_CANCELADO.equals(x.getStatus()))
@@ -332,8 +297,6 @@ public class CodigoCompletoService {
     public CodigoCompletoResponse buscarPorId(String id) {
         CodigoCompleto model = codigoCompletoRepository.findById(id).orElse(null);
         if (model == null) {
-            // id pode chegar como a composição (idCompleto): vale o pedido pendente
-            // mais recente — senão, o vínculo mais novo da composição
             List<CodigoCompleto> daComposicao = codigoCompletoRepository.findByIdCompletoOrderByCreatedAtDesc(id);
             model = daComposicao.stream()
                     .filter(c -> CodigoCompleto.STATUS_PENDENTE.equals(c.getStatus()))
@@ -346,11 +309,6 @@ public class CodigoCompletoService {
         return paraResponse(model);
     }
 
-    /**
-     * O registro de cada vínculo tem um _id próprio: a composição como _id quando livre,
-     * senão a composição com sufixo (#2, #3, ...) — assim a mesma composição pode ser
-     * vinculada quantas vezes forem necessárias.
-     */
     private String alocarIdRegistro(String idCompleto) {
         if (codigoCompletoRepository.findById(idCompleto).isEmpty()) {
             return idCompleto;
@@ -381,15 +339,9 @@ public class CodigoCompletoService {
         excecaoRepository.save(ex);
     }
 
-    /**
-     * O que o usuário viu no radio do bloqueio de duplicidade e NÃO escolheu: os
-     * matches do Código de Serviço e os alertas dos demais componentes (GS/CF/UM).
-     * Fica guardado no pedido para a Governança decidir por ele, se preciso.
-     */
     private static List<RegistroSimilar> similaresDoPedido(PreviewResponse preview) {
         List<RegistroSimilar> similares = new java.util.ArrayList<>(preview.similares().stream()
-                .map(c -> new RegistroSimilar(c.posicao(), c.id(), c.codigoOriginal(), c.descricao(), c.score(), c.motivo(),
-                        c.casoIsolado(), c.motivoCasoIsolado(), c.tipo()))
+                .map(CodigoCompletoService::paraRegistro)
                 .toList());
         for (AlertaComponenteResponse a : preview.alertasComponentes()) {
             similares.add(new RegistroSimilar(similares.size() + 1, a.itemSimilarId(), null, a.itemSimilarNome(),
@@ -399,6 +351,11 @@ public class CodigoCompletoService {
         return similares;
     }
 
+    private static RegistroSimilar paraRegistro(CandidatoSimilarResponse c) {
+        return new RegistroSimilar(c.posicao(), c.id(), c.codigoOriginal(), c.descricao(), c.score(), c.motivo(),
+                c.casoIsolado(), c.motivoCasoIsolado(), c.tipo());
+    }
+
     private static PreviewRequest paraPreview(CriarCodigoCompletoRequest r) {
         return new PreviewRequest(r.gsId(), r.gsNovoNome(), r.cfId(), r.cfNovoNome(), r.cfNovoCodigoSap(),
                 r.csId(), r.csNovaDescricao(), r.umId(), r.umNovaSigla(), r.umNovoNome());
@@ -406,9 +363,9 @@ public class CodigoCompletoService {
 
     public static String hashDoConteudo(CriarCodigoCompletoRequest r) {
         String canonico = String.join("|",
-                nvl(r.gsId()), nvl(r.gsNovoNome()), nvl(r.cfId()), nvl(r.cfNovoNome()), nvl(r.cfNovoCodigoSap()),
-                nvl(r.csId()), nvl(r.csNovaDescricao()), nvl(r.umId()), nvl(r.umNovaSigla()), nvl(r.umNovoNome()),
-                nvl(r.acao()), nvl(r.justificativa()));
+                TextoUtil.nvl(r.gsId()), TextoUtil.nvl(r.gsNovoNome()), TextoUtil.nvl(r.cfId()), TextoUtil.nvl(r.cfNovoNome()), TextoUtil.nvl(r.cfNovoCodigoSap()),
+                TextoUtil.nvl(r.csId()), TextoUtil.nvl(r.csNovaDescricao()), TextoUtil.nvl(r.umId()), TextoUtil.nvl(r.umNovaSigla()), TextoUtil.nvl(r.umNovoNome()),
+                TextoUtil.nvl(r.acao()), TextoUtil.nvl(r.justificativa()));
         try {
             java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(canonico.getBytes(java.nio.charset.StandardCharsets.UTF_8));
@@ -420,10 +377,6 @@ public class CodigoCompletoService {
         } catch (Exception e) {
             return Integer.toHexString(canonico.hashCode());
         }
-    }
-
-    private static String nvl(String s) {
-        return s == null ? "" : s.trim();
     }
 
     private static java.util.List<String> idsDosSimilares(PreviewResponse p) {

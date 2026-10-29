@@ -16,4 +16,8 @@ public record PreviewRequest(
         String umNovaSigla,
         String umNovoNome
 ) {
+
+    public static PreviewRequest deComposicao(String gsId, String cfId, String csId, String umId) {
+        return new PreviewRequest(gsId, null, cfId, null, null, csId, null, umId, null, null);
+    }
 }

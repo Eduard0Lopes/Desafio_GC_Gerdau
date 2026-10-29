@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
-import VinculacaoMassa from '../src/views/VinculacaoMassa.vue'
+import BulkServiceLink from '../src/views/VinculacaoMassa.vue'
 import { toast } from '../src/services/toast'
 
 const ANALISE = {
   tipo: 'CS',
   total: 3,
-  disponiveis: 1,
-  aCriar: 2,
+  available: 1,
+  toCreate: 2,
   bloqueadas: 0,
   itens: [
     {
@@ -105,16 +105,16 @@ const RESULTADO = {
   ]
 }
 
-function mockFetch(resultado: unknown = RESULTADO) {
-  const chamadas: { url: string; corpo: unknown }[] = []
+function mockFetch(result: unknown = RESULTADO) {
+  const chamadas: { url: string; body: unknown }[] = []
   const fn = vi.fn(async (url: string, init?: RequestInit) => {
     const rota = String(url)
     if (rota.includes('/itens/similaridade/lote')) {
       return { ok: true, status: 200, json: async () => ANALISE }
     }
     if (rota.includes('/codigos-completos/lote')) {
-      chamadas.push({ url: rota, corpo: init?.body ? JSON.parse(String(init.body)) : null })
-      return { ok: true, status: 201, json: async () => resultado }
+      chamadas.push({ url: rota, body: init?.body ? JSON.parse(String(init.body)) : null })
+      return { ok: true, status: 201, json: async () => result }
     }
     return { ok: true, status: 200, json: async () => [] }
   })
@@ -122,12 +122,12 @@ function mockFetch(resultado: unknown = RESULTADO) {
 }
 
 function montar(props = {
-  gs: { id: 'CIVIL', nome: 'CIVIL' },
-  cf: { id: '1440531', nome: 'FORNECEDOR X' },
-  um: { id: 'UN', sigla: 'UN', nome: 'Unidade' },
-  usuario: '403921'
+  serviceGroup: { id: 'CIVIL', nome: 'CIVIL' },
+  supplierCode: { id: '1440531', nome: 'FORNECEDOR X' },
+  unitOfMeasure: { id: 'UN', sigla: 'UN', nome: 'Unidade' },
+  user: '403921'
 }) {
-  return mount(VinculacaoMassa, { props })
+  return mount(BulkServiceLink, { props })
 }
 
 const LISTA = 'SV EQUIPE TELHADO\nSV MONTAGEM PIPA\nSV REPARO COBERTURA'
@@ -137,7 +137,7 @@ async function colarLista(wrapper: ReturnType<typeof montar>): Promise<void> {
   await flushPromises()
 }
 
-/** a ação principal fica no rodapé da seleção — fora dos modais */
+
 function botaoVincular(wrapper: ReturnType<typeof montar>) {
   return wrapper.find('.massa-rodape .botao-roxo')
 }
@@ -148,21 +148,21 @@ async function abrirPrevia(wrapper: ReturnType<typeof montar>): Promise<void> {
 }
 
 async function confirmar(wrapper: ReturnType<typeof montar>): Promise<void> {
-  const botao = wrapper.findAll('.modal button').find((b) => b.text().includes('Confirmar'))
+  const botao = wrapper.findAll('.modal button').find((botao) => botao.text().includes('Confirmar'))
   expect(botao).toBeTruthy()
   await botao!.trigger('click')
   await flushPromises()
 }
 
 function avisos(): string[] {
-  return toast.estado.itens.map((t) => t.mensagem)
+  return toast.state.itens.map((notification) => notification.message)
 }
 
 describe('VinculacaoMassa — mesmo fluxo do vínculo único: prévia, confirmação e sucesso', () => {
   beforeEach(() => {
-    localStorage.setItem('papel', 'ADMIN')
-    localStorage.setItem('usuario', '403921')
-    toast.estado.itens.splice(0)
+    localStorage.setItem('role', 'ADMIN')
+    localStorage.setItem('user', '403921')
+    toast.state.itens.splice(0)
   })
 
   it('mostra na prévia o que será reutilizado, criado e enviado à Governança', async () => {
@@ -170,7 +170,7 @@ describe('VinculacaoMassa — mesmo fluxo do vínculo único: prévia, confirma�
     const wrapper = montar()
     await colarLista(wrapper)
 
-    // o item com similaridade alertada fica marcado na lista
+    
     expect(wrapper.find('.tag-governanca').exists()).toBe(true)
 
     await abrirPrevia(wrapper)
@@ -190,21 +190,21 @@ describe('VinculacaoMassa — mesmo fluxo do vínculo único: prévia, confirma�
     await abrirPrevia(wrapper)
     await confirmar(wrapper)
 
-    const chamada = mock.chamadas.find((c) => c.url.includes('/codigos-completos/lote'))
+    const chamada = mock.chamadas.find((chamada) => chamada.url.includes('/codigos-completos/lote'))
     expect(chamada).toBeTruthy()
-    const corpo = chamada!.corpo as { gsId: string; itens: { csId: string | null; texto: string | null }[] }
-    expect(corpo.gsId).toBe('CIVIL')
-    expect(corpo.itens).toEqual([
+    const body = chamada!.body as { gsId: string; itens: { csId: string | null; texto: string | null }[] }
+    expect(body.gsId).toBe('CIVIL')
+    expect(body.itens).toEqual([
       { csId: 'CS-0001', texto: null },
       { csId: null, texto: 'SV MONTAGEM PIPA' },
       { csId: null, texto: 'SV REPARO COBERTURA' }
     ])
-    // o resultado entra no mesmo modal de sucesso do vínculo único
+    
     expect(wrapper.text()).toContain('2 vínculos ativos')
     expect(wrapper.text()).toContain('1 aguardando validação da Governança')
     expect(wrapper.text()).toContain('1 reutilizado(s), 2 criado(s)')
 
-    // nada é barrado: a seleção continua pronta para um novo envio igual
+    
     await wrapper.find('.modal .botao-escuro').trigger('click')
     await flushPromises()
     expect(botaoVincular(wrapper).text()).toBe('Vincular 3 códigos')
@@ -212,7 +212,7 @@ describe('VinculacaoMassa — mesmo fluxo do vínculo único: prévia, confirma�
   })
 
   it('pendências ficam no modal de sucesso, sem fechar sozinho', async () => {
-    const resultado = {
+    const result = {
       ...RESULTADO,
       vinculados: 1,
       aguardandoValidacao: 0,
@@ -230,7 +230,7 @@ describe('VinculacaoMassa — mesmo fluxo do vínculo único: prévia, confirma�
         }
       ]
     }
-    vi.stubGlobal('fetch', mockFetch(resultado).fn)
+    vi.stubGlobal('fetch', mockFetch(result).fn)
     const wrapper = montar()
     await colarLista(wrapper)
     await abrirPrevia(wrapper)
@@ -255,9 +255,9 @@ describe('VinculacaoMassa — mesmo fluxo do vínculo único: prévia, confirma�
     await abrirPrevia(wrapper)
     await confirmar(wrapper)
 
-    const chamada = mock.chamadas.find((c) => c.url.includes('/codigos-completos/lote'))
-    const corpo = chamada!.corpo as { itens: { texto: string | null }[] }
-    expect(corpo.itens).toEqual([
+    const chamada = mock.chamadas.find((chamada) => chamada.url.includes('/codigos-completos/lote'))
+    const body = chamada!.body as { itens: { texto: string | null }[] }
+    expect(body.itens).toEqual([
       { csId: null, texto: 'SV MONTAGEM PIPA' },
       { csId: null, texto: 'SV MONTAGEM PIPA' }
     ])
@@ -268,7 +268,7 @@ describe('VinculacaoMassa — mesmo fluxo do vínculo único: prévia, confirma�
     const wrapper = montar()
 
     const botoes = wrapper.findAll('.massa-rodape .acoes .botao')
-    expect(botoes.map((b) => b.text())).toEqual([
+    expect(botoes.map((botao) => botao.text())).toEqual([
       'Vincular em massa',
       'Cadastrar Novo Item',
       'Limpar tudo'
@@ -281,15 +281,15 @@ describe('VinculacaoMassa — mesmo fluxo do vínculo único: prévia, confirma�
 
     expect(botaoVincular(wrapper).attributes('disabled')).toBeUndefined()
 
-    // sem nada marcado
+    
     await abrirPrevia(wrapper)
     expect(avisos().some((m) => m.includes('Marque ao menos um Código de Serviço'))).toBe(true)
     expect(wrapper.find('.modal').exists()).toBe(false)
 
-    // sem composição escolhida
-    toast.estado.itens.splice(0)
+    
+    toast.state.itens.splice(0)
     await colarLista(wrapper)
-    await wrapper.setProps({ gs: null })
+    await wrapper.setProps({ serviceGroup: null })
     await abrirPrevia(wrapper)
     expect(avisos().some((m) => m.includes('Falta escolher Grupo de Serviço'))).toBe(true)
     expect(wrapper.find('.modal').exists()).toBe(false)

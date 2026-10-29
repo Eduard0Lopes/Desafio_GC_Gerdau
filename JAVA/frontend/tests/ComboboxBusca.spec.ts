@@ -1,21 +1,21 @@
 import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
-import ComboboxBusca from '../src/components/ComboboxBusca.vue'
+import SearchCombobox from '../src/components/ComboboxBusca.vue'
 
 const ITENS = [
   { id: 'CS-000001', descricao: 'SV EQUIPE TELHADO', quantidadeCaracteres: 17 },
   { id: 'CS-000002', descricao: 'DIARIA RESGATISTA', quantidadeCaracteres: 18 }
 ]
 
-describe('ComboboxBusca', () => {
+describe('SearchCombobox', () => {
   it('lista as opções encontradas e mantém "Cadastrar Novo Item" como ÚLTIMA opção', async () => {
-    const carregar = vi.fn().mockResolvedValue(ITENS)
-    const wrapper = mount(ComboboxBusca, {
+    const load = vi.fn().mockResolvedValue(ITENS)
+    const wrapper = mount(SearchCombobox, {
       props: {
-        carregar,
-        nomeDe: (i: Record<string, unknown>) => String(i.descricao),
-        idDe: (i: Record<string, unknown>) => String(i.id),
-        sapDe: (i: Record<string, unknown>) => `${i.quantidadeCaracteres}/40 SAP`
+        load,
+        nameOf: (i: Record<string, unknown>) => String(i.descricao),
+        idOf: (i: Record<string, unknown>) => String(i.id),
+        sapOf: (i: Record<string, unknown>) => `${i.quantidadeCaracteres}/40 SAP`
       }
     })
 
@@ -33,9 +33,9 @@ describe('ComboboxBusca', () => {
   })
 
   it('emite "criarNovo" com o texto digitado ao escolher a última opção', async () => {
-    const carregar = vi.fn().mockResolvedValue(ITENS)
-    const wrapper = mount(ComboboxBusca, {
-      props: { carregar, nomeDe: (i: Record<string, unknown>) => String(i.descricao) }
+    const load = vi.fn().mockResolvedValue(ITENS)
+    const wrapper = mount(SearchCombobox, {
+      props: { load, nameOf: (i: Record<string, unknown>) => String(i.descricao) }
     })
 
     const input = wrapper.get('input')
@@ -45,13 +45,13 @@ describe('ComboboxBusca', () => {
 
     const itens = wrapper.findAll('li')
     await itens[itens.length - 1].trigger('mousedown')
-    expect(wrapper.emitted('criarNovo')?.[0]).toEqual(['novo servico'])
+    expect(wrapper.emitted('createNew')?.[0]).toEqual(['novo servico'])
   })
 
   it('emite a seleção ao clicar em uma opção', async () => {
-    const carregar = vi.fn().mockResolvedValue(ITENS)
-    const wrapper = mount(ComboboxBusca, {
-      props: { carregar, nomeDe: (i: Record<string, unknown>) => String(i.descricao) }
+    const load = vi.fn().mockResolvedValue(ITENS)
+    const wrapper = mount(SearchCombobox, {
+      props: { load, nameOf: (i: Record<string, unknown>) => String(i.descricao) }
     })
 
     await wrapper.get('input').trigger('focus')
@@ -64,9 +64,9 @@ describe('ComboboxBusca', () => {
   })
 
   it('mostra estado vazio quando não há resultados', async () => {
-    const carregar = vi.fn().mockResolvedValue([])
-    const wrapper = mount(ComboboxBusca, {
-      props: { carregar, permiteCriar: false, nomeDe: (i: Record<string, unknown>) => String(i.descricao) }
+    const load = vi.fn().mockResolvedValue([])
+    const wrapper = mount(SearchCombobox, {
+      props: { load, allowCreate: false, nameOf: (i: Record<string, unknown>) => String(i.descricao) }
     })
     await wrapper.get('input').setValue('zzz')
     await vi.waitFor(() => expect(wrapper.text()).toContain('Nenhum resultado'))

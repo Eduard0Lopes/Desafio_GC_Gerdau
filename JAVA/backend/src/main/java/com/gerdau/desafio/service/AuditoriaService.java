@@ -50,7 +50,7 @@ public class AuditoriaService {
                 return id == null ? "" : id.toString();
             }
         } catch (Exception ignored) {
-            
+
         }
         return "";
     }
@@ -65,7 +65,7 @@ public class AuditoriaService {
                 return usuario == null ? "" : usuario.trim();
             }
         } catch (Exception ignored) {
-            
+
         }
         return "";
     }

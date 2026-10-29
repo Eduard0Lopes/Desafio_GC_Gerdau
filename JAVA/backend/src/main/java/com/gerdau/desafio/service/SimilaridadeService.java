@@ -87,15 +87,6 @@ public class SimilaridadeService {
         searchClient.invalidarCache();
     }
 
-    /**
-     * Avaliação em lote para a criação em massa de códigos: para cada linha informada,
-     * diz se o código já está DISPONÍVEL na base (é reutilizar), se PRECISA SER CRIADO
-     * ou se está BLOQUEADA (linha vazia, repetida na lista ou acima do limite SAP).
-     *
-     * As regras de negócio valem para a lista inteira: nada duplicado entra duas vezes
-     * e um item com duplicidade provável (score ≥ limiar de duplicidade) conta como
-     * "disponível" — o código já existe para esta necessidade.
-     */
     public LoteSimilaridadeResponse avaliarLote(List<String> textos, Integer limite, String tipo) {
         if (textos == null || textos.isEmpty()) {
             throw new BusinessException("Informe ao menos um código para avaliar.");
@@ -177,7 +168,6 @@ public class SimilaridadeService {
                 consulta.decisao(), melhorScore, melhor);
     }
 
-    /** Mesmo item: descrição idêntica (normalizada) ou sigla de UM seguida do nome. */
     private static boolean mesmoItem(String normalizada, CandidatoSimilarResponse candidato, String tipo) {
         String alvo = TextoUtil.normalizar(candidato.descricao() == null ? "" : candidato.descricao());
         if (alvo.equals(normalizada)) {

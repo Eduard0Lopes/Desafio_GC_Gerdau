@@ -1,3 +1,313 @@
+<script setup lang="ts">
+import { computed, inject, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { api, buildIdempotencyKey, isConflict, errorMessage } from '../services/api'
+import { toast } from '../services/toast'
+import { currentUser } from '../services/usuario'
+import { decisionClass, itemFromCandidate, componentLabel, typeLabel } from '../services/rotulos'
+import { useStatistics } from '../composables/useEstatisticas'
+import { useAutoClose } from '../composables/useFechamentoAutomatico'
+import { usePendingRequest } from '../composables/usePedidoPendente'
+import BadgeException from '../components/BadgeExcecao.vue'
+import BadgeMatch from '../components/BadgeMatch.vue'
+import SearchCombobox from '../components/ComboboxBusca.vue'
+import DuplicateBlockModal from '../components/ModalBloqueio.vue'
+import ConfirmModal from '../components/ModalConfirmacao.vue'
+import GovernanceModal from '../components/ModalGovernanca.vue'
+import PendingRequestModal from '../components/ModalPedidoPendente.vue'
+import BulkServiceLink from './VinculacaoMassa.vue'
+import type {
+  SimilarCandidate,
+  CreateFullCodePayload,
+  Item,
+  PreviewResponse,
+  BatchLinkResult,
+  TipoComponente
+} from '../types'
+
+type BlockItem = SimilarCandidate & { componentType?: string }
+
+const props = withDefaults(defineProps<{ user?: string; role?: string }>(), { user: '', role: 'USUARIO' })
+const router = useRouter()
+const route = useRoute()
+const updatePending = inject<() => void>('updatePending', () => {})
+
+const isAdmin = computed(() => props.role === 'ADMIN')
+const guideOpen = ref(false)
+const linkMode = ref<'unico' | 'massa'>('unico')
+const bulkKey = ref(0)
+
+const { statistics, reduction, load: carregarEstatisticas } = useStatistics()
+
+async function loadAdminSummary(): Promise<void> {
+  if (!isAdmin.value) return
+  await carregarEstatisticas()
+}
+
+function onBulkLinked(result: BatchLinkResult): void {
+  updatePending()
+  void loadAdminSummary()
+  if (result.aguardandoValidacao) {
+    toast.warning(
+      `${result.aguardandoValidacao} pedido(s) aguardando validação da Governança — acompanhe no Painel Admin.`
+    )
+  }
+}
+
+const serviceGroup = ref<Item | null>(null)
+const supplierCode = ref<Item | null>(null)
+const serviceCode = ref<Item | null>(null)
+const unitOfMeasure = ref<Item | null>(null)
+
+const serviceGroupCombobox = ref<InstanceType<typeof SearchCombobox> | null>(null)
+const supplierCodeCombobox = ref<InstanceType<typeof SearchCombobox> | null>(null)
+const serviceCodeCombobox = ref<InstanceType<typeof SearchCombobox> | null>(null)
+const unitOfMeasureCombobox = ref<InstanceType<typeof SearchCombobox> | null>(null)
+
+const deactivation = ref<{ tipo: TipoComponente; id: string; label: string } | null>(null)
+
+function askDeactivation(item: Item, tipo: TipoComponente): void {
+  deactivation.value = { tipo, id: String(item.id), label: componentLabel(item, tipo) }
+}
+
+async function confirmDeactivation(): Promise<void> {
+  const target = deactivation.value
+  if (!target) return
+  deactivation.value = null
+  try {
+    const report = await api.setComponentStatus(target.tipo, [target.id], 'DESATIVADO')
+    const result = report[0]
+    if (!result?.alterado) {
+      toast.warning(result?.motivo || 'Nada foi alterado.')
+      return
+    }
+    toast.success(`${typeLabel(target.tipo)} “${target.label}” desativado — fora de circulação. Reative no Catálogo se precisar.`)
+    const selecoes: Record<TipoComponente, { value: Item | null }> = { GS: serviceGroup, CF: supplierCode, CS: serviceCode, UM: unitOfMeasure }
+    const paineis: Record<TipoComponente, { reload: () => void } | null> = {
+      GS: serviceGroupCombobox.value, CF: supplierCodeCombobox.value, CS: serviceCodeCombobox.value, UM: unitOfMeasureCombobox.value
+    }
+    const selected = selecoes[target.tipo]
+    if (selected.value && String(selected.value.id) === target.id) selected.value = null
+    paineis[target.tipo]?.reload()
+    updatePending()
+  } catch (error) {
+    toast.error(errorMessage(error))
+  }
+}
+
+const preview = ref<PreviewResponse | null>(null)
+const processing = ref(false)
+const previewModal = ref(false)
+const blockModal = ref(false)
+const governanceModal = ref(false)
+const success = ref<{ title: string; message: string } | null>(null)
+const submissionKey = ref('')
+
+const { timeLeft } = useAutoClose(success, () => {
+  success.value = null
+})
+
+const {
+  isOpen: requestModal,
+  request: pedidoPendente,
+  canManage: canManageRequest,
+  saving: savingRequest,
+  processing: processingRequest,
+  confirmingCancel,
+  open: openPendingRequest,
+  close: closeRequest,
+  save: saveRequest,
+  confirmCancelation
+} = usePendingRequest({ afterCancel: () => link() })
+
+function managePending(): void {
+  const id = preview.value?.idCompleto
+  previewModal.value = false
+  if (id) void openPendingRequest(id)
+}
+
+const complete = computed(() => serviceGroup.value && supplierCode.value && serviceCode.value && unitOfMeasure.value)
+const newServiceDescription = computed(() => preview.value?.codigoServico?.nome || '')
+
+const blockItems = computed<BlockItem[]>(() => {
+  const currentPreview = preview.value
+  if (!currentPreview) return []
+  const list: BlockItem[] = (currentPreview.similares || []).map((candidate) => ({ ...candidate, componentType: 'CS' }))
+  for (const alert of currentPreview.alertasComponentes || []) {
+    list.push({
+      posicao: 0,
+      id: alert.itemSimilarId,
+      codigoOriginal: null,
+      descricao: alert.itemSimilarNome,
+      score: alert.score,
+      scoreTokens: 0,
+      scoreCaracteres: 0,
+      tokensEmComum: [],
+      motivo: `${typeLabel(alert.tipo)}: “${alert.descricaoInformada}” é semelhante a este item.`,
+      componentType: alert.tipo
+    })
+  }
+  return list
+})
+
+const blockReason = computed(() =>
+  'O sistema identificou itens semelhantes cadastrados. Escolha um item para reutilizar ou justifique a criação.')
+
+function goToCreate(tipo: string, texto: string): void {
+  router.push({ path: '/cadastrar-item', query: { tipo, descricao: texto } })
+}
+
+function buildPayload(extra: Partial<CreateFullCodePayload> = {}): CreateFullCodePayload {
+  return {
+    gsId: (serviceGroup.value?.id as string) ?? null,
+    cfId: (supplierCode.value?.id as string) ?? null,
+    csId: (serviceCode.value?.id as string) ?? null,
+    umId: (unitOfMeasure.value?.id as string) ?? null,
+    usuarioCriacaoId: props.user.trim() || currentUser(),
+    ...extra
+  }
+}
+
+async function link(): Promise<void> {
+  processing.value = true
+  try {
+    preview.value = await api.preview(buildPayload())
+    if (preview.value.idCompletoJaExiste) {
+      toast.warning(`Este código já está vinculado (${preview.value.idCompleto}) — este envio criará mais um vínculo.`)
+    }
+    const body = buildPayload()
+    submissionKey.value = buildIdempotencyKey('criar-', body.gsId, body.cfId, body.csId, body.umId, String(Date.now()))
+    if (preview.value.decisao === 'PERMITIR') {
+      previewModal.value = true
+    } else {
+      blockModal.value = true
+    }
+  } catch (error) {
+    toast.error(errorMessage(error))
+  } finally {
+    processing.value = false
+  }
+}
+
+function registerLink(idCompleto: string, descricaoSnapshot: string): void {
+  toast.success(`Enviado com sucesso! Serviço ${idCompleto} vinculado.`)
+  success.value = { title: `Serviço ${idCompleto} vinculado!`, message: descricaoSnapshot }
+  updatePending()
+}
+
+async function confirmLink(): Promise<void> {
+  processing.value = true
+  try {
+    const body = buildPayload({ acao: 'CRIAR' })
+    const response = await api.createFullCode(
+      body,
+      submissionKey.value || buildIdempotencyKey('criar-', body.gsId, body.cfId, body.csId, body.umId, String(Date.now()))
+    )
+    previewModal.value = false
+    if (response.requisicaoRepetida) {
+      toast.warning(`O vínculo ${response.idCompleto} já estava registrado — nada novo foi criado.`)
+      success.value = { title: 'Vínculo já registrado', message: response.descricaoSnapshot }
+      updatePending()
+    } else {
+      registerLink(response.idCompleto, response.descricaoSnapshot)
+    }
+  } catch (error) {
+    if (isConflict(error) && preview.value) {
+      previewModal.value = false
+      await link()
+    } else {
+      toast.error(errorMessage(error))
+    }
+  } finally {
+    processing.value = false
+  }
+}
+
+function selectPanel(tipo: string, id: string, texto: string): void {
+  const item = itemFromCandidate(id, texto, tipo)
+  if (tipo === 'GS') serviceGroup.value = item
+  else if (tipo === 'CF') supplierCode.value = item
+  else if (tipo === 'UM') unitOfMeasure.value = item
+  else serviceCode.value = item
+}
+
+function reuseItem(candidateItem: SimilarCandidate): void {
+  const item = candidateItem as BlockItem
+  blockModal.value = false
+  selectPanel(item.componentType || 'CS', item.id, item.descricao || '')
+  toast.success(`Código existente reutilizado: ${item.id} — ${item.descricao}. Confirme a vinculação.`)
+  void link()
+}
+
+function openGovernance(): void {
+  blockModal.value = false
+  governanceModal.value = true
+  const body = buildPayload()
+  submissionKey.value = buildIdempotencyKey('gov-', body.gsId, body.cfId, body.csId, body.umId, String(Date.now()))
+}
+
+async function confirmGovernance(justificativa: string): Promise<void> {
+  processing.value = true
+  try {
+    const body = buildPayload({ acao: 'ENVIAR_VALIDACAO', justificativa })
+    const response = await api.createFullCode(
+      body,
+      submissionKey.value || buildIdempotencyKey('gov-', body.gsId, body.cfId, body.csId, body.umId, justificativa)
+    )
+    governanceModal.value = false
+    if (response.requisicaoRepetida) {
+      toast.warning(`Este pedido já havia sido enviado (${response.idCompleto}) — nada novo foi criado.`)
+      success.value = {
+        title: 'Pedido já enviado',
+        message: `O cadastro ${response.idCompleto} já estava na fila de validação da Governança.`
+      }
+    } else {
+      toast.success('Enviado com sucesso! O cadastro foi para a fila de validação da Governança.')
+      success.value = {
+        title: 'Enviado para Governança',
+        message: `O cadastro ${response.idCompleto} passará por validação humana pela Equipe de Governança de Dados.`
+      }
+    }
+    updatePending()
+  } catch (error) {
+    if (isConflict(error) && preview.value) {
+      governanceModal.value = false
+      await link()
+    } else {
+      toast.error(errorMessage(error))
+    }
+  } finally {
+    processing.value = false
+  }
+}
+
+function clearAll(): void {
+  serviceGroup.value = supplierCode.value = serviceCode.value = unitOfMeasure.value = null
+  preview.value = null
+  success.value = null
+  previewModal.value = blockModal.value = governanceModal.value = false
+  bulkKey.value++
+  closeRequest()
+}
+
+function applyReuse(): void {
+  const id = route.query.reuse
+  if (!id) return
+  const itemType = String(route.query.tipo || 'CS').toUpperCase()
+  const texto = String(route.query.descricao || '')
+  selectPanel(itemType, String(id), texto)
+  toast.success(`${String(id)} — ${texto} selecionado como ${typeLabel(itemType)}. Complete a vinculação.`)
+  void router.replace({ query: {} })
+}
+
+onMounted(() => {
+  void loadAdminSummary()
+  applyReuse()
+  if (route.query.criado) void router.replace({ query: {} })
+})
+watch(() => props.role, () => void loadAdminSummary())
+</script>
+
 <template>
   <div>
     <div class="modos-vinculo" role="tablist" aria-label="Modo de vinculação">
@@ -5,9 +315,9 @@
         type="button"
         role="tab"
         class="aba"
-        :class="{ ativa: modoVinculo === 'unico' }"
-        :aria-selected="modoVinculo === 'unico'"
-        @click="modoVinculo = 'unico'"
+        :class="{ ativa: linkMode === 'unico' }"
+        :aria-selected="linkMode === 'unico'"
+        @click="linkMode = 'unico'"
       >
         <svg class="aba-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
@@ -22,9 +332,9 @@
         type="button"
         role="tab"
         class="aba"
-        :class="{ ativa: modoVinculo === 'massa' }"
-        :aria-selected="modoVinculo === 'massa'"
-        @click="modoVinculo = 'massa'"
+        :class="{ ativa: linkMode === 'massa' }"
+        :aria-selected="linkMode === 'massa'"
+        @click="linkMode = 'massa'"
       >
         <svg class="aba-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
@@ -38,114 +348,112 @@
       </button>
     </div>
 
-    <p class="modos-dica">
-      <template v-if="modoVinculo === 'unico'">
+    <currentPreview class="modos-dica">
+      <template v-if="linkMode === 'unico'">
         Escolha Grupo, Fornecedor, Código de Serviço e Unidade — e veja a prévia antes de confirmar.
       </template>
       <template v-else>
         Escolha Grupo, Fornecedor e Unidade <strong>uma vez</strong>: eles valem para todos os códigos
         que você marcar na lista.
       </template>
-    </p>
+    </currentPreview>
 
-    <!-- em massa, composição e códigos num fluxo só; no vínculo único, os 4 painéis clássicos -->
-    <div :class="modoVinculo === 'massa' ? 'painel painel-massa' : ''">
-      <label v-if="modoVinculo === 'massa'" class="painel-rotulo">1 · Composição do vínculo</label>
+    <div :class="linkMode === 'massa' ? 'painel painel-massa' : ''">
+      <label v-if="linkMode === 'massa'" class="painel-rotulo">1 · Composição do vínculo</label>
 
-      <section class="grade-seletores" :class="{ 'tres-colunas': modoVinculo === 'massa' }">
+      <section class="grade-seletores" :class="{ 'tres-colunas': linkMode === 'massa' }">
         <div class="painel">
           <label class="painel-rotulo">Grupo de Serviço</label>
-          <ComboboxBusca
+          <SearchCombobox
             ref="cbGs"
             placeholder="Digite para buscar…"
-            :carregar="api.gruposServico.listar"
-            :nomeDe="(i: any) => String(i.nome)"
-            :idDe="() => ''"
-            :permiteExcluir="isAdmin"
-            v-model="gs"
-            @criarNovo="(t: string) => irParaCadastro('Grupo de Serviço', t)"
-            @excluir="(i: any) => pedirExclusao(i, 'GS')"
+            :load="api.serviceGroups.list"
+            :nameOf="(item: any) => String(item.nome)"
+            :idOf="() => ''"
+            :allowRemove="isAdmin"
+            v-model="serviceGroup"
+            @createNew="(text: string) => goToCreate('Grupo de Serviço', text)"
+            @remove="(item: any) => askDeactivation(item, 'GS')"
           />
         </div>
 
         <div class="painel">
           <label class="painel-rotulo">Código de Fornecedor</label>
-          <ComboboxBusca
+          <SearchCombobox
             ref="cbCf"
             placeholder="Digite para buscar…"
-            :carregar="api.codigosFornecedor.listar"
-            :nomeDe="(i: any) => String(i.nome)"
-            :idDe="(i: any) => String(i.codigoFornecedorSAP || i.id)"
-            :permiteExcluir="isAdmin"
-            v-model="cf"
-            @criarNovo="(t: string) => irParaCadastro('Código de Fornecedor', t)"
-            @excluir="(i: any) => pedirExclusao(i, 'CF')"
+            :load="api.supplierCodes.list"
+            :nameOf="(item: any) => String(item.nome)"
+            :idOf="(item: any) => String(item.codigoFornecedorSAP || item.id)"
+            :allowRemove="isAdmin"
+            v-model="supplierCode"
+            @createNew="(text: string) => goToCreate('Código de Fornecedor', text)"
+            @remove="(item: any) => askDeactivation(item, 'CF')"
           />
         </div>
 
-        <div v-if="modoVinculo === 'unico'" class="painel">
+        <div v-if="linkMode === 'unico'" class="painel">
           <label class="painel-rotulo">Código de Serviço</label>
-          <ComboboxBusca
+          <SearchCombobox
             ref="cbCs"
             placeholder="Digite para buscar…"
-            :carregar="api.codigosServico.listar"
-            :nomeDe="(i: any) => String(i.descricao)"
-            :idDe="(i: any) => String(i.id)"
-            :sapDe="(i: any) => `${i.quantidadeCaracteres ?? String(i.descricao || '').length}/40 SAP`"
-            :permiteExcluir="isAdmin"
-            v-model="cs"
-            @criarNovo="(t: string) => irParaCadastro('Código de Serviço', t)"
-            @excluir="(i: any) => pedirExclusao(i, 'CS')"
+            :load="api.serviceCodes.list"
+            :nameOf="(item: any) => String(item.descricao)"
+            :idOf="(item: any) => String(item.id)"
+            :sapOf="(item: any) => `${item.quantidadeCaracteres ?? String(item.descricao || '').length}/40 SAP`"
+            :allowRemove="isAdmin"
+            v-model="serviceCode"
+            @createNew="(text: string) => goToCreate('Código de Serviço', text)"
+            @remove="(item: any) => askDeactivation(item, 'CS')"
           />
         </div>
 
         <div class="painel">
           <label class="painel-rotulo">Unidade de Medida</label>
-          <ComboboxBusca
+          <SearchCombobox
             ref="cbUm"
             placeholder="Digite para buscar…"
-            :carregar="api.unidadesMedida.listar"
-            :nomeDe="(i: any) => `${i.sigla} - ${i.nome}`"
-            :idDe="() => ''"
-            :permiteExcluir="isAdmin"
-            v-model="um"
-            @criarNovo="(t: string) => irParaCadastro('Unidade de Medida', t)"
-            @excluir="(i: any) => pedirExclusao(i, 'UM')"
+            :load="api.unitsOfMeasure.list"
+            :nameOf="(item: any) => `${item.sigla} - ${item.nome}`"
+            :idOf="() => ''"
+            :allowRemove="isAdmin"
+            v-model="unitOfMeasure"
+            @createNew="(text: string) => goToCreate('Unidade de Medida', text)"
+            @remove="(item: any) => askDeactivation(item, 'UM')"
           />
         </div>
       </section>
 
-      <div v-if="modoVinculo === 'unico'" class="linha-botoes">
+      <div v-if="linkMode === 'unico'" class="linha-botoes">
         <button
           class="botao botao-roxo"
-          :disabled="!completo || processando"
-          @click="vincular"
+          :disabled="!complete || processing"
+          @click="link"
         >
-          {{ processando ? 'Processando…' : 'Vincular Serviço' }}
+          {{ processing ? 'Processando…' : 'Vincular Serviço' }}
         </button>
-        <button class="botao botao-escuro" @click="irParaCadastro('Código de Serviço', '')">
+        <button class="botao botao-escuro" @click="goToCreate('Código de Serviço', '')">
           Cadastrar Novo Item
         </button>
-        <button class="botao botao-escuro" @click="limpar">Limpar tudo</button>
+        <button class="botao botao-escuro" @click="clearAll">Limpar tudo</button>
       </div>
 
-      <template v-if="modoVinculo === 'massa'">
+      <template v-if="linkMode === 'massa'">
         <label class="painel-rotulo">2 · Códigos de Serviço</label>
-        <VinculacaoMassa
-          :key="chaveMassa"
-          :gs="gs"
-          :cf="cf"
-          :um="um"
-          :usuario="props.usuario"
-          @vinculado="aoVincularEmMassa"
-          @cadastrar="irParaCadastro('Código de Serviço', '')"
-          @limpar="limpar"
+        <BulkServiceLink
+          :key="bulkKey"
+          :serviceGroup="serviceGroup"
+          :supplierCode="supplierCode"
+          :unitOfMeasure="unitOfMeasure"
+          :user="props.user"
+          @linked="onBulkLinked"
+          @create="goToCreate('Código de Serviço', '')"
+          @clear="clearAll"
         />
       </template>
     </div>
 
-    
-    <div v-if="modalPreview" class="modal-fundo" @click.self="modalPreview = false">
+    <div v-if="previewModal" class="modal-fundo" @click.self="previewModal = false">
       <div class="modal">
         <h3>Vincular Serviço</h3>
         <div v-if="preview" class="item-similar" style="display: block">
@@ -153,135 +461,123 @@
           <div style="margin-top: 6px"><span class="suave">Descrição:</span> {{ preview.descricaoSnapshot }}</div>
           <div style="margin-top: 6px">
             <span class="suave">Decisão:</span>
-            <span class="badge" :class="classeDecisao(preview.decisao)">{{ preview.decisao }}</span>
-            <span v-if="preview.melhorScore > 0" class="match" :class="{ alerta: preview.melhorScore < 0.88 }">
-              {{ (preview.melhorScore * 100).toFixed(0) }}% Match
-            </span>
+            <span class="badge" :class="decisionClass(preview.decisao)">{{ preview.decisao }}</span>
+            <BadgeMatch v-if="preview.melhorScore > 0" :score="preview.melhorScore" />
           </div>
 
-          
           <div
-            v-for="a in preview.alertasComponentes || []"
-            :key="a.tipo"
+            v-for="alert in preview.alertasComponentes || []"
+            :key="alert.tipo"
             class="item-similar"
             style="margin-top: 10px"
           >
-            <span>{{ a.tipo }}:</span>
-            <span>“{{ a.descricaoInformada }}”</span>
+            <span>{{ alert.tipo }}:</span>
+            <span>“{{ alert.descricaoInformada }}”</span>
             <span class="suave">semelhante a</span>
-            <span>{{ a.itemSimilarNome }}</span>
-            <span
-              v-if="a.casoIsolado"
-              class="badge-excecao"
-              :title="'Caso especial registrado.' + (a.motivoCasoIsolado ? ' Motivo: ' + a.motivoCasoIsolado : '')"
-            >!</span>
-            <span class="match" :class="{ alerta: a.score < 0.88 }">{{ (a.score * 100).toFixed(0) }}% Match</span>
+            <span>{{ alert.itemSimilarNome }}</span>
+            <BadgeException v-if="alert.casoIsolado" :motivo="alert.motivoCasoIsolado" />
+            <BadgeMatch :score="alert.score" />
           </div>
         </div>
         <div class="linha-botoes">
-          <button class="botao botao-escuro" @click="modalPreview = false">Voltar</button>
+          <button class="botao botao-escuro" @click="previewModal = false">Voltar</button>
           <button
             v-if="preview?.statusExistente === 'PENDENTE_VALIDACAO'"
             class="botao botao-escuro"
-            @click="gerenciarPendente"
+            @click="managePending"
           >
             Gerenciar pedido pendente
           </button>
-          <button class="botao botao-roxo" :disabled="processando" @click="confirmarVinculo">Confirmar</button>
+          <button class="botao botao-roxo" :disabled="processing" @click="confirmLink">Confirmar</button>
         </div>
       </div>
     </div>
 
-    <ModalPedidoPendente
-      v-if="modalPedido"
-      :pedido="pedidoPendente"
-      :pode-gerenciar="podeGerenciarPedido"
-      :processando="processandoPedido"
-      :salvando="salvandoPedido"
-      @fechar="fecharPedido"
-      @cancelar="confirmandoCancelamento = true"
-      @salvar="salvarPedido"
+    <PendingRequestModal
+      v-if="requestModal"
+      :request="pedidoPendente"
+      :can-manage="canManageRequest"
+      :processing="processingRequest"
+      :saving="savingRequest"
+      @close="closeRequest"
+      @cancel="confirmingCancel = true"
+      @save="saveRequest"
     />
 
-    <ModalConfirmacao
-      v-if="confirmandoCancelamento"
-      titulo="Cancelar o pedido?"
-      mensagem="O pedido sai da fila da governança e a composição fica livre para um novo envio. O histórico fica preservado."
-      rotulo-confirmar="✕ Cancelar pedido"
-      :acao-perigosa="true"
-      @confirmar="confirmarCancelamento"
-      @cancelar="confirmandoCancelamento = false"
+    <ConfirmModal
+      v-if="confirmingCancel"
+      title="Cancelar o pedido?"
+      message="O pedido sai da fila da governança e a composição fica livre para um novo envio. O histórico fica preservado."
+      confirm-label="✕ Cancelar pedido"
+      :dangerous-action="true"
+      @confirm="confirmCancelation"
+      @cancel="confirmingCancel = false"
     />
 
-    <ModalBloqueio
-      v-if="modalBloqueio"
-      :itens="itensBloqueio"
-      :motivo="motivoBloqueio"
-      @reutilizar="reutilizarItem"
-      @governanca="abrirGovernanca"
-      @voltar="modalBloqueio = false"
+    <DuplicateBlockModal
+      v-if="blockModal"
+      :itens="blockItems"
+      :motivo="blockReason"
+      @reuse="reuseItem"
+      @governance="openGovernance"
+      @back="blockModal = false"
     />
 
-    
-    <ModalGovernanca
-      v-if="modalGovernanca"
-      classe="Código de Serviço"
-      :descricao="descricaoNovoServico"
-      @voltar="modalGovernanca = false"
-      @confirmar="confirmarGovernanca"
+    <GovernanceModal
+      v-if="governanceModal"
+      itemClass="Código de Serviço"
+      :descricao="newServiceDescription"
+      @back="governanceModal = false"
+      @confirm="confirmGovernance"
     />
 
-    
-    <ModalConfirmacao
-      v-if="exclusao"
-      titulo="Desativar componente do catálogo?"
-      :mensagem="`${ROTULO_TIPO[exclusao.tipo]} “${exclusao.rotulo}” sairá de circulação: some das listas de uso e da similaridade, mas nada é perdido. É possível reativar no Catálogo quando quiser.`"
-      rotulo-confirmar="Desativar"
-      :acao-perigosa="false"
-      @confirmar="executarExclusao"
-      @cancelar="exclusao = null"
+    <ConfirmModal
+      v-if="deactivation"
+      title="Desativar componente do catálogo?"
+      :message="`${typeLabel(deactivation.tipo)} “${deactivation.label}” sairá de circulação: some das listas de uso e da similaridade, mas nada é perdido. É possível reativar no Catálogo quando quiser.`"
+      confirm-label="Desativar"
+      :dangerous-action="false"
+      @confirm="confirmDeactivation"
+      @cancel="deactivation = null"
     />
 
-    
-    <div v-if="sucesso" class="modal-fundo" @click.self="sucesso = null">
+    <div v-if="success" class="modal-fundo" @click.self="success = null">
       <div class="modal">
         <div class="aviso aviso-verde">
           <span class="icone">✓</span>
-          <div><strong>{{ sucesso.titulo }}</strong><br />{{ sucesso.mensagem }}</div>
+          <div><strong>{{ success.title }}</strong><br />{{ success.message }}</div>
         </div>
         <div class="barra-tempo">
-          <div class="barra-tempo-fill" :style="{ width: tempoRestante + '%' }"></div>
+          <div class="barra-tempo-fill" :style="{ width: timeLeft + '%' }"></div>
         </div>
         <div class="suave centralizado" style="margin-top: 8px; font-size: 0.82rem">
-          Fecha automaticamente em {{ Math.ceil(tempoRestante / 100 * 5) }}s…
+          Fecha automaticamente em {{ Math.ceil(timeLeft / 100 * 5) }}s…
         </div>
         <div class="linha-botoes" style="margin-top: 14px">
-          <button class="botao botao-roxo" @click="limpar">Novo registro</button>
+          <button class="botao botao-roxo" @click="clearAll">Novo registro</button>
           <button v-if="isAdmin" class="botao botao-escuro" @click="$router.push('/admin')">Ver Painel Admin</button>
         </div>
       </div>
     </div>
 
-    
-    
     <div v-if="isAdmin" class="painel" style="margin-top: 34px">
       <label class="painel-rotulo">Resumo da base</label>
       <div class="indicadores" style="margin: 0">
         <div class="indicador">
           <div class="rotulo">Serviços únicos</div>
-          <div class="valor" style="color: var(--azul)">{{ est.catalogo?.servicos?.toLocaleString('pt-BR') ?? '…' }}</div>
+          <div class="valor" style="color: var(--azul)">{{ statistics.catalogo?.servicos?.toLocaleString('pt-BR') ?? '…' }}</div>
         </div>
         <div class="indicador">
           <div class="rotulo">Registros originais</div>
-          <div class="valor">{{ est.matriz?.total?.toLocaleString('pt-BR') ?? '…' }}</div>
+          <div class="valor">{{ statistics.matriz?.total?.toLocaleString('pt-BR') ?? '…' }}</div>
         </div>
         <div class="indicador">
           <div class="rotulo">Menos repetições</div>
-          <div class="valor" style="color: var(--verde)">{{ reducao }}%</div>
+          <div class="valor" style="color: var(--verde)">{{ reduction }}%</div>
         </div>
         <div class="indicador">
           <div class="rotulo">Aguardando revisão</div>
-          <div class="valor" style="color: var(--amarelo-alerta)">{{ est.matriz?.pendentes?.toLocaleString('pt-BR') ?? '…' }}</div>
+          <div class="valor" style="color: var(--amarelo-alerta)">{{ statistics.matriz?.pendentes?.toLocaleString('pt-BR') ?? '…' }}</div>
         </div>
       </div>
       <div class="linha" style="margin-top: 14px">
@@ -289,33 +585,32 @@
       </div>
     </div>
 
-    
     <div v-else class="guia">
-      <button class="guia-cabecalho" :class="{ aberto: guiaAberto }" @click="guiaAberto = !guiaAberto">
-        <span class="seta">{{ guiaAberto ? '▾' : '▸' }}</span>
+      <button class="guia-cabecalho" :class="guideOpen ? 'isOpen' : ''" @click="guideOpen = !guideOpen">
+        <span class="seta">{{ guideOpen ? '▾' : '▸' }}</span>
         <div>
           <h2 style="margin: 0; font-size: 1.12rem; color: var(--azul-escuro)">Guia rápido</h2>
-          <p class="suave" style="margin: 2px 0 0">
-            {{ guiaAberto ? 'Tudo o que você pode encontrar ao usar o sistema.' : 'Toque para ver como o sistema funciona e o que esperar.' }}
-          </p>
+          <currentPreview class="suave" style="margin: 2px 0 0">
+            {{ guideOpen ? 'Tudo o que você pode encontrar ao usar o sistema.' : 'Toque para ver como o sistema funciona e o que esperar.' }}
+          </currentPreview>
         </div>
       </button>
 
-      <div v-if="guiaAberto" class="grade-seletores" style="margin-top: 18px">
+      <div v-if="guideOpen" class="grade-seletores" style="margin-top: 18px">
         <div class="painel">
           <label class="painel-rotulo">1 · Como vincular um serviço</label>
-          <p class="suave" style="margin: 0; line-height: 1.6">
+          <currentPreview class="suave" style="margin: 0; line-height: 1.6">
             Escolha um item em cada painel — <strong>Grupo de Serviço</strong>, <strong>Código de Fornecedor</strong>,
             <strong>Código de Serviço</strong> e <strong>Unidade de Medida</strong> — e clique em
             <strong>Vincular Serviço</strong>. Você verá uma prévia com o código completo e a
             decisão antes de confirmar.
-          </p>
-          <p class="suave" style="margin: 10px 0 0; line-height: 1.6">
+          </currentPreview>
+          <currentPreview class="suave" style="margin: 10px 0 0; line-height: 1.6">
             Para vários de uma vez, use a aba <strong>Vincular em massa</strong>: escolha Grupo,
             Fornecedor e Unidade uma vez, marque os Códigos de Serviço com checkbox (buscando ou
             colando a lista) e o sistema avisa quantos <strong>já estão disponíveis</strong> e quantos
             <strong>precisam ser criados</strong> antes de vincular todos.
-          </p>
+          </currentPreview>
         </div>
 
         <div class="painel">
@@ -338,10 +633,10 @@
 
         <div class="painel">
           <label class="painel-rotulo">3 · Se aparecer um item similar</label>
-          <p class="suave" style="margin: 0 0 10px; line-height: 1.6">
+          <currentPreview class="suave" style="margin: 0 0 10px; line-height: 1.6">
             O sistema mostra os semelhantes com o <strong>% de match</strong> e o motivo.
             Você tem três caminhos:
-          </p>
+          </currentPreview>
           <ul class="suave" style="margin: 0; padding-left: 18px; line-height: 1.9">
             <li><strong>Reutilizar o código existente</strong> — o recomendado;</li>
             <li><strong>Criar com justificativa</strong> — fica registrada na auditoria;</li>
@@ -351,486 +646,35 @@
 
         <div class="painel">
           <label class="painel-rotulo">4 · Cadastrar um item novo</label>
-          <p class="suave" style="margin: 0; line-height: 1.6">
+          <currentPreview class="suave" style="margin: 0; line-height: 1.6">
             Em qualquer busca, a opção <strong>＋ Cadastrar Novo Item</strong> aparece por
             último. A descrição do serviço deve caber em <strong>40 caracteres (limite SAP)</strong>
             — o contador na tela acompanha a digitação.
-          </p>
+          </currentPreview>
         </div>
 
         <div class="painel">
           <label class="painel-rotulo">5 · Dicas de busca</label>
-          <p class="suave" style="margin: 0; line-height: 1.6">
+          <currentPreview class="suave" style="margin: 0; line-height: 1.6">
             A busca entende <strong>acentos ausentes</strong>, <strong>plural e singular</strong>
             (ex.: <em>telhados</em> acha <em>telhado</em> e vice-versa), pequenos erros de digitação e
             palavras invertidas (ex.: <em>mecanico manutencao</em>). Códigos legados também
             funcionam — digite <strong>4033776</strong> para achar o item original.
-          </p>
+          </currentPreview>
         </div>
 
         <div class="painel">
           <label class="painel-rotulo">6 · Nada é perdido</label>
-          <p class="suave" style="margin: 0; line-height: 1.6">
+          <currentPreview class="suave" style="margin: 0; line-height: 1.6">
             Toda decisão (criação, bloqueio, justificativa) é <strong>auditada com autor e
             horário</strong>. A unificação de repetições apenas consolidam o catálogo — o
             histórico dos códigos legados é preservado.
-          </p>
+          </currentPreview>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed, inject, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { api, chaveIdempotente } from '../services/api'
-import { toast } from '../services/toast'
-import ComboboxBusca from '../components/ComboboxBusca.vue'
-import ModalBloqueio from '../components/ModalBloqueio.vue'
-import ModalConfirmacao from '../components/ModalConfirmacao.vue'
-import ModalGovernanca from '../components/ModalGovernanca.vue'
-import ModalPedidoPendente from '../components/ModalPedidoPendente.vue'
-import VinculacaoMassa from './VinculacaoMassa.vue'
-import type { CandidatoSimilar, CodigoCompletoResponse, CriarCodigoCompletoPayload, PreviewResponse, ResultadoVinculacaoLote } from '../types'
-
-type Item = Record<string, unknown>
-
-
-type ItemBloqueio = CandidatoSimilar & { tipoComponente?: string }
-
-
-type TipoComponenteCatalogo = 'GS' | 'CF' | 'CS' | 'UM'
-
-const props = withDefaults(defineProps<{ usuario?: string; papel?: string }>(), { usuario: '', papel: 'USUARIO' })
-const router = useRouter()
-const route = useRoute()
-const atualizarPendentes = inject<() => void>('atualizarPendentes', () => {})
-
-const isAdmin = computed(() => props.papel === 'ADMIN')
-const guiaAberto = ref(false)
-
-// vínculo único (o fluxo clássico) ou vinculação em massa (vários CS de uma vez)
-const modoVinculo = ref<'unico' | 'massa'>('unico')
-const chaveMassa = ref(0)
-
-function aoVincularEmMassa(resultado: ResultadoVinculacaoLote): void {
-  atualizarPendentes()
-  void carregarResumoAdmin()
-  if (resultado.aguardandoValidacao) {
-    toast.aviso(
-      `${resultado.aguardandoValidacao} pedido(s) aguardando validação da Governança — acompanhe no Painel Admin.`
-    )
-  }
-}
-const est = ref<Partial<import('../types').Estatisticas>>({})
-
-async function carregarResumoAdmin(): Promise<void> {
-  if (!isAdmin.value) return
-  try {
-    est.value = await api.estatisticas()
-  } catch {
-    est.value = {}
-  }
-}
-
-const reducao = computed(() => {
-  const total = est.value.matriz?.total || 0
-  const servicos = est.value.catalogo?.servicos || 0
-  if (!total || !servicos) return '0,0'
-  return ((1 - servicos / total) * 100).toFixed(1).replace('.', ',')
-})
-
-const gs = ref<Item | null>(null)
-const cf = ref<Item | null>(null)
-const cs = ref<Item | null>(null)
-const um = ref<Item | null>(null)
-
-
-const cbGs = ref<InstanceType<typeof ComboboxBusca> | null>(null)
-const cbCf = ref<InstanceType<typeof ComboboxBusca> | null>(null)
-const cbCs = ref<InstanceType<typeof ComboboxBusca> | null>(null)
-const cbUm = ref<InstanceType<typeof ComboboxBusca> | null>(null)
-
-const ROTULO_TIPO: Record<TipoComponenteCatalogo, string> = {
-  GS: 'Grupo de Serviço',
-  CF: 'Código de Fornecedor',
-  CS: 'Código de Serviço',
-  UM: 'Unidade de Medida'
-}
-const exclusao = ref<{ tipo: TipoComponenteCatalogo; id: string; rotulo: string } | null>(null)
-
-function pedirExclusao(item: Item, tipo: TipoComponenteCatalogo): void {
-  const nome = tipo === 'CS'
-    ? String(item.descricao ?? item.nome ?? item.id)
-    : tipo === 'UM'
-      ? String(`${item.sigla ?? ''} - ${item.nome ?? ''}`).trim()
-      : String(item.nome ?? item.descricao ?? item.id)
-  exclusao.value = { tipo, id: String(item.id), rotulo: nome }
-}
-
-async function executarExclusao(): Promise<void> {
-  const alvo = exclusao.value
-  if (!alvo) return
-  exclusao.value = null
-  try {
-    
-    const relatorio = await api.situacaoComponentes(alvo.tipo, [alvo.id], 'DESATIVADO')
-    const resultado = relatorio[0]
-    if (!resultado?.alterado) {
-      toast.aviso(resultado?.motivo || 'Nada foi alterado.')
-      return
-    }
-    toast.sucesso(`${ROTULO_TIPO[alvo.tipo]} “${alvo.rotulo}” desativado — fora de circulação. Reative no Catálogo se precisar.`)
-    const selecoes: Record<TipoComponenteCatalogo, { value: Item | null }> = { GS: gs, CF: cf, CS: cs, UM: um }
-    const paineis: Record<TipoComponenteCatalogo, { recarregar: () => void } | null> = {
-      GS: cbGs.value, CF: cbCf.value, CS: cbCs.value, UM: cbUm.value
-    }
-    
-    const selecionado = selecoes[alvo.tipo]
-    if (selecionado.value && String(selecionado.value.id) === alvo.id) selecionado.value = null
-    paineis[alvo.tipo]?.recarregar()
-    atualizarPendentes()
-  } catch (e) {
-    toast.erro((e as Error).message)
-  }
-}
-
-const preview = ref<PreviewResponse | null>(null)
-const processando = ref(false)
-const modalPreview = ref(false)
-const modalBloqueio = ref(false)
-const modalGovernanca = ref(false)
-const sucesso = ref<{ titulo: string; mensagem: string } | null>(null)
-
-// gestão do pedido pendente na governança (ver / editar / cancelar)
-const modalPedido = ref(false)
-const pedidoPendente = ref<CodigoCompletoResponse | null>(null)
-const salvandoPedido = ref(false)
-const confirmandoCancelamento = ref(false)
-const processandoPedido = ref(false)
-const chaveEnvio = ref('')
-
-// só quem enviou o pedido (ou um admin) pode editá-lo/cancelá-lo
-const podeGerenciarPedido = computed(() => {
-  const p = pedidoPendente.value
-  if (!p) return false
-  const papel = (localStorage.getItem('papel') || 'USUARIO').toUpperCase()
-  return papel === 'ADMIN' || (p.usuarioCriacaoId ?? '') === (props.usuario || '')
-})
-
-function formatarData(iso: string | null | undefined): string {
-  if (!iso) return ''
-  const d = new Date(iso)
-  return isNaN(d.getTime()) ? iso : d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
-}
-
-async function abrirPedidoPendente(idCompleto: string): Promise<void> {
-  try {
-    pedidoPendente.value = await api.codigosCompletos.buscar(idCompleto)
-    modalPedido.value = true
-  } catch (e) {
-    toast.erro((e as Error).message)
-  }
-}
-
-function gerenciarPendente(): void {
-  const id = preview.value?.idCompleto
-  modalPreview.value = false
-  if (id) void abrirPedidoPendente(id)
-}
-
-function fecharPedido(): void {
-  modalPedido.value = false
-  pedidoPendente.value = null
-  confirmandoCancelamento.value = false
-}
-
-async function salvarPedido(dados: { descricao: string; justificativa: string }): Promise<void> {
-  if (!pedidoPendente.value || salvandoPedido.value) return
-  salvandoPedido.value = true
-  try {
-    pedidoPendente.value = await api.codigosCompletos.atualizarPedido(pedidoPendente.value.id, {
-      descricao: dados.descricao || null,
-      justificativa: dados.justificativa || null
-    })
-    toast.sucesso('Pedido atualizado — a governança verá a versão mais nova.')
-  } catch (e) {
-    toast.erro((e as Error).message)
-  } finally {
-    salvandoPedido.value = false
-  }
-}
-
-async function confirmarCancelamento(): Promise<void> {
-  if (!pedidoPendente.value || processandoPedido.value) return
-  processandoPedido.value = true
-  confirmandoCancelamento.value = false
-  try {
-    await api.codigosCompletos.cancelarPedido(pedidoPendente.value.id)
-    fecharPedido()
-    toast.sucesso('Pedido cancelado. A composição está livre para um novo envio.')
-    await vincular()
-  } catch (e) {
-    toast.erro((e as Error).message)
-  } finally {
-    processandoPedido.value = false
-  }
-}
-const tempoRestante = ref(100)
-
-
-watch(sucesso, (novo) => {
-  if (!novo) {
-    tempoRestante.value = 100
-    return
-  }
-  tempoRestante.value = 100
-  const timer = setInterval(() => {
-    tempoRestante.value -= 2
-    if (tempoRestante.value <= 0) {
-      clearInterval(timer)
-      if (sucesso.value) sucesso.value = null
-    }
-  }, 100)
-})
-
-const completo = computed(() => gs.value && cf.value && cs.value && um.value)
-const descricaoNovoServico = computed(() => preview.value?.codigoServico?.nome || '')
-
-
-const itensBloqueio = computed<ItemBloqueio[]>(() => {
-  const p = preview.value
-  if (!p) return []
-
-  
-  const lista: ItemBloqueio[] = (p.similares || []).map((c) => ({ ...c, tipoComponente: 'CS' }))
-  for (const a of p.alertasComponentes || []) {
-    lista.push({
-      posicao: 0,
-      id: a.itemSimilarId,
-      codigoOriginal: null,
-      descricao: a.itemSimilarNome,
-      score: a.score,
-      scoreTokens: 0,
-      scoreCaracteres: 0,
-      tokensEmComum: [],
-      motivo: `${nomeComponente(a.tipo)}: “${a.descricaoInformada}” é semelhante a este item.`,
-      tipoComponente: a.tipo
-    })
-  }
-  return lista
-})
-
-
-function nomeComponente(tipo: string): string {
-  return ({
-    GS: 'Grupo de Serviço',
-    CF: 'Código de Fornecedor',
-    UM: 'Unidade de Medida',
-    CS: 'Código de Serviço'
-  } as Record<string, string>)[tipo] || 'Código de Serviço'
-}
-
-const motivoBloqueio = computed(() =>
-  'O sistema identificou itens semelhantes cadastrados. Escolha um item para reutilizar ou justifique a criação.')
-
-function irParaCadastro(tipo: string, texto: string): void {
-  router.push({ path: '/cadastrar-item', query: { tipo, descricao: texto } })
-}
-
-function payload(extra: Partial<CriarCodigoCompletoPayload> = {}): CriarCodigoCompletoPayload {
-  return {
-    gsId: (gs.value?.id as string) ?? null,
-    cfId: (cf.value?.id as string) ?? null,
-    csId: (cs.value?.id as string) ?? null,
-    umId: (um.value?.id as string) ?? null,
-    usuarioCriacaoId: props.usuario || null,
-    ...extra
-  }
-}
-
-async function vincular(): Promise<void> {
-  processando.value = true
-  try {
-    preview.value = await api.preview(payload())
-    // a composição pode já estar vinculada — isso não bloqueia: cada envio cria um novo vínculo
-    if (preview.value.idCompletoJaExiste) {
-      toast.aviso(`Este código já está vinculado (${preview.value.idCompleto}) — este envio criará mais um vínculo.`)
-    }
-    // Idempotency-Key por tentativa: duplo clique no Confirmar não duplica, mas cada
-    // clique em "Vincular Serviço" é uma nova tentativa — e cria um novo vínculo
-    const corpo = payload()
-    chaveEnvio.value = chaveIdempotente('criar-', corpo.gsId, corpo.cfId, corpo.csId, corpo.umId, String(Date.now()))
-    if (preview.value.decisao === 'PERMITIR') {
-      modalPreview.value = true
-    } else {
-      modalBloqueio.value = true
-    }
-  } catch (e) {
-    toast.erro((e as Error).message)
-  } finally {
-    processando.value = false
-  }
-}
-
-
-function registrarVinculo(idCompleto: string, descricaoSnapshot: string): void {
-  toast.sucesso(`Enviado com sucesso! Serviço ${idCompleto} vinculado.`)
-  sucesso.value = { titulo: `Serviço ${idCompleto} vinculado!`, mensagem: descricaoSnapshot }
-  atualizarPendentes()
-}
-
-async function confirmarVinculo(): Promise<void> {
-  processando.value = true
-  try {
-    const corpo = payload({ acao: 'CRIAR' })
-    // Idempotency-Key por tentativa: duplo clique/rede não cria dois registros para o mesmo clique
-    const r = await api.criarCodigoCompleto(
-      corpo,
-      chaveEnvio.value || chaveIdempotente('criar-', corpo.gsId, corpo.cfId, corpo.csId, corpo.umId, String(Date.now()))
-    )
-    modalPreview.value = false
-    if (r.requisicaoRepetida) {
-      // nada novo foi criado: dizer isso em vez de fingir uma nova criação
-      toast.aviso(`O vínculo ${r.idCompleto} já estava registrado — nada novo foi criado.`)
-      sucesso.value = { titulo: 'Vínculo já registrado', mensagem: r.descricaoSnapshot }
-      atualizarPendentes()
-    } else {
-      registrarVinculo(r.idCompleto, r.descricaoSnapshot)
-    }
-  } catch (e) {
-    if ((e as { status?: number }).status === 409 && preview.value) {
-      // reavalia o que existe: pedido pendente (abre gestão), ativo (confirma) ou liberado para envio
-      modalPreview.value = false
-      await vincular()
-    } else {
-      toast.erro((e as Error).message)
-    }
-  } finally {
-    processando.value = false
-  }
-}
-
-function reutilizarItem(itemCandidato: CandidatoSimilar): void {
-  const item = itemCandidato as ItemBloqueio
-  modalBloqueio.value = false
-
-  
-  const escolhido: Item = { id: item.id, descricao: item.descricao, nome: item.descricao }
-  switch (item.tipoComponente) {
-    case 'GS':
-      gs.value = escolhido
-      break
-    case 'CF':
-      cf.value = escolhido
-      break
-    case 'UM': {
-      const [sigla, ...resto] = String(item.descricao || '').split(' - ')
-      um.value = { ...escolhido, sigla, nome: resto.join(' - ') || sigla }
-      break
-    }
-    default:
-      cs.value = escolhido
-  }
-  toast.sucesso(`Código existente reutilizado: ${item.id} — ${item.descricao}. Confirme a vinculação.`)
-  
-  void vincular()
-}
-
-function abrirGovernanca(): void {
-  modalBloqueio.value = false
-  modalGovernanca.value = true
-  // chave por tentativa: duplo clique/rede não duplica, mas um novo envio é um novo pedido
-  const corpo = payload()
-  chaveEnvio.value = chaveIdempotente('gov-', corpo.gsId, corpo.cfId, corpo.csId, corpo.umId, String(Date.now()))
-}
-
-async function confirmarGovernanca(justificativa: string): Promise<void> {
-  processando.value = true
-  try {
-    const corpo = payload({ acao: 'ENVIAR_VALIDACAO', justificativa })
-    const r = await api.criarCodigoCompleto(
-      corpo,
-      chaveEnvio.value || chaveIdempotente('gov-', corpo.gsId, corpo.cfId, corpo.csId, corpo.umId, justificativa)
-    )
-    modalGovernanca.value = false
-    if (r.requisicaoRepetida) {
-      toast.aviso(`Este pedido já havia sido enviado (${r.idCompleto}) — nada novo foi criado.`)
-      sucesso.value = {
-        titulo: 'Pedido já enviado',
-        mensagem: `O cadastro ${r.idCompleto} já estava na fila de validação da Governança.`
-      }
-    } else {
-      toast.sucesso('Enviado com sucesso! O cadastro foi para a fila de validação da Governança.')
-      sucesso.value = {
-        titulo: 'Enviado para Governança',
-        mensagem: `O cadastro ${r.idCompleto} passará por validação humana pela Equipe de Governança de Dados.`
-      }
-    }
-    atualizarPendentes()
-  } catch (e) {
-    if ((e as { status?: number }).status === 409 && preview.value) {
-      modalGovernanca.value = false
-      await vincular()
-    } else {
-      toast.erro((e as Error).message)
-    }
-  } finally {
-    processando.value = false
-  }
-}
-
-function classeDecisao(d: string): string {
-  return d === 'PERMITIR' ? 'badge-permitir' : d === 'ALERTAR' ? 'badge-alertar' : 'badge-revisar'
-}
-
-function limpar(): void {
-  gs.value = cf.value = cs.value = um.value = null
-  preview.value = null
-  sucesso.value = null
-  modalPreview.value = modalBloqueio.value = modalGovernanca.value = false
-  chaveMassa.value++ // recomeça também a seleção da vinculação em massa
-  fecharPedido()
-}
-
-
-
-
-
-function aplicarReutilizacao(): void {
-  const id = route.query.reutilizar
-  if (!id) return
-  const tipoItem = String(route.query.tipo || 'CS').toUpperCase()
-  const texto = String(route.query.descricao || '')
-  const item: Item = { id: String(id), descricao: texto, nome: texto }
-  let painel = 'Código de Serviço'
-  if (tipoItem === 'GS') {
-    gs.value = item
-    painel = 'Grupo de Serviço'
-  } else if (tipoItem === 'CF') {
-    cf.value = item
-    painel = 'Código de Fornecedor'
-  } else if (tipoItem === 'UM') {
-    const [sigla, ...resto] = texto.split(' - ')
-    um.value = { ...item, sigla, nome: resto.join(' - ') || sigla }
-    painel = 'Unidade de Medida'
-  } else {
-    cs.value = item
-  }
-  toast.sucesso(`${String(id)} — ${texto} selecionado como ${painel}. Complete a vinculação.`)
-  
-  void router.replace({ query: {} })
-}
-
-onMounted(() => {
-  carregarResumoAdmin()
-  aplicarReutilizacao()
-  
-  if (route.query.criado) void router.replace({ query: {} })
-})
-watch(() => props.papel, carregarResumoAdmin)
-</script>
 
 <style scoped>
 .modos-vinculo {
@@ -896,13 +740,11 @@ watch(() => props.papel, carregarResumoAdmin)
   color: var(--texto-suave);
   line-height: 1.55;
 }
-/* em massa o fluxo é um painel só: composição, códigos e ação */
 .painel-massa {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-/* os campos da composição deixam de ser cards — viram um formulário só */
 .painel-massa .grade-seletores .painel {
   background: transparent;
   border: none;
@@ -910,7 +752,6 @@ watch(() => props.papel, carregarResumoAdmin)
   box-shadow: none;
   padding: 0;
 }
-/* na vinculação em massa são só 3 campos (sem Código de Serviço) — sem coluna vazia */
 .grade-seletores.tres-colunas {
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;

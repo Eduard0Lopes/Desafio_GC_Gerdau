@@ -1,10 +1,3 @@
-<template>
-  <div class="grafico-animado">
-    <Doughnut v-if="temDados" :key="tema.estado.tema" :data="dadosGrafico" :options="opcoes" ref="graficoRef" />
-    <div v-else class="grafico-vazio suave">Sem dados para exibir.</div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { Doughnut } from 'vue-chartjs'
@@ -15,47 +8,46 @@ import {
   Tooltip,
   type ChartOptions
 } from 'chart.js'
-import { tema } from '../services/tema'
+import { theme } from '../services/tema'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 interface Fatia {
-  rotulo: string
-  valor: number
-  cor: string
+  label: string
+  value: number
+  color: string
 }
 
 const props = withDefaults(defineProps<{
-  dados: Fatia[]
-  titulo?: string
-}>(), { titulo: '' })
+  data: Fatia[]
+  title?: string
+}>(), { title: '' })
 
-const graficoRef = ref<InstanceType<typeof Doughnut> | null>(null)
+const chartRef = ref<InstanceType<typeof Doughnut> | null>(null)
 
-
-const corTexto = computed(() => {
-  void tema.estado.tema
-  return tema.cor('--texto', '#1c2b3a')
+const textColor = computed(() => {
+  void theme.state.theme
+  return theme.color('--texto', '#1c2b3a')
 })
-const corTitulo = computed(() => {
-  void tema.estado.tema
-  return tema.cor('--azul-escuro', '#00205b')
+const titleColor = computed(() => {
+  void theme.state.theme
+  return theme.color('--azul-escuro', '#00205b')
 })
-const corBorda = computed(() => {
-  void tema.estado.tema
-  return tema.cor('--cartao', '#ffffff')
+const borderColor = computed(() => {
+  void theme.state.theme
+  return theme.color('--cartao', '#ffffff')
 })
 
-const dadosGrafico = computed(() => {
-  
-  const fatias = props.dados.filter((f) => f.valor > 0)
+const chartData = computed(() => {
+
+  const slices = props.data.filter((slice) => slice.value > 0)
   return {
-    labels: fatias.map((f) => f.rotulo),
+    labels: slices.map((slice) => slice.label),
     datasets: [
       {
-        data: fatias.map((f) => f.valor),
-        backgroundColor: fatias.map((f) => f.cor),
-        borderColor: corBorda.value,
+        data: slices.map((slice) => slice.value),
+        backgroundColor: slices.map((slice) => slice.color),
+        borderColor: borderColor.value,
         borderWidth: 3,
         hoverOffset: 10
       }
@@ -63,9 +55,9 @@ const dadosGrafico = computed(() => {
   }
 })
 
-const temDados = computed(() => props.dados.some((f) => f.valor > 0))
+const hasData = computed(() => props.data.some((slice) => slice.value > 0))
 
-const opcoes = computed<ChartOptions<'doughnut'>>(() => ({
+const options = computed<ChartOptions<'doughnut'>>(() => ({
   responsive: true,
   maintainAspectRatio: true,
   animation: { animateRotate: true, animateScale: true, duration: 900 },
@@ -73,25 +65,32 @@ const opcoes = computed<ChartOptions<'doughnut'>>(() => ({
   plugins: {
     legend: {
       position: 'bottom',
-      labels: { usePointStyle: true, padding: 16, color: corTexto.value, font: { size: 11 } }
+      labels: { usePointStyle: true, padding: 16, color: textColor.value, font: { size: 11 } }
     },
-    title: props.titulo
-      ? { display: true, text: props.titulo, color: corTitulo.value, font: { size: 14, weight: 700 } }
+    title: props.title
+      ? { display: true, text: props.title, color: titleColor.value, font: { size: 14, weight: 700 } }
       : undefined,
     tooltip: {
       callbacks: {
-        label: (ctx) => ` ${ctx.label}: ${Number(ctx.parsed).toLocaleString('pt-BR')}`
+        label: (context) => ` ${context.label}: ${Number(context.parsed).toLocaleString('pt-BR')}`
       }
     }
   },
-  
-  onClick: (_evento, elementos, grafico) => {
-    if (!elementos.length) return
-    grafico.toggleDataVisibility(elementos[0].index)
-    grafico.update()
+
+  onClick: (_evento, elements, chart) => {
+    if (!elements.length) return
+    chart.toggleDataVisibility(elements[0].index)
+    chart.update()
   }
 }))
 </script>
+
+<template>
+  <div class="grafico-animado">
+    <Doughnut v-if="hasData" :key="theme.state.theme" :data="chartData" :options="options" ref="graficoRef" />
+    <div v-else class="grafico-vazio suave">Sem dados para exibir.</div>
+  </div>
+</template>
 
 <style scoped>
 .grafico-animado {

@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import { defineComponent, ref } from 'vue'
-import SelecaoMultiplaCS from '../src/components/SelecaoMultiplaCS.vue'
-import type { CodigoServico, ItemCsMassa } from '../src/types'
+import ServiceCodeMultiSelect from '../src/components/SelecaoMultiplaCS.vue'
+import type { ServiceCode, BulkCodeItem } from '../src/types'
 
-const CATALOGO: CodigoServico[] = [
+const CATALOGO: ServiceCode[] = [
   {
     id: 'CS-001',
     descricao: 'SV EQUIPE TELHADO',
@@ -23,10 +23,10 @@ const CATALOGO: CodigoServico[] = [
   }
 ]
 
-function itemNovo(texto: string): ItemCsMassa {
+function itemNovo(text: string): BulkCodeItem {
   return {
-    chave: `novo:${texto}`,
-    texto,
+    key: `novo:${text}`,
+    texto: text,
     csId: null,
     classificacao: 'CRIAR',
     situacao: 'OK',
@@ -35,26 +35,26 @@ function itemNovo(texto: string): ItemCsMassa {
   }
 }
 
-/** harness com v-model de verdade: o checkbox depende do estado do pai */
+
 function montar() {
   return mount(
     defineComponent({
-      components: { SelecaoMultiplaCS },
+      components: { ServiceCodeMultiSelect },
       setup() {
-        const escolhidos = ref<ItemCsMassa[]>([])
-        const carregar = async (termo: string) =>
-          CATALOGO.filter((c) => c.descricao.toLowerCase().includes(termo.toLowerCase()))
-        const resolver = async (textos: string[]) => textos.map(itemNovo)
-        return { escolhidos, carregar, resolver }
+        const chosen = ref<BulkCodeItem[]>([])
+        const load = async (term: string) =>
+          CATALOGO.filter((item) => item.descricao.toLowerCase().includes(term.toLowerCase()))
+        const analyze = async (texts: string[]) => texts.map(itemNovo)
+        return { chosen, load, analyze }
       },
-      template: '<SelecaoMultiplaCS v-model="escolhidos" :carregar="carregar" :resolver="resolver" />'
+      template: '<ServiceCodeMultiSelect v-model="chosen" :load="load" :analyze="analyze" />'
     })
   )
 }
 
-async function buscar(wrapper: ReturnType<typeof montar>, termo: string): Promise<void> {
-  await wrapper.find('input').setValue(termo)
-  await new Promise((r) => setTimeout(r, 300)) // debounce da busca
+async function search(wrapper: ReturnType<typeof montar>, term: string): Promise<void> {
+  await wrapper.find('input').setValue(term)
+  await new Promise((resolve) => setTimeout(resolve, 300)) 
   await flushPromises()
 }
 
@@ -62,14 +62,14 @@ describe('SelecaoMultiplaCS — checkbox sem perder os escolhidos', () => {
   it('marca um resultado e mantém a marca ao pesquisar outra coisa', async () => {
     const wrapper = montar()
 
-    await buscar(wrapper, 'telhado')
+    await search(wrapper, 'telhado')
     expect(wrapper.text()).toContain('SV EQUIPE TELHADO')
     await wrapper.find('.resultados .opcao input').setValue(true)
     await flushPromises()
     expect(wrapper.text()).toContain('Escolhidos (1)')
 
-    // a busca muda e o que já foi escolhido continua lá
-    await buscar(wrapper, 'pipa')
+    
+    await search(wrapper, 'pipa')
     expect(wrapper.text()).toContain('SV MONTAGEM PIPA')
     expect(wrapper.text()).toContain('Escolhidos (1)')
     expect(wrapper.find('.escolhidos').text()).toContain('SV EQUIPE TELHADO')
@@ -78,7 +78,7 @@ describe('SelecaoMultiplaCS — checkbox sem perder os escolhidos', () => {
   it('desmarcar o checkbox tira o item da seleção', async () => {
     const wrapper = montar()
 
-    await buscar(wrapper, 'telhado')
+    await search(wrapper, 'telhado')
     await wrapper.find('.resultados .opcao input').setValue(true)
     await flushPromises()
     await wrapper.find('.escolhidos .opcao input').setValue(false)
@@ -103,7 +103,7 @@ describe('SelecaoMultiplaCS — checkbox sem perder os escolhidos', () => {
   it('oferece criar um código que não existe na base', async () => {
     const wrapper = montar()
 
-    await buscar(wrapper, 'SERVICO NOVO')
+    await search(wrapper, 'SERVICO NOVO')
     expect(wrapper.text()).toContain('Criar “SERVICO NOVO”')
     await wrapper.findAll('.resultados .opcao').pop()!.find('input').setValue(true)
     await flushPromises()

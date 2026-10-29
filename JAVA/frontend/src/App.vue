@@ -1,40 +1,107 @@
+<script setup lang="ts">
+import { computed, onMounted, provide, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { api } from './services/api'
+import { theme } from './services/tema'
+import Toast from './components/Toast.vue'
+
+const router = useRouter()
+const user = ref(localStorage.getItem('user') || '403921')
+const role = ref(localStorage.getItem('role') || 'USUARIO')
+const pendentes = ref(0)
+const apiUnavailable = ref(false)
+
+const today = new Date().toLocaleDateString('pt-BR')
+const isAdmin = computed(() => role.value === 'ADMIN')
+const activeDatabase = ref('')
+
+async function loadActiveDatabase(): Promise<void> {
+  try {
+    const response = await fetch('/api/v1/health')
+    const data = await response.json()
+    activeDatabase.value = data?.banco || ''
+
+    apiUnavailable.value = false
+  } catch {
+    activeDatabase.value = ''
+    apiUnavailable.value = true
+  }
+}
+
+function save(): void {
+  localStorage.setItem('user', user.value)
+  localStorage.setItem('role', role.value)
+}
+
+async function updatePending(): Promise<void> {
+  if (!isAdmin.value) {
+    pendentes.value = 0
+    return
+  }
+  try {
+    const response = await api.summary()
+    pendentes.value = (response.pendentesHistorico || 0) + (response.pendentesNovos || 0)
+    apiUnavailable.value = false
+  } catch {
+    apiUnavailable.value = true
+  }
+}
+
+watch(role, () => {
+  save()
+  if (router.currentRoute.value.path === '/admin' && role.value !== 'ADMIN') {
+    router.push('/')
+  }
+  updatePending()
+})
+
+provide('updatePending', updatePending)
+
+onMounted(() => {
+  theme.apply()
+  updatePending()
+  loadActiveDatabase()
+})
+
+setInterval(() => {
+  void updatePending()
+  void loadActiveDatabase()
+}, 30000)
+</script>
+
 <template>
   <header class="barra-sistema">
     <h1>Gerdau — Padronização de Códigos de Serviço</h1>
     <div class="barra-usuario">
       <span>Usuário:</span>
-      <input v-model="usuario" placeholder="403921" @change="salvar" />
-      <span>| Data: {{ dataHoje }}</span>
+      <input v-model="user" placeholder="403921" @change="save" />
+      <span>| Data: {{ today }}</span>
 
-      
       <div class="troca-perfil">
         <span>Perfil:</span>
-        <select v-model="papel" @change="salvar">
+        <select v-model="role" @change="save">
           <option value="USUARIO">Usuário</option>
           <option value="ADMIN">Admin</option>
         </select>
       </div>
 
-      
-      <span v-if="bancoAtivo" class="banco-ativo" title="Banco de dados que está recebendo os dados">
-        ● dados em: <strong>{{ bancoAtivo }}</strong>
+      <span v-if="activeDatabase" class="banco-ativo" title="Banco de dados que está recebendo os dados">
+        ● dados em: <strong>{{ activeDatabase }}</strong>
       </span>
 
-      
       <nav class="navegacao">
         <router-link to="/" exact-active-class="ativo">Início</router-link>
         <router-link to="/catalogo" active-class="ativo">Catálogo</router-link>
-        
+
         <router-link v-if="isAdmin" to="/admin" active-class="ativo">
           Painel Admin
           <strong v-if="pendentes > 0">({{ pendentes }})</strong>
         </router-link>
       </nav>
 
-      
-      <button class="troca-tema" :title="tema.estado.tema === 'claro' ? 'Ativar modo escuro' : 'Ativar modo claro'"
-              @click="tema.alternar()">
-        {{ tema.estado.tema === 'claro' ? '☾' : '☀' }}
+      <button class="troca-tema" :title="theme.state.theme === 'claro' ? 'Ativar modo escuro' : 'Ativar modo claro'"
+              @click="theme.toggle()">
+        {{ theme.state.theme === 'claro' ? '☾' : '☀' }}
       </button>
     </div>
   </header>
@@ -42,85 +109,13 @@
   <Toast />
 
   <main class="area">
-    <div v-if="apiFora" class="status-api">
+    <div v-if="apiUnavailable" class="status-api">
       ⚠️ <strong>Backend indisponível.</strong> Verifique se a aplicação está no ar
       (<code>docker compose up --build</code>) e recarregue a página.
     </div>
-    <router-view :usuario="usuario" :papel="papel" @pendentes="pendentes = $event" @api-fora="apiFora = $event" />
+    <router-view :user="user" :role="role" @pending="pendentes = $event" @apiUnavailable="apiUnavailable = $event" />
   </main>
 </template>
-
-<script setup lang="ts">
-import { computed, onMounted, provide, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { api } from './services/api'
-import { tema } from './services/tema'
-import Toast from './components/Toast.vue'
-
-const router = useRouter()
-const usuario = ref(localStorage.getItem('usuario') || '403921')
-const papel = ref(localStorage.getItem('papel') || 'USUARIO')
-const pendentes = ref(0)
-const apiFora = ref(false)
-
-const dataHoje = new Date().toLocaleDateString('pt-BR')
-const isAdmin = computed(() => papel.value === 'ADMIN')
-const bancoAtivo = ref('')
-
-async function carregarBancoAtivo(): Promise<void> {
-  try {
-    const r = await fetch('/api/v1/health')
-    const dados = await r.json()
-    bancoAtivo.value = dados?.banco || ''
-    
-    apiFora.value = false
-  } catch {
-    bancoAtivo.value = ''
-    apiFora.value = true
-  }
-}
-
-function salvar(): void {
-  localStorage.setItem('usuario', usuario.value)
-  localStorage.setItem('papel', papel.value)
-}
-
-async function atualizarPendentes(): Promise<void> {
-  if (!isAdmin.value) {
-    pendentes.value = 0
-    return
-  }
-  try {
-    const r = await api.resumo()
-    pendentes.value = (r.pendentesHistorico || 0) + (r.pendentesNovos || 0)
-    apiFora.value = false
-  } catch {
-    apiFora.value = true
-  }
-}
-
-
-watch(papel, () => {
-  salvar()
-  if (router.currentRoute.value.path === '/admin' && papel.value !== 'ADMIN') {
-    router.push('/')
-  }
-  atualizarPendentes()
-})
-
-provide('atualizarPendentes', atualizarPendentes)
-
-onMounted(() => {
-  tema.aplicar()
-  atualizarPendentes()
-  carregarBancoAtivo()
-})
-
-setInterval(() => {
-  void atualizarPendentes()
-  void carregarBancoAtivo()
-}, 30000)
-</script>
 
 <style scoped>
 .troca-perfil {

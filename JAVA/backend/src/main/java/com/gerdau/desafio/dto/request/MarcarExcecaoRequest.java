@@ -9,10 +9,8 @@ public record MarcarExcecaoRequest(
 
         String motivo,
 
-        /** motivo específico por id (sobrepõe o motivo geral) */
         Map<String, String> motivos,
 
-        /** true = remove a marcação (!) dos itens listados */
         Boolean limpar
 ) {
 }

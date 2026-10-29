@@ -1,22 +1,68 @@
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { formatDate } from '../services/formato'
+import type { FullCodeResponse } from '../types'
+
+const props = withDefaults(defineProps<{
+  request: FullCodeResponse | null
+  canManage?: boolean
+  processing?: boolean
+  saving?: boolean
+}>(), {
+  canManage: false,
+  processing: false,
+  saving: false
+})
+
+const emit = defineEmits<{
+  (event: 'close'): void
+  (event: 'cancel'): void
+  (event: 'save', data: { descricao: string; justificativa: string }): void
+}>()
+
+const editing = ref(false)
+const editDescription = ref('')
+const editJustification = ref('')
+
+watch(() => props.request, (updatedRequest) => {
+  editing.value = false
+  editDescription.value = ''
+  editJustification.value = updatedRequest?.justificativa ?? ''
+}, { immediate: true })
+
+function startEdit(): void {
+  editDescription.value = ''
+  editJustification.value = props.request?.justificativa ?? ''
+  editing.value = true
+}
+
+function save(): void {
+  emit('save', {
+    descricao: editDescription.value.trim(),
+    justificativa: editJustification.value.trim()
+  })
+}
+</script>
+
 <template>
-  <div class="modal-fundo" @click.self="$emit('fechar')">
+  <div class="modal-fundo" @click.self="$emit('close')">
     <div class="modal modal-pedido">
-      <button class="fechar-x" type="button" title="Fechar (Esc)" @click="$emit('fechar')">✕</button>
+      <button class="fechar-x" type="button" title="Fechar (Esc)" @click="$emit('close')">✕</button>
 
       <h3>Já existe um pedido pendente na governança</h3>
-      <p class="suave" style="margin: -6px 0 16px; line-height: 1.6">
+      <updatedRequest class="suave" style="margin: -6px 0 16px; line-height: 1.6">
         Esta composição já está na fila de validação. Veja o pedido abaixo — você pode editá-lo
         ou cancelá-lo antes de enviar outro.
-      </p>
+      </updatedRequest>
 
       <div class="pedido-info">
         <div class="campo">
           <span class="rotulo">Identificador</span>
-          <strong>{{ pedido?.idCompleto || '—' }}</strong>
+          <strong>{{ request?.idCompleto || '—' }}</strong>
         </div>
         <div class="campo">
           <span class="rotulo">Enviado em</span>
-          <span>{{ formatarData(pedido?.createdAt) }}</span>
+          <span>{{ formatDate(request?.createdAt) }}</span>
         </div>
         <div class="campo">
           <span class="rotulo">Situação</span>
@@ -24,23 +70,23 @@
         </div>
         <div class="campo">
           <span class="rotulo">Enviado por</span>
-          <span>{{ pedido?.usuarioCriacaoId || '—' }}</span>
+          <span>{{ request?.usuarioCriacaoId || '—' }}</span>
         </div>
         <div class="campo campo-largo">
           <span class="rotulo">Descrição do pedido</span>
-          <span>{{ pedido?.descricaoSnapshot || '—' }}</span>
+          <span>{{ request?.descricaoSnapshot || '—' }}</span>
         </div>
         <div class="campo campo-largo">
           <span class="rotulo">Justificativa</span>
-          <span>{{ pedido?.justificativa || '—' }}</span>
+          <span>{{ request?.justificativa || '—' }}</span>
         </div>
       </div>
 
-      <template v-if="editando">
+      <template v-if="editing">
         <div class="campo-form" style="margin-top: 18px">
           <label>Alterar descrição do serviço (máx. 40 caracteres SAP)</label>
           <input
-            v-model="descricaoEdicao"
+            v-model="editDescription"
             type="text"
             maxlength="40"
             placeholder="Nova descrição do serviço do pedido"
@@ -48,29 +94,29 @@
         </div>
         <div class="campo-form">
           <label>Alterar justificativa</label>
-          <textarea v-model="justificativaEdicao" style="min-height: 78px"></textarea>
+          <textarea v-model="editJustification" style="min-height: 78px"></textarea>
         </div>
       </template>
 
       <div class="linha-botoes">
-        <button class="botao botao-escuro" type="button" @click="$emit('fechar')">Fechar</button>
-        <template v-if="podeGerenciar">
-          <button v-if="!editando" class="botao botao-roxo" type="button" @click="abrirEdicao">
+        <button class="botao botao-escuro" type="button" @click="$emit('close')">Fechar</button>
+        <template v-if="canManage">
+          <button v-if="!editing" class="botao botao-roxo" type="button" @click="startEdit">
             ✎ Editar pedido
           </button>
           <button
-            v-if="!editando"
+            v-if="!editing"
             class="botao botao-vermelho"
             type="button"
-            :disabled="processando"
-            @click="$emit('cancelar')"
+            :disabled="processing"
+            @click="$emit('cancel')"
           >
             ✕ Cancelar pedido
           </button>
           <template v-else>
-            <button class="botao botao-escuro" type="button" @click="editando = false">Voltar</button>
-            <button class="botao botao-roxo" type="button" :disabled="salvando" @click="salvar">
-              {{ salvando ? 'Salvando…' : '💾 Salvar alterações' }}
+            <button class="botao botao-escuro" type="button" @click="editing = false">Voltar</button>
+            <button class="botao botao-roxo" type="button" :disabled="saving" @click="save">
+              {{ saving ? 'Salvando…' : '💾 Salvar alterações' }}
             </button>
           </template>
         </template>
@@ -81,57 +127,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, watch } from 'vue'
-import type { CodigoCompletoResponse } from '../types'
-
-const props = withDefaults(defineProps<{
-  pedido: CodigoCompletoResponse | null
-  podeGerenciar?: boolean
-  processando?: boolean
-  salvando?: boolean
-}>(), {
-  podeGerenciar: false,
-  processando: false,
-  salvando: false
-})
-
-const emit = defineEmits<{
-  (e: 'fechar'): void
-  (e: 'cancelar'): void
-  (e: 'salvar', dados: { descricao: string; justificativa: string }): void
-}>()
-
-const editando = ref(false)
-const descricaoEdicao = ref('')
-const justificativaEdicao = ref('')
-
-watch(() => props.pedido, (p) => {
-  editando.value = false
-  descricaoEdicao.value = ''
-  justificativaEdicao.value = p?.justificativa ?? ''
-}, { immediate: true })
-
-function abrirEdicao(): void {
-  descricaoEdicao.value = ''
-  justificativaEdicao.value = props.pedido?.justificativa ?? ''
-  editando.value = true
-}
-
-function salvar(): void {
-  emit('salvar', {
-    descricao: descricaoEdicao.value.trim(),
-    justificativa: justificativaEdicao.value.trim()
-  })
-}
-
-function formatarData(iso: string | null | undefined): string {
-  if (!iso) return '—'
-  const d = new Date(iso)
-  return isNaN(d.getTime()) ? iso : d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
-}
-</script>
 
 <style scoped>
 .modal-pedido {

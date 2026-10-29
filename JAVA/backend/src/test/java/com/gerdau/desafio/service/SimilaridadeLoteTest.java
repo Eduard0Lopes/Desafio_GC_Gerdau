@@ -19,11 +19,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-/**
- * Criação em massa (feedback Gerdau): o usuário informa vários códigos de uma vez e o
- * sistema avisa "há X disponíveis, porém Y precisam ser criados" — respeitando as
- * regras de negócio (nada repetido, nada acima do limite SAP, duplicidade = reutilizar).
- */
 class SimilaridadeLoteTest {
 
     private SearchClient searchClient;

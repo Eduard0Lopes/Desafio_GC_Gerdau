@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
-import ModalPedidoPendente from '../src/components/ModalPedidoPendente.vue'
-import type { CodigoCompletoResponse } from '../src/types'
+import PendingRequestModal from '../src/components/ModalPedidoPendente.vue'
+import type { FullCodeResponse } from '../src/types'
 
 const PEDIDO = {
   id: 'CIVIL_200982674_CS-000004_SV',
@@ -21,11 +21,11 @@ const PEDIDO = {
   createdAt: '2026-10-14T23:50:11Z',
   aprovadoPor: null,
   observacaoAprovacao: null
-} as unknown as CodigoCompletoResponse
+} as unknown as FullCodeResponse
 
-function montar(podeGerenciar = true) {
-  return mount(ModalPedidoPendente, {
-    props: { pedido: PEDIDO, podeGerenciar }
+function montar(canManage = true) {
+  return mount(PendingRequestModal, {
+    props: { request: PEDIDO, canManage }
   })
 }
 
@@ -40,13 +40,13 @@ describe('ModalPedidoPendente — aviso de pedido já existente', () => {
 
   it('tem X para fechar e botão Fechar, ambos emitindo fechar', async () => {
     const wrapper = montar()
-    const x = wrapper.get('.fechar-x')
-    await x.trigger('click')
-    expect(wrapper.emitted('fechar')).toHaveLength(1)
+    const closeButton = wrapper.get('.fechar-x')
+    await closeButton.trigger('click')
+    expect(wrapper.emitted('close')).toHaveLength(1)
 
-    const fechar = wrapper.findAll('button').find((b) => b.text().trim() === 'Fechar')!
-    await fechar.trigger('click')
-    expect(wrapper.emitted('fechar')).toHaveLength(2)
+    const close = wrapper.findAll('button').find((b) => b.text().trim() === 'Fechar')!
+    await close.trigger('click')
+    expect(wrapper.emitted('close')).toHaveLength(2)
   })
 
   it('editar abre os campos e salvar emite as alterações', async () => {
@@ -58,7 +58,7 @@ describe('ModalPedidoPendente — aviso de pedido já existente', () => {
     await inputs[1].setValue('ajuste após revisão')
 
     await wrapper.findAll('button').find((b) => b.text().includes('Salvar alterações'))!.trigger('click')
-    expect(wrapper.emitted('salvar')?.[0]?.[0]).toEqual({
+    expect(wrapper.emitted('save')?.[0]?.[0]).toEqual({
       descricao: 'SV ENGENHEIRO SEGURANCA TRABALHO 2',
       justificativa: 'ajuste após revisão'
     })
@@ -67,7 +67,7 @@ describe('ModalPedidoPendente — aviso de pedido já existente', () => {
   it('cancelar emite cancelar', async () => {
     const wrapper = montar()
     await wrapper.findAll('button').find((b) => b.text().includes('Cancelar pedido'))!.trigger('click')
-    expect(wrapper.emitted('cancelar')).toHaveLength(1)
+    expect(wrapper.emitted('cancel')).toHaveLength(1)
   })
 
   it('quem não é dono/admin só vê o pedido, sem editar/cancelar', () => {

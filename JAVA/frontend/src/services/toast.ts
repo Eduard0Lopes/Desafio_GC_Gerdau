@@ -1,31 +1,29 @@
-
-
 import { reactive } from 'vue'
 
 export interface Toast {
   id: number
-  mensagem: string
-  tipo: 'sucesso' | 'erro' | 'aviso'
+  message: string
+  tipo: 'success' | 'error' | 'warning'
 }
 
-const estado = reactive<{ itens: Toast[] }>({ itens: [] })
-let proximoId = 1
+const state = reactive<{ itens: Toast[] }>({ itens: [] })
+let nextId = 1
 
-function mostrar(mensagem: string, tipo: Toast['tipo']): void {
-  const id = proximoId++
-  estado.itens.push({ id, mensagem, tipo })
-  setTimeout(() => remover(id), tipo === 'erro' ? 7000 : 4200)
+function show(message: string, tipo: Toast['tipo']): void {
+  const id = nextId++
+  state.itens.push({ id, message, tipo })
+  setTimeout(() => removeItem(id), tipo === 'error' ? 7000 : 4200)
 }
 
-function remover(id: number): void {
-  const i = estado.itens.findIndex((t) => t.id === id)
-  if (i >= 0) estado.itens.splice(i, 1)
+function removeItem(id: number): void {
+  const index = state.itens.findIndex((entry) => entry.id === id)
+  if (index >= 0) state.itens.splice(index, 1)
 }
 
 export const toast = {
-  estado,
-  remover,
-  sucesso: (m: string) => mostrar(m, 'sucesso'),
-  erro: (m: string) => mostrar(m, 'erro'),
-  aviso: (m: string) => mostrar(m, 'aviso')
+  state,
+  removeItem,
+  success: (message: string) => show(message, 'success'),
+  error: (message: string) => show(message, 'error'),
+  warning: (message: string) => show(message, 'warning')
 }

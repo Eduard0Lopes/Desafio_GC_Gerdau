@@ -83,15 +83,12 @@ class IdempotenciaEAuditoriaTest {
         CodigoCompletoService.ResultadoCriacao resultado = service.criar(requisicao("Servico"), "k1");
 
         assertEquals("CIVIL_200982674_CS-000001_SV", resultado.resposta().idCompleto());
-        // requisição repetida: o contrato precisa dizer a verdade — nada foi criado agora
         assertTrue(resultado.requisicaoRepetida());
         verify(codigoCompletoRepository, Mockito.never()).save(any());
     }
 
     @Test
     void chaveDeOutraComposicaoNaoEngoleONovoEnvio() {
-        // a chave existe, mas pertence a um registro de OUTRA composição (ex.: chave
-        // arrastada por transferência de vínculos ou colisão): o envio precisa criar de verdade
         CodigoCompleto existente = new CodigoCompleto();
         existente.setIdCompleto("OUTRA_GRUPO_OUTRO_FORN_OUTRO_SERV_OUTRA_UM");
         existente.setIdempotencyHash(CodigoCompletoService.hashDoConteudo(requisicao("Servico")));
@@ -103,7 +100,6 @@ class IdempotenciaEAuditoriaTest {
         assertFalse(resultado.requisicaoRepetida());
         ArgumentCaptor<CodigoCompleto> salvo = ArgumentCaptor.forClass(CodigoCompleto.class);
         verify(codigoCompletoRepository).save(salvo.capture());
-        // e a chave estrangeira não pode ser reutilizada no novo registro
         assertNull(salvo.getValue().getIdempotencyKey());
     }
 
@@ -120,7 +116,6 @@ class IdempotenciaEAuditoriaTest {
         CodigoCompletoService.ResultadoCriacao resultado = service.criar(requisicao("Servico"), "k1");
 
         assertFalse(resultado.requisicaoRepetida());
-        // a chave sai do registro cancelado e vai para o registro novo (índice único)
         assertNull(existente.getIdempotencyKey());
         ArgumentCaptor<CodigoCompleto> salvos = ArgumentCaptor.forClass(CodigoCompleto.class);
         verify(codigoCompletoRepository, Mockito.atLeastOnce()).save(salvos.capture());
@@ -165,7 +160,7 @@ class IdempotenciaEAuditoriaTest {
                 "DUPLICIDADE", "REVISAR", "bloqueado", 0.95,
                 List.of(new CandidatoSimilarResponse(1, "CS-000002", null, "Outro", 0.95, 0, 0, List.of(), "motivo", false, null)),
                 List.of());
-        
+
         PreviewService previewService = Mockito.mock(PreviewService.class);
         when(previewService.montarPreview(any())).thenReturn(bloqueada);
         service = new CodigoCompletoService(codigoCompletoRepository, Mockito.mock(ExcecaoRepository.class),

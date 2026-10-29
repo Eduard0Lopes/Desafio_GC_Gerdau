@@ -1,9 +1,3 @@
-<template>
-  <div class="grafico-animado" :style="{ minHeight: altura + 'px' }">
-    <Bar :key="tema.estado.tema" :data="dadosGrafico" :options="opcoes" />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Bar } from 'vue-chartjs'
@@ -16,72 +10,70 @@ import {
   Tooltip,
   type ChartOptions
 } from 'chart.js'
-import { tema } from '../services/tema'
+import { theme } from '../services/tema'
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend)
 
 interface Item {
   nome: string
-  valor: number
+  value: number
 }
 
 const props = withDefaults(defineProps<{
-  dados: Item[]
-  titulo?: string
-  cor?: string
-  rotulo?: string
-}>(), { titulo: '', cor: '#005eb8', rotulo: 'Registros' })
+  data: Item[]
+  title?: string
+  color?: string
+  label?: string
+}>(), { title: '', color: '#005eb8', label: 'Registros' })
 
-const altura = computed(() => Math.max(200, props.dados.length * 42 + 70))
+const height = computed(() => Math.max(200, props.data.length * 42 + 70))
 
-
-const corTexto = computed(() => {
-  void tema.estado.tema
-  return tema.cor('--texto', '#1c2b3a')
+const textColor = computed(() => {
+  void theme.state.theme
+  return theme.color('--texto', '#1c2b3a')
 })
-const corTitulo = computed(() => {
-  void tema.estado.tema
-  return tema.cor('--azul-escuro', '#00205b')
+const titleColor = computed(() => {
+  void theme.state.theme
+  return theme.color('--azul-escuro', '#00205b')
 })
-const corGrade = computed(() => {
-  void tema.estado.tema
-  return tema.estado.tema === 'escuro' ? 'rgba(157, 176, 195, 0.18)' : 'rgba(128, 148, 168, 0.14)'
+const gridColor = computed(() => {
+  void theme.state.theme
+  return theme.state.theme === 'escuro' ? 'rgba(157, 176, 195, 0.18)' : 'rgba(128, 148, 168, 0.14)'
 })
-const corBarra = computed(() => {
-  void tema.estado.tema
-  // o azul-marinho da marca some no fundo escuro; lá usamos o azul Gerdau claro
-  return tema.estado.tema === 'escuro' && props.cor.toLowerCase() === '#00205b' ? '#4fa3e8' : props.cor
+const barColor = computed(() => {
+  void theme.state.theme
+  return theme.state.theme === 'escuro' && props.color.toLowerCase() === '#00205b' ? '#4fa3e8' : props.color
 })
 
-const dadosGrafico = computed(() => ({
-  labels: props.dados.map((i) => i.nome.length > 22 ? i.nome.slice(0, 21) + '…' : i.nome),
+const chartData = computed(() => ({
+  labels: props.data.map((entry) => entry.nome.length > 22 ? entry.nome.slice(0, 21) + '…' : entry.nome),
   datasets: [
     {
-      label: props.rotulo,
-      data: props.dados.map((i) => i.valor),
-      backgroundColor: props.dados.map((_, idx) => (idx % 2 === 0 ? corBarra.value : '#ffc72c')),
+      label: props.label,
+      data: props.data.map((entry) => entry.value),
+      backgroundColor: props.data.map((_, index) => (index % 2 === 0 ? barColor.value : '#ffc72c')),
       borderRadius: 7,
       barThickness: 22
     }
   ]
 }))
 
-const opcoes = computed<ChartOptions<'bar'>>(() => ({
+const options = computed<ChartOptions<'bar'>>(() => ({
   responsive: true,
   maintainAspectRatio: false,
   animation: { duration: 900, easing: 'easeOutQuart' },
   layout: { padding: { top: 6, right: 16, bottom: 6, left: 4 } },
   plugins: {
     legend: { display: false },
-    title: props.titulo
-      ? { display: true, text: props.titulo, color: corTitulo.value, font: { size: 14, weight: 700 } }
+    title: props.title
+      ? { display: true, text: props.title, color: titleColor.value, font: { size: 14, weight: 700 } }
       : undefined,
     tooltip: {
       callbacks: {
-        
-        label: (ctx) => {
-          const valor = Number(ctx.dataset.data[ctx.dataIndex])
-          return ` ${props.rotulo}: ${valor.toLocaleString('pt-BR')}`
+
+        label: (context) => {
+          const value = Number(context.dataset.data[context.dataIndex])
+          return ` ${props.label}: ${value.toLocaleString('pt-BR')}`
         }
       }
     }
@@ -90,28 +82,34 @@ const opcoes = computed<ChartOptions<'bar'>>(() => ({
   scales: {
     x: {
       beginAtZero: true,
-      ticks: { color: corSuaveTick(), precision: 0 },
-      grid: { color: corGrade.value }
+      ticks: { color: tickColor(), precision: 0 },
+      grid: { color: gridColor.value }
     },
     y: {
-      ticks: { color: corTexto.value, font: { size: 11 }, autoSkip: false },
+      ticks: { color: textColor.value, font: { size: 11 }, autoSkip: false },
       grid: { display: false }
     }
   },
-  
-  onClick: (_evento, elementos, grafico) => {
-    if (!elementos.length) return
-    const meta = grafico.getDatasetMeta(0)
-    const barra = meta.data[elementos[0].index] as unknown as { hidden?: boolean }
+
+  onClick: (_evento, elements, chart) => {
+    if (!elements.length) return
+    const meta = chart.getDatasetMeta(0)
+    const barra = meta.data[elements[0].index] as unknown as { hidden?: boolean }
     barra.hidden = !barra.hidden
-    grafico.update()
+    chart.update()
   }
 }))
 
-function corSuaveTick(): string {
-  return tema.cor('--texto-suave', '#5c6f81')
+function tickColor(): string {
+  return theme.color('--texto-suave', '#5c6f81')
 }
 </script>
+
+<template>
+  <div class="grafico-animado" :style="{ minHeight: height + 'px' }">
+    <Bar :key="theme.state.theme" :data="chartData" :options="options" />
+  </div>
+</template>
 
 <style scoped>
 .grafico-animado {

@@ -1,3 +1,26 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import BadgeException from './BadgeExcecao.vue'
+import BadgeMatch from './BadgeMatch.vue'
+import type { SimilarCandidate } from '../types'
+
+defineProps<{
+  itens: SimilarCandidate[]
+  motivo?: string
+}>()
+const emit = defineEmits<{
+  (event: 'reuse', item: SimilarCandidate): void
+  (event: 'governance'): void
+  (event: 'back'): void
+}>()
+
+const selected = ref<SimilarCandidate | null>(null)
+
+function reuse(): void {
+  if (selected.value) emit('reuse', selected.value)
+}
+</script>
+
 <template>
   <div class="modal-fundo">
     <div class="modal">
@@ -8,71 +31,44 @@
         <div>{{ motivo || 'O sistema identificou itens semelhantes cadastrados.' }}</div>
       </div>
 
-      
       <div v-if="itens.length" class="lista-selecao">
         <div
-          v-for="c in itens"
-          :key="c.id"
+          v-for="candidato in itens"
+          :key="candidato.id"
           class="opcao-item"
-          :class="{ selecionada: selecionado?.id === c.id }"
-          @click="selecionado = c"
+          :class="{ selecionada: selected?.id === candidato.id }"
+          @click="selected = candidato"
         >
           <input
             type="radio"
             name="item-reutilizar"
-            :checked="selecionado?.id === c.id"
-            @change="selecionado = c"
+            :checked="selected?.id === candidato.id"
+            @change="selected = candidato"
           />
           <div class="opcao-conteudo">
             <div class="opcao-linha">
-              <span class="opcao-id">{{ c.id }}</span>
+              <span class="opcao-id">{{ candidato.id }}</span>
               <span class="separador">|</span>
-              <strong>{{ (c.descricao || '').toUpperCase() }}</strong>
-              <span
-                v-if="c.casoIsolado"
-                class="badge-excecao"
-                :title="'Caso especial registrado.' + (c.motivoCasoIsolado ? ' Motivo: ' + c.motivoCasoIsolado : '')"
-              >!</span>
-              <span class="match" :class="{ alerta: c.score < 0.88 }">{{ (c.score * 100).toFixed(0) }}% Match</span>
+              <strong>{{ (candidato.descricao || '').toUpperCase() }}</strong>
+              <BadgeException v-if="candidato.casoIsolado" :motivo="candidato.motivoCasoIsolado" />
+              <BadgeMatch :score="candidato.score" />
             </div>
-            <div v-if="c.motivo" class="opcao-motivo">{{ c.motivo }}</div>
+            <div v-if="candidato.motivo" class="opcao-motivo">{{ candidato.motivo }}</div>
           </div>
         </div>
       </div>
 
       <div class="linha-botoes">
-        <button class="botao botao-roxo" :disabled="!selecionado" :title="selecionado ? '' : 'Selecione um item da lista'"
-                @click="reutilizar">
+        <button class="botao botao-roxo" :disabled="!selected" :title="selected ? '' : 'Selecione um item da lista'"
+                @click="reuse">
           Reutilizar Código Existente
         </button>
-        <button class="botao botao-escuro" @click="$emit('governanca')">Enviar para Governança</button>
-        <button class="botao botao-escuro" @click="$emit('voltar')">Voltar</button>
+        <button class="botao botao-escuro" @click="$emit('governance')">Enviar para Governança</button>
+        <button class="botao botao-escuro" @click="$emit('back')">Voltar</button>
       </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-import type { CandidatoSimilar } from '../types'
-
-defineProps<{
-  itens: CandidatoSimilar[]
-  motivo?: string
-}>()
-const emit = defineEmits<{
-  (e: 'reutilizar', item: CandidatoSimilar): void
-  (e: 'governanca'): void
-  (e: 'voltar'): void
-}>()
-
-
-const selecionado = ref<CandidatoSimilar | null>(null)
-
-function reutilizar(): void {
-  if (selecionado.value) emit('reutilizar', selecionado.value)
-}
-</script>
 
 <style scoped>
 .lista-selecao {

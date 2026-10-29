@@ -1,3 +1,255 @@
+<script setup lang="ts">
+import { computed, inject, onMounted, reactive, ref } from 'vue'
+import { api, errorMessage } from '../services/api'
+import { toast } from '../services/toast'
+import { debounce } from '../services/tempo'
+import { shortTypeLabel } from '../services/rotulos'
+import { isAdmin } from '../services/usuario'
+import BadgeException from '../components/BadgeExcecao.vue'
+import BadgeMatch from '../components/BadgeMatch.vue'
+import ConfirmModal from '../components/ModalConfirmacao.vue'
+import type { SimilarCandidate, GovernanceItem, GovernanceSummary } from '../types'
+
+interface GroupUsage { nome: string; quantidade: number }
+interface FullSummary extends Partial<GovernanceSummary> {
+  grupos?: GroupUsage[]
+  totalLegados?: number
+}
+
+const props = withDefaults(defineProps<{ user?: string }>(), { user: '' })
+
+function podeDecidir(item: GovernanceItem): boolean {
+  if (!isAdmin()) return false
+  return item.origem === 'HISTORICO'
+    ? item.status === 'PENDENTE'
+    : item.status === 'PENDENTE_VALIDACAO'
+}
+const emit = defineEmits<{
+  (event: 'pending', count: number): void
+  (event: 'apiUnavailable', v: boolean): void
+}>()
+const updatePending = inject<() => void>('updatePending', () => {})
+
+const summary = ref<FullSummary>({})
+const itens = ref<GovernanceItem[]>([])
+const notes = reactive<Record<string, string>>({})
+const processing = ref<string | null>(null)
+const origem = ref('HISTORICO')
+const search = ref('')
+const filter = ref<string>('TODOS')
+const page = ref(0)
+const pageSize = 4
+const hasMore = ref(false)
+const queueTotal = ref(0)
+const totalPages = computed(() => Math.max(1, Math.ceil(queueTotal.value / pageSize)))
+const confirmation = ref<{ title: string; message: string; label: string; perigosa: boolean; acao: string; item: GovernanceItem } | null>(null)
+
+const chosen = reactive<Record<string, string>>({})
+const reuse = ref<{ item: GovernanceItem; candidato: SimilarCandidate } | null>(null)
+
+function choiceKey(similar: SimilarCandidate): string {
+  return `${(similar.tipo || 'CS').toUpperCase()}:${similar.id}`
+}
+
+function chooseMatch(item: GovernanceItem, similar: SimilarCandidate): void {
+  if (!podeDecidir(item)) return
+  chosen[item.id] = choiceKey(similar)
+}
+
+function askReuse(item: GovernanceItem): void {
+  const key = chosen[item.id]
+  const candidato = (item.similares || []).find((similar) => choiceKey(similar) === key)
+  if (!candidato) {
+    toast.warning('Escolha um dos matches acima para reutilizar.')
+    return
+  }
+  reuse.value = { item, candidato }
+}
+
+async function confirmReuse(): Promise<void> {
+  const pendingReuse = reuse.value
+  if (!pendingReuse || processing.value === pendingReuse.item.id) return
+  reuse.value = null
+  processing.value = pendingReuse.item.id
+  try {
+    await api.reuseCandidate(pendingReuse.item.id, {
+      escolhidoId: pendingReuse.candidato.id,
+      escolhidoTipo: pendingReuse.candidato.tipo || 'CS',
+      aprovadoPor: props.user || 'governance',
+      observacao: (notes[pendingReuse.item.id] || '').trim() || null
+    })
+    toast.success(
+      `Pedido ${pendingReuse.item.identificador} resolvido reutilizando ${pendingReuse.candidato.id} — ${pendingReuse.candidato.descricao}.`
+    )
+    itens.value = itens.value.filter((item) => item.id !== pendingReuse.item.id)
+    await load()
+    updatePending()
+  } catch (error) {
+    toast.error(errorMessage(error))
+  } finally {
+    processing.value = null
+  }
+}
+
+const filterLabel = computed(() => ({
+  PENDENTES: 'aguardando revisão', DUPLICIDADE: 'possíveis repetidos', ALERTA: 'em atenção',
+  REVISADOS: 'revisados', NOVOS: 'novos cadastros'
+} as Record<string, string>)[filter.value] || filter.value)
+
+const filteredItems = computed(() => {
+  switch (filter.value) {
+    case 'DUPLICIDADE':
+    case 'ALERTA':
+      return itens.value.filter((item) => item.decision === filter.value)
+    case 'REVISADOS': return itens.value.filter((item) => item.status === 'REVISADO')
+    case 'PENDENTES': return itens.value.filter((item) => item.status === 'PENDENTE')
+    default: return itens.value
+  }
+})
+
+function toggleFilter(filterKey: string): void {
+  filter.value = filter.value === filterKey || filterKey === 'TODOS' ? 'TODOS' : filterKey
+  page.value = 0
+  if (filterKey === 'NOVOS') {
+    filter.value = 'TODOS'
+    origem.value = 'NOVOS'
+    load()
+    return
+  }
+  if (filterKey !== 'TODOS' && origem.value !== 'HISTORICO') {
+    origem.value = 'HISTORICO'
+  }
+  load()
+}
+
+function nextPage(): void {
+  if (!hasMore.value) return
+  page.value++
+  load()
+}
+
+function previousPage(): void {
+  if (page.value === 0) return
+  page.value--
+  load()
+}
+
+function skipPages(count: number): void {
+  page.value = Math.min(page.value + count, totalPages.value - 1)
+  load()
+}
+
+function goToPage(count: number): void {
+  page.value = Math.max(0, Math.min(count, totalPages.value - 1))
+  load()
+}
+
+async function load(): Promise<void> {
+  try {
+    summary.value = (await api.summary()) as FullSummary
+    const statusServidor =
+      filter.value === 'REVISADOS' ? 'REVISADO'
+      : filter.value === 'SEM_PENDENCIA' ? 'SEM_PENDENCIA'
+      : filter.value === 'DUPLICIDADE' || filter.value === 'ALERTA' ? 'TODOS'
+      : 'PENDENTE'
+    const decisaoServidor =
+      filter.value === 'DUPLICIDADE' ? 'DUPLICIDADE'
+      : filter.value === 'ALERTA' ? 'ALERTA'
+      : undefined
+    const lote = await api.pendentes(origem.value, search.value, pageSize, statusServidor, decisaoServidor, page.value)
+    itens.value = lote
+    hasMore.value = lote.length === pageSize
+    const count = await api.countQueue(origem.value, statusServidor, decisaoServidor, search.value)
+    queueTotal.value = count.total
+    emit('pending', (summary.value.pendentesHistorico || 0) + (summary.value.pendentesNovos || 0))
+    emit('apiUnavailable', false)
+  } catch {
+    emit('apiUnavailable', true)
+  }
+}
+
+function switchOrigin(o: string): void {
+  origem.value = o
+  page.value = 0
+  load()
+}
+
+const debouncedLoad = debounce(() => void load(), 350)
+
+function askConfirmation(item: GovernanceItem, acao: string): void {
+  const ehDuplicidade = item.decision === 'DUPLICIDADE'
+  const textos: Record<string, { title: string; message: string; label: string; perigosa: boolean }> = {
+    keep: {
+      title: 'Aceitar este item?',
+      message: `O item ${item.identificador} será aceito como válido${ehDuplicidade
+        ? ' — a possível repetição está aceitável' : ''}. O motivo informado fica registrado na auditoria.`,
+      label: '✓ Aceitar', perigosa: false
+    },
+    remove: {
+      title: 'Apagar do catálogo?',
+      message: `O item ${item.identificador} será apagado da lista ativa (o registro original continua preservado no histórico). O motivo informado fica registrado na auditoria.`,
+      label: '✕ Apagar', perigosa: true
+    },
+    approve: {
+      title: 'Aprovar cadastro?',
+      message: `O cadastro ${item.identificador} será aprovado e ativado. O motivo informado fica registrado na auditoria.`,
+      label: '✓ Aprovar', perigosa: false
+    },
+    reject: {
+      title: 'Rejeitar cadastro?',
+      message: `O cadastro ${item.identificador} será rejeitado. O motivo informado fica registrado na auditoria.`,
+      label: '✕ Rejeitar', perigosa: true
+    }
+  }
+  confirmation.value = { ...textos[acao], acao, item }
+}
+
+const HISTORY_ACTION: Record<string, { acao: string; passado: string }> = {
+  keep: { acao: 'MANTER', passado: 'aceito' },
+  remove: { acao: 'EXCLUIR', passado: 'apagado' }
+}
+
+async function confirmDecision(): Promise<void> {
+  const pendingDecision = confirmation.value
+  if (!pendingDecision) return
+  const { item, acao } = pendingDecision
+
+  const motivo = (notes[item.id] || '').trim()
+  if (!motivo) {
+    toast.warning('Informe o motivo da decisão — ele é obrigatório.')
+    return
+  }
+  confirmation.value = null
+  processing.value = item.id
+  try {
+    const historico = HISTORY_ACTION[acao]
+    if (historico) {
+      await api.reviewHistory(item.id, {
+        revisadoPor: props.user || 'governance',
+        acao: historico.acao,
+        observacao: motivo
+      })
+      toast.success(`Item ${item.identificador} ${historico.passado} — decisão registrada.`)
+    } else if (acao === 'approve') {
+      await api.approve(item.id, { aprovadoPor: props.user || 'governance', observacao: motivo })
+      toast.success(`Cadastro ${item.identificador} aprovado.`)
+    } else {
+      await api.reject(item.id, { aprovadoPor: props.user || 'governance', observacao: motivo })
+      toast.success(`Cadastro ${item.identificador} rejeitado.`)
+    }
+    itens.value = itens.value.filter((item) => item.id !== item.id)
+    await load()
+    updatePending()
+  } catch (error) {
+    toast.error(errorMessage(error))
+  } finally {
+    processing.value = null
+  }
+}
+
+onMounted(load)
+</script>
+
 <template>
   <div>
     <p class="suave" style="margin: 0 0 22px">
@@ -5,90 +257,79 @@
       <strong>Clique nos cartões</strong> para filtrar a fila.
     </p>
 
-    
     <div class="indicadores">
-      <div class="indicador" :class="{ ativo: filtro === 'PENDENTES' }" @click="alternarFiltro('PENDENTES')">
+      <div class="indicador" :class="{ ativo: filter === 'PENDENTES' }" @click="toggleFilter('PENDENTES')">
         <div class="rotulo">Aguardando revisão</div>
-        <div class="valor" style="color: var(--amarelo-alerta)">{{ resumo.pendentesHistorico ?? '…' }}</div>
+        <div class="valor" style="color: var(--amarelo-alerta)">{{ summary.pendentesHistorico ?? '…' }}</div>
       </div>
-      <div class="indicador" :class="{ ativo: filtro === 'DUPLICIDADE' }" @click="alternarFiltro('DUPLICIDADE')">
+      <div class="indicador" :class="{ ativo: filter === 'DUPLICIDADE' }" @click="toggleFilter('DUPLICIDADE')">
         <div class="rotulo">Possíveis repetidos</div>
-        <div class="valor" style="color: var(--vermelho)">{{ resumo.decisionDuplicidade ?? '…' }}</div>
+        <div class="valor" style="color: var(--vermelho)">{{ summary.decisionDuplicidade ?? '…' }}</div>
       </div>
-      <div class="indicador" :class="{ ativo: filtro === 'ALERTA' }" @click="alternarFiltro('ALERTA')">
+      <div class="indicador" :class="{ ativo: filter === 'ALERTA' }" @click="toggleFilter('ALERTA')">
         <div class="rotulo">Em atenção</div>
-        <div class="valor" style="color: var(--amarelo-alerta)">{{ resumo.decisionAlerta ?? '…' }}</div>
+        <div class="valor" style="color: var(--amarelo-alerta)">{{ summary.decisionAlerta ?? '…' }}</div>
       </div>
-      <div class="indicador" :class="{ ativo: filtro === 'REVISADOS' }" @click="alternarFiltro('REVISADOS')">
+      <div class="indicador" :class="{ ativo: filter === 'REVISADOS' }" @click="toggleFilter('REVISADOS')">
         <div class="rotulo">Revisados</div>
-        <div class="valor" style="color: var(--verde)">{{ resumo.revisados ?? '…' }}</div>
+        <div class="valor" style="color: var(--verde)">{{ summary.revisados ?? '…' }}</div>
       </div>
-      <div class="indicador" :class="{ ativo: filtro === 'NOVOS' }" @click="alternarFiltro('NOVOS')">
+      <div class="indicador" :class="{ ativo: filter === 'NOVOS' }" @click="toggleFilter('NOVOS')">
         <div class="rotulo">Novos cadastros</div>
-        <div class="valor">{{ resumo.pendentesNovos ?? '…' }}</div>
+        <div class="valor">{{ summary.pendentesNovos ?? '…' }}</div>
       </div>
     </div>
 
-    
     <div class="linha-campo" style="margin-bottom: 18px">
       <button
         class="botao"
         :class="origem === 'HISTORICO' ? 'botao-roxo' : 'botao-escuro'"
-        @click="trocarOrigem('HISTORICO')"
+        @click="switchOrigin('HISTORICO')"
       >
         Base original
       </button>
       <button
         class="botao"
         :class="origem === 'NOVOS' ? 'botao-roxo' : 'botao-escuro'"
-        @click="trocarOrigem('NOVOS')"
+        @click="switchOrigin('NOVOS')"
       >
         Novos cadastros
       </button>
-      <span v-if="filtro !== 'TODOS'" class="badge badge-alertar">
-        filtro: {{ rotuloFiltro }}
-        <span style="cursor: pointer; margin-left: 6px" @click="alternarFiltro('TODOS')">✕</span>
+      <span v-if="filter !== 'TODOS'" class="badge badge-alertar">
+        filtro: {{ filterLabel }}
+        <span style="cursor: pointer; margin-left: 6px" @click="toggleFilter('TODOS')">✕</span>
       </span>
       <span style="flex: 1"></span>
       <div class="campo-busca-wrap" style="min-width: 260px">
         <input
-          v-model="busca"
+          v-model="search"
           placeholder="Buscar por código, descrição…"
           style="background: var(--campo); border: 1px solid var(--borda); border-radius: 9px;
                  color: var(--texto); padding: 9px 12px; width: 100%"
-          @input="carregarComDebounce"
+          @input="debouncedLoad"
         />
-        <button v-if="busca" type="button" class="btn-limpar-busca" title="Limpar busca" @click="busca = ''; carregar()">✕</button>
+        <button v-if="search" type="button" class="btn-limpar-busca" title="Limpar busca" @click="search = ''; load()">✕</button>
       </div>
     </div>
 
-    <div v-if="!itensFiltrados.length" class="aviso aviso-verde">
+    <div v-if="!filteredItems.length" class="aviso aviso-verde">
       <span class="icone">✓</span>
-      <div>Nenhum item {{ rotuloFiltro === 'revisados' ? 'revisado' : 'aguardando decisão' }} neste filtro.</div>
+      <div>Nenhum item {{ filterLabel === 'revisados' ? 'revisado' : 'aguardando decisão' }} neste filtro.</div>
     </div>
 
-    
     <div class="grade-cards">
-      <div v-for="item in itensFiltrados" :key="item.origem + item.id" class="painel card-item">
+      <div v-for="item in filteredItems" :key="item.origem + item.id" class="painel card-item">
 
-        
         <div class="card-cabecalho">
           <span class="badge" :class="item.origem === 'HISTORICO' ? 'badge-alertar' : 'badge-permitir'">
             {{ item.origem === 'HISTORICO' ? 'BASE ORIGINAL' : 'NOVO CADASTRO' }}
           </span>
           <span class="card-identificador">{{ item.identificador }}</span>
-          <span
-            v-if="item.casoIsolado"
-            class="badge-excecao"
-            :title="'Caso especial registrado.' + (item.motivoCasoIsolado ? ' Motivo: ' + item.motivoCasoIsolado : '')"
-          >!</span>
-          <span class="match" :class="{ alerta: item.score < 0.88 }">
-            {{ (item.score * 100).toFixed(0) }}% Match
-          </span>
+          <BadgeException v-if="item.casoIsolado" :motivo="item.motivoCasoIsolado" />
+          <BadgeMatch :score="item.score" />
         </div>
         <div class="card-descricao">{{ item.descricao }}</div>
 
-        
         <div class="card-campos">
           <div class="campo">
             <span class="rotulo">Grupo de Serviço</span>
@@ -117,12 +358,11 @@
             </span>
           </div>
           <div v-if="item.solicitante" class="campo">
-            <span class="rotulo">Solicitante</span>
+            <span class="rotulo">Criado por</span>
             <span class="valor">{{ item.solicitante }}</span>
           </div>
         </div>
 
-        
         <div v-if="item.justificativa" class="justificativa-destaque">
           <div class="rotulo">Justificativa do solicitante</div>
           <blockquote>“{{ item.justificativa }}”</blockquote>
@@ -131,7 +371,6 @@
           </div>
         </div>
 
-        
         <div v-if="item.similares && item.similares.length" class="nao-escolhidos">
           <div class="nao-escolhidos-cabecalho">
             <strong>O que o usuário não escolheu</strong>
@@ -142,48 +381,42 @@
           </div>
           <div class="lista-selecao">
             <div
-              v-for="s in item.similares.slice(0, 5)"
-              :key="chaveEscolha(s)"
+              v-for="similar in item.similares.slice(0, 5)"
+              :key="choiceKey(similar)"
               class="opcao-item"
-              :class="{ selecionada: escolhidos[item.id] === chaveEscolha(s), clicavel: podeDecidir(item) }"
-              @click="escolherMatch(item, s)"
+              :class="{ selecionada: chosen[item.id] === choiceKey(similar), clicavel: podeDecidir(item) }"
+              @click="chooseMatch(item, similar)"
             >
               <input
                 v-if="podeDecidir(item)"
                 type="radio"
                 :name="`match-${item.id}`"
-                :checked="escolhidos[item.id] === chaveEscolha(s)"
-                @change="escolherMatch(item, s)"
+                :checked="chosen[item.id] === choiceKey(similar)"
+                @change="chooseMatch(item, similar)"
               />
               <div class="opcao-conteudo">
                 <div class="opcao-linha">
-                  <span class="opcao-id">{{ s.id }}</span>
-                  <span class="badge badge-permitir">{{ rotuloTipoMatch(s.tipo) }}</span>
+                  <span class="opcao-id">{{ similar.id }}</span>
+                  <span class="badge badge-permitir">{{ shortTypeLabel(similar.tipo) }}</span>
                   <span class="suave">|</span>
-                  <strong>{{ (s.descricao || '').toUpperCase() }}</strong>
-                  <span
-                    v-if="s.casoIsolado"
-                    class="badge-excecao"
-                    :title="'Caso especial registrado.' + (s.motivoCasoIsolado ? ' Motivo: ' + s.motivoCasoIsolado : '')"
-                  >!</span>
-                  <span class="match" :class="{ alerta: s.score < 0.88 }">{{ (s.score * 100).toFixed(0) }}% Match</span>
+                  <strong>{{ (similar.descricao || '').toUpperCase() }}</strong>
+                  <BadgeException v-if="similar.casoIsolado" :motivo="similar.motivoCasoIsolado" />
+                  <BadgeMatch :score="similar.score" />
                 </div>
-                <div v-if="s.motivo" class="opcao-motivo">{{ s.motivo }}</div>
+                <div v-if="similar.motivo" class="opcao-motivo">{{ similar.motivo }}</div>
               </div>
             </div>
           </div>
         </div>
 
-        
         <div class="linha-campo" style="margin-top: 14px">
           <textarea
-            v-model="observacoes[item.id]"
+            v-model="notes[item.id]"
             placeholder="Motivo da decisão (obrigatório)"
             style="min-height: 58px"
           ></textarea>
         </div>
 
-        
         <div v-if="item.origem === 'HISTORICO' && item.status === 'REVISADO'" class="aviso aviso-verde" style="margin: 12px 0 0">
           <span class="icone">✓</span>
           <div>
@@ -193,11 +426,10 @@
         </div>
 
         <div v-if="podeDecidir(item) && item.origem === 'HISTORICO'" class="linha-botoes" style="margin-top: 12px">
-          
-            <button class="botao botao-verde" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'manter')">
+            <button class="botao botao-verde" :disabled="processing === item.id" @click="askConfirmation(item, 'keep')">
               ✓ Aceitar
             </button>
-            <button class="botao botao-vermelho" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'excluir')">
+            <button class="botao botao-vermelho" :disabled="processing === item.id" @click="askConfirmation(item, 'remove')">
               ✕ Apagar
             </button>
         </div>
@@ -205,323 +437,52 @@
             <button
               v-if="item.similares && item.similares.length"
               class="botao botao-roxo"
-              :disabled="processando === item.id || !escolhidos[item.id]"
-              :title="escolhidos[item.id] ? 'O pedido segue reutilizando o código escolhido' : 'Escolha um dos matches acima'"
-              @click="pedirReutilizacao(item)"
+              :disabled="processing === item.id || !chosen[item.id]"
+              :title="chosen[item.id] ? 'O pedido segue reutilizando o código escolhido' : 'Escolha um dos matches acima'"
+              @click="askReuse(item)"
             >
               ⇄ Reutilizar escolhido
             </button>
-            <button class="botao botao-verde" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'aprovar')">
+            <button class="botao botao-verde" :disabled="processing === item.id" @click="askConfirmation(item, 'approve')">
               ✓ Aprovar cadastro
             </button>
-            <button class="botao botao-vermelho" :disabled="processando === item.id" @click="pedirConfirmacao(item, 'rejeitar')">
+            <button class="botao botao-vermelho" :disabled="processing === item.id" @click="askConfirmation(item, 'reject')">
               ✕ Rejeitar cadastro
             </button>
         </div>
       </div>
     </div>
 
-    
     <div class="paginacao" style="margin-top: 20px">
-      <button class="pulo" :disabled="pagina === 0" @click="irParaPagina(0)" title="Início">|‹</button>
-      <button class="pulo" :disabled="pagina === 0" @click="paginaAnterior" title="Página anterior">‹</button>
-      <span class="info"><strong>{{ pagina + 1 }}</strong> / {{ totalPaginas }}</span>
-      <button class="pulo" :disabled="!temMais" @click="proximaPagina" title="Próxima página">›</button>
-      <button class="pulo" :disabled="!temMais" @click="pular(10)" title="Avançar 10 páginas (ou ir ao fim)">››</button>
-      <button class="pulo" :disabled="pagina + 1 >= totalPaginas" @click="irParaPagina(totalPaginas - 1)" title="Fim">›|</button>
+      <button class="pulo" :disabled="page === 0" @click="goToPage(0)" title="Início">|‹</button>
+      <button class="pulo" :disabled="page === 0" @click="previousPage" title="Página anterior">‹</button>
+      <span class="info"><strong>{{ page + 1 }}</strong> / {{ totalPages }}</span>
+      <button class="pulo" :disabled="!hasMore" @click="nextPage" title="Próxima página">›</button>
+      <button class="pulo" :disabled="!hasMore" @click="skipPages(10)" title="Avançar 10 páginas (ou ir ao fim)">››</button>
+      <button class="pulo" :disabled="page + 1 >= totalPages" @click="goToPage(totalPages - 1)" title="Fim">›|</button>
     </div>
 
-    
-    <ModalConfirmacao
-      v-if="confirmacao"
-      :titulo="confirmacao.titulo"
-      :mensagem="confirmacao.mensagem"
-      :rotulo-confirmar="confirmacao.rotulo"
-      :acao-perigosa="confirmacao.perigosa"
-      @confirmar="executarConfirmacao"
-      @cancelar="confirmacao = null"
+    <ConfirmModal
+      v-if="confirmation"
+      :title="confirmation.title"
+      :message="confirmation.message"
+      :confirm-label="confirmation.label"
+      :dangerous-action="confirmation.perigosa"
+      @confirm="confirmDecision"
+      @cancel="confirmation = null"
     />
 
-    <ModalConfirmacao
-      v-if="reutilizacao"
-      titulo="Reutilizar o código escolhido?"
-      :mensagem="`O pedido ${reutilizacao.item.identificador} será resolvido reutilizando ${reutilizacao.candidato.id} — ${reutilizacao.candidato.descricao}. A composição passa a apontar para este código, o código novo do pedido não entra no catálogo e a decisão fica registrada na auditoria.`"
-      rotulo-confirmar="⇄ Reutilizar e seguir"
-      :acao-perigosa="false"
-      @confirmar="executarReutilizacao"
-      @cancelar="reutilizacao = null"
+    <ConfirmModal
+      v-if="reuse"
+      title="Reutilizar o código escolhido?"
+      :message="`O pedido ${reuse.item.identificador} será resolvido reutilizando ${reuse.candidato.id} — ${reuse.candidato.descricao}. A composição passa a apontar para este código, o código novo do pedido não entra no catálogo e a decisão fica registrada na auditoria.`"
+      confirm-label="⇄ Reutilizar e seguir"
+      :dangerous-action="false"
+      @confirm="confirmReuse"
+      @cancel="reuse = null"
     />
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed, inject, onMounted, reactive, ref } from 'vue'
-import { api } from '../services/api'
-import { toast } from '../services/toast'
-import ModalConfirmacao from '../components/ModalConfirmacao.vue'
-import type { CandidatoSimilar, ItemGovernanca, ResumoGovernanca } from '../types'
-
-interface GrupoUso { nome: string; quantidade: number }
-interface ResumoCompleto extends Partial<ResumoGovernanca> {
-  grupos?: GrupoUso[]
-  totalLegados?: number
-}
-
-const props = withDefaults(defineProps<{ usuario?: string }>(), { usuario: '' })
-
-// decisões são da governança: só ADMIN, e só enquanto o item está pendente
-const isAdmin = computed(() => (localStorage.getItem('papel') || 'USUARIO').toUpperCase() === 'ADMIN')
-function podeDecidir(item: ItemGovernanca): boolean {
-  if (!isAdmin.value) return false
-  return item.origem === 'HISTORICO'
-    ? item.status === 'PENDENTE'
-    : item.status === 'PENDENTE_VALIDACAO'
-}
-const emit = defineEmits<{
-  (e: 'pendentes', n: number): void
-  (e: 'api-fora', v: boolean): void
-}>()
-const atualizarPendentes = inject<() => void>('atualizarPendentes', () => {})
-
-const resumo = ref<ResumoCompleto>({})
-const itens = ref<ItemGovernanca[]>([])
-const observacoes = reactive<Record<string, string>>({})
-const processando = ref<string | null>(null)
-const origem = ref('HISTORICO')
-const busca = ref('')
-const filtro = ref<string>('TODOS')
-const pagina = ref(0)
-const tamanhoPagina = 4
-const temMais = ref(false)
-const totalFila = ref(0)
-const totalPaginas = computed(() => Math.max(1, Math.ceil(totalFila.value / tamanhoPagina)))
-const confirmacao = ref<{ titulo: string; mensagem: string; rotulo: string; perigosa: boolean; acao: string; item: ItemGovernanca } | null>(null)
-
-/* ============================================================================
-   O QUE O USUÁRIO NÃO ESCOLHEU — o radio do bloqueio de duplicidade que foi
-   ignorado ao enviar para a Governança. Quem decide vê os matches e pode
-   escolher um deles e seguir: o pedido é resolvido reutilizando o código
-   existente, em vez de criar outro igual.
-   ========================================================================== */
-const escolhidos = reactive<Record<string, string>>({})
-const reutilizacao = ref<{ item: ItemGovernanca; candidato: CandidatoSimilar } | null>(null)
-
-const TIPOS_MATCH: Record<string, string> = { CS: 'Serviço', GS: 'Grupo', CF: 'Fornecedor', UM: 'Unidade' }
-
-function rotuloTipoMatch(tipo?: string | null): string {
-  return TIPOS_MATCH[(tipo || 'CS').toUpperCase()] || 'Serviço'
-}
-
-function chaveEscolha(s: CandidatoSimilar): string {
-  return `${(s.tipo || 'CS').toUpperCase()}:${s.id}`
-}
-
-function escolherMatch(item: ItemGovernanca, s: CandidatoSimilar): void {
-  if (!podeDecidir(item)) return
-  escolhidos[item.id] = chaveEscolha(s)
-}
-
-function pedirReutilizacao(item: ItemGovernanca): void {
-  const chave = escolhidos[item.id]
-  const candidato = (item.similares || []).find((s) => chaveEscolha(s) === chave)
-  if (!candidato) {
-    toast.aviso('Escolha um dos matches acima para reutilizar.')
-    return
-  }
-  reutilizacao.value = { item, candidato }
-}
-
-async function executarReutilizacao(): Promise<void> {
-  const r = reutilizacao.value
-  if (!r || processando.value === r.item.id) return
-  reutilizacao.value = null
-  processando.value = r.item.id
-  try {
-    await api.reutilizarNovo(r.item.id, {
-      escolhidoId: r.candidato.id,
-      escolhidoTipo: r.candidato.tipo || 'CS',
-      aprovadoPor: props.usuario || 'governanca',
-      observacao: (observacoes[r.item.id] || '').trim() || null
-    })
-    toast.sucesso(
-      `Pedido ${r.item.identificador} resolvido reutilizando ${r.candidato.id} — ${r.candidato.descricao}.`
-    )
-    itens.value = itens.value.filter((i) => i.id !== r.item.id)
-    await carregar()
-    atualizarPendentes()
-  } catch (e) {
-    toast.erro((e as Error).message)
-  } finally {
-    processando.value = null
-  }
-}
-
-const rotuloFiltro = computed(() => ({
-  PENDENTES: 'aguardando revisão', DUPLICIDADE: 'possíveis repetidos', ALERTA: 'em atenção',
-  REVISADOS: 'revisados', NOVOS: 'novos cadastros'
-} as Record<string, string>)[filtro.value] || filtro.value)
-
-const itensFiltrados = computed(() => {
-  switch (filtro.value) {
-    case 'DUPLICIDADE':
-    case 'ALERTA':
-      return itens.value.filter((i) => i.decision === filtro.value)
-    case 'REVISADOS': return itens.value.filter((i) => i.status === 'REVISADO')
-    case 'PENDENTES': return itens.value.filter((i) => i.status === 'PENDENTE')
-    default: return itens.value
-  }
-})
-
-function alternarFiltro(f: string): void {
-  filtro.value = filtro.value === f || f === 'TODOS' ? 'TODOS' : f
-  pagina.value = 0
-  if (f === 'NOVOS') {
-    filtro.value = 'TODOS'
-    origem.value = 'NOVOS'
-    carregar()
-    return
-  }
-  if (f !== 'TODOS' && origem.value !== 'HISTORICO') {
-    origem.value = 'HISTORICO'
-  }
-  carregar()
-}
-
-function proximaPagina(): void {
-  if (!temMais.value) return
-  pagina.value++
-  carregar()
-}
-
-function paginaAnterior(): void {
-  if (pagina.value === 0) return
-  pagina.value--
-  carregar()
-}
-
-function pular(n: number): void {
-  pagina.value = Math.min(pagina.value + n, totalPaginas.value - 1)
-  carregar()
-}
-
-function irParaPagina(n: number): void {
-  pagina.value = Math.max(0, Math.min(n, totalPaginas.value - 1))
-  carregar()
-}
-
-async function carregar(): Promise<void> {
-  try {
-    resumo.value = (await api.resumo()) as ResumoCompleto
-    const statusServidor =
-      filtro.value === 'REVISADOS' ? 'REVISADO'
-      : filtro.value === 'SEM_PENDENCIA' ? 'SEM_PENDENCIA'
-      
-      : filtro.value === 'DUPLICIDADE' || filtro.value === 'ALERTA' ? 'TODOS'
-      : 'PENDENTE'
-    const decisaoServidor =
-      filtro.value === 'DUPLICIDADE' ? 'DUPLICIDADE'
-      : filtro.value === 'ALERTA' ? 'ALERTA'
-      : undefined
-    const lote = await api.pendentes(origem.value, busca.value, tamanhoPagina, statusServidor, decisaoServidor, pagina.value)
-    itens.value = lote
-    temMais.value = lote.length === tamanhoPagina
-    const contagem = await api.contarFila(origem.value, statusServidor, decisaoServidor, busca.value)
-    totalFila.value = contagem.total
-    emit('pendentes', (resumo.value.pendentesHistorico || 0) + (resumo.value.pendentesNovos || 0))
-    emit('api-fora', false)
-  } catch {
-    emit('api-fora', true)
-  }
-}
-
-function trocarOrigem(o: string): void {
-  origem.value = o
-  pagina.value = 0
-  carregar()
-}
-
-let timer: ReturnType<typeof setTimeout> | null = null
-function carregarComDebounce(): void {
-  if (timer) clearTimeout(timer)
-  timer = setTimeout(carregar, 350)
-}
-
-function pedirConfirmacao(item: ItemGovernanca, acao: string): void {
-  const ehDuplicidade = item.decision === 'DUPLICIDADE'
-  const textos: Record<string, { titulo: string; mensagem: string; rotulo: string; perigosa: boolean }> = {
-    manter: {
-      titulo: 'Aceitar este item?',
-      mensagem: `O item ${item.identificador} será aceito como válido${ehDuplicidade
-        ? ' — a possível repetição está aceitável' : ''}. O motivo informado fica registrado na auditoria.`,
-      rotulo: '✓ Aceitar', perigosa: false
-    },
-    excluir: {
-      titulo: 'Apagar do catálogo?',
-      mensagem: `O item ${item.identificador} será apagado da lista ativa (o registro original continua preservado no histórico). O motivo informado fica registrado na auditoria.`,
-      rotulo: '✕ Apagar', perigosa: true
-    },
-    aprovar: {
-      titulo: 'Aprovar cadastro?',
-      mensagem: `O cadastro ${item.identificador} será aprovado e ativado. O motivo informado fica registrado na auditoria.`,
-      rotulo: '✓ Aprovar', perigosa: false
-    },
-    rejeitar: {
-      titulo: 'Rejeitar cadastro?',
-      mensagem: `O cadastro ${item.identificador} será rejeitado. O motivo informado fica registrado na auditoria.`,
-      rotulo: '✕ Rejeitar', perigosa: true
-    }
-  }
-  confirmacao.value = { ...textos[acao], acao, item }
-}
-
-
-const ACAO_HISTORICO: Record<string, { acao: string; passado: string }> = {
-  manter: { acao: 'MANTER', passado: 'aceito' },
-  excluir: { acao: 'EXCLUIR', passado: 'apagado' }
-}
-
-async function executarConfirmacao(): Promise<void> {
-  const c = confirmacao.value
-  if (!c) return
-  const { item, acao } = c
-
-  
-  const motivo = (observacoes[item.id] || '').trim()
-  if (!motivo) {
-    toast.aviso('Informe o motivo da decisão — ele é obrigatório.')
-    return
-  }
-  confirmacao.value = null
-  processando.value = item.id
-  try {
-    const historico = ACAO_HISTORICO[acao]
-    if (historico) {
-      await api.revisarHistorico(item.id, {
-        revisadoPor: props.usuario || 'governanca',
-        acao: historico.acao,
-        observacao: motivo
-      })
-      toast.sucesso(`Item ${item.identificador} ${historico.passado} — decisão registrada.`)
-    } else if (acao === 'aprovar') {
-      await api.aprovar(item.id, { aprovadoPor: props.usuario || 'governanca', observacao: motivo })
-      toast.sucesso(`Cadastro ${item.identificador} aprovado.`)
-    } else {
-      await api.rejeitar(item.id, { aprovadoPor: props.usuario || 'governanca', observacao: motivo })
-      toast.sucesso(`Cadastro ${item.identificador} rejeitado.`)
-    }
-    // a decisão sai da fila imediatamente — o card não fica na tela
-    itens.value = itens.value.filter((i) => i.id !== item.id)
-    await carregar()
-    atualizarPendentes()
-  } catch (e) {
-    toast.erro((e as Error).message)
-  } finally {
-    processando.value = null
-  }
-}
-
-onMounted(carregar)
-</script>
 
 <style scoped>
 .grade-cards {

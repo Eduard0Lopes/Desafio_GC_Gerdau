@@ -46,12 +46,6 @@ public class SchemaBackfill implements ApplicationRunner {
         }
     }
 
-    /**
-     * Marca como "Exceção aprovada" quem foi aprovado apesar da similaridade:
-     * 1) novos cadastros da aplicação aprovados (ou criados) com justificativa;
-     * 2) itens do histórico aceitos na governança ("Aceitar" uma possível repetição).
-     * Itens migrados sem decisão humana ficam de fora: a análise veio da planilha.
-     */
     private long marcarExcecoesAprovadas() {
         long ajustados = 0;
 
@@ -107,10 +101,6 @@ public class SchemaBackfill implements ApplicationRunner {
         return true;
     }
 
-    /**
-     * Componentes que ainda estão "em validação" mas não pertencem a nenhum pedido vivo
-     * (os pedidos foram cancelados/rejeitados) não podem ficar em limbo: saem de cena.
-     */
     private long limparComponentesOrfaos() {
         long ajustados = 0;
         for (GrupoServico g : mongoTemplate.find(pendentes(), GrupoServico.class)) {

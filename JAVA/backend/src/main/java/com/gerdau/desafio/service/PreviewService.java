@@ -8,6 +8,7 @@ import com.gerdau.desafio.repository.*;
 import com.gerdau.desafio.search.SearchClient;
 import com.gerdau.desafio.seed.DataSeeder;
 import com.gerdau.desafio.similarity.RankingPolicy;
+import com.gerdau.desafio.util.ComposicaoUtil;
 import com.gerdau.desafio.util.TextoUtil;
 import org.springframework.stereotype.Service;
 
@@ -56,10 +57,10 @@ public class PreviewService {
     public ComponentesResolvidos resolver(PreviewRequest req, boolean alocarIds) {
         GrupoServico gs;
         boolean grupoNovo = false;
-        if (naoVazio(req.gsId())) {
+        if (TextoUtil.preenchido(req.gsId())) {
             gs = grupoServicoRepository.findById(req.gsId())
                     .orElseThrow(() -> new BusinessException("Grupo de Serviço não encontrado: " + req.gsId()));
-        } else if (naoVazio(req.gsNovoNome())) {
+        } else if (TextoUtil.preenchido(req.gsNovoNome())) {
             String nome = req.gsNovoNome().trim();
             GrupoServico existente = buscarGrupoExistente(nome);
             if (existente != null) {
@@ -78,12 +79,12 @@ public class PreviewService {
 
         CodigoFornecedor cf;
         boolean fornecedorNovo = false;
-        if (naoVazio(req.cfId())) {
+        if (TextoUtil.preenchido(req.cfId())) {
             cf = codigoFornecedorRepository.findById(req.cfId())
                     .orElseThrow(() -> new BusinessException("Código de Fornecedor não encontrado: " + req.cfId()));
-        } else if (naoVazio(req.cfNovoNome())) {
+        } else if (TextoUtil.preenchido(req.cfNovoNome())) {
             String nome = req.cfNovoNome().trim();
-            String sap = naoVazio(req.cfNovoCodigoSap()) ? req.cfNovoCodigoSap().trim() : null;
+            String sap = TextoUtil.preenchido(req.cfNovoCodigoSap()) ? req.cfNovoCodigoSap().trim() : null;
             CodigoFornecedor existente = buscarFornecedorExistente(nome, sap);
             if (existente != null) {
                 cf = existente;
@@ -105,10 +106,10 @@ public class PreviewService {
 
         CodigoServico cs;
         boolean codigoNovo = false;
-        if (naoVazio(req.csId())) {
+        if (TextoUtil.preenchido(req.csId())) {
             cs = codigoServicoRepository.findById(req.csId())
                     .orElseThrow(() -> new BusinessException("Código de Serviço não encontrado: " + req.csId()));
-        } else if (naoVazio(req.csNovaDescricao())) {
+        } else if (TextoUtil.preenchido(req.csNovaDescricao())) {
             String descricao = req.csNovaDescricao().trim();
             if (descricao.length() > TextoUtil.LIMITE_SAP) {
                 throw new BusinessException("A descrição do serviço não pode exceder "
@@ -116,7 +117,6 @@ public class PreviewService {
             }
             CodigoServico existente = buscarServicoExistente(descricao);
             if (existente != null) {
-                // não pode existir outro código de serviço com o mesmo nome
                 cs = existente;
             } else {
                 cs = new CodigoServico();
@@ -133,10 +133,10 @@ public class PreviewService {
 
         UnidadeMedida um;
         boolean unidadeNova = false;
-        if (naoVazio(req.umId())) {
+        if (TextoUtil.preenchido(req.umId())) {
             um = unidadeMedidaRepository.findById(req.umId())
                     .orElseThrow(() -> new BusinessException("Unidade de Medida não encontrada: " + req.umId()));
-        } else if (naoVazio(req.umNovaSigla())) {
+        } else if (TextoUtil.preenchido(req.umNovaSigla())) {
             String sigla = req.umNovaSigla().trim().toUpperCase();
             UnidadeMedida existente = unidadeMedidaRepository.findById(sigla).orElse(null);
             if (existente != null) {
@@ -145,7 +145,7 @@ public class PreviewService {
                 um = new UnidadeMedida();
                 um.setId(alocarIds ? sigla : MARCADOR_NOVO);
                 um.setSigla(sigla);
-                um.setNome(naoVazio(req.umNovoNome()) ? req.umNovoNome().trim() : sigla);
+                um.setNome(TextoUtil.preenchido(req.umNovoNome()) ? req.umNovoNome().trim() : sigla);
                 um.setNomeNormalizado(TextoUtil.normalizar(um.getNome()));
                 um.setOrigem("SISTEMA");
                 unidadeNova = true;
@@ -184,8 +184,6 @@ public class PreviewService {
 
         String idCompleto = montarIdCompleto(r);
         boolean todosExistentes = !r.grupoNovo() && !r.fornecedorNovo() && !r.codigoNovo() && !r.unidadeNova();
-        // a composição pode ter vários vínculos (criados quantas vezes forem necessárias);
-        // para gestão, interessa o pedido pendente mais recente — senão, o vínculo mais novo
         CodigoCompleto existente = todosExistentes
                 ? codigoCompletoRepository.findByIdCompletoOrderByCreatedAtDesc(idCompleto).stream()
                         .filter(c -> CodigoCompleto.STATUS_PENDENTE.equals(c.getStatus()))
@@ -193,7 +191,6 @@ public class PreviewService {
                         .orElseGet(() -> codigoCompletoRepository.findByIdCompletoOrderByCreatedAtDesc(idCompleto)
                                 .stream().findFirst().orElse(null))
                 : null;
-        // rejeitados/cancelados não contam como vínculo vivo
         boolean jaExiste = existente != null
                 && !CodigoCompleto.STATUS_REJEITADO.equals(existente.getStatus())
                 && !CodigoCompleto.STATUS_CANCELADO.equals(existente.getStatus());
@@ -244,8 +241,6 @@ public class PreviewService {
         }
 
         if (jaExiste) {
-            // informação, não bloqueio: a composição pode ser vinculada quantas vezes
-            // forem necessárias — cada envio cria um novo registro
             acaoRecomendada = CodigoCompleto.STATUS_PENDENTE.equals(statusExistente)
                     ? "Já existe um pedido pendente para esta composição — este envio criará mais um vínculo."
                     : "Esta composição já está vinculada — este envio criará mais um vínculo.";
@@ -274,13 +269,13 @@ public class PreviewService {
     }
 
     public static String montarIdCompleto(ComponentesResolvidos r) {
-        return r.grupoServico().getId() + "_" + r.codigoFornecedor().getId() + "_"
-                + r.codigoServico().getId() + "_" + r.unidadeMedida().getId();
+        return ComposicaoUtil.montarIdCompleto(r.grupoServico().getId(), r.codigoFornecedor().getId(),
+                r.codigoServico().getId(), r.unidadeMedida().getId());
     }
 
     public String montarSnapshot(ComponentesResolvidos r) {
-        return r.grupoServico().getNome() + " | " + r.codigoFornecedor().getNome() + " | "
-                + r.codigoServico().getDescricao() + " | " + r.unidadeMedida().getSigla();
+        return ComposicaoUtil.montarSnapshot(r.grupoServico().getNome(), r.codigoFornecedor().getNome(),
+                r.codigoServico().getDescricao(), r.unidadeMedida().getSigla());
     }
 
     private void analisarComponente(String tipo, String texto, List<AlertaComponenteResponse> alertas) {
@@ -311,9 +306,5 @@ public class PreviewService {
             case SearchClient.TIPO_UM -> "Unidade de Medida";
             default -> "Código de Serviço";
         };
-    }
-
-    private static boolean naoVazio(String s) {
-        return s != null && !s.isBlank();
     }
 }

@@ -24,7 +24,6 @@ public final class SimilarityEngine {
             return resultado;
         }
         for (String token : texto.trim().split("\\s+")) {
-            // singularizar torna "telhados" e "telhado" o mesmo token
             resultado.add(TextoUtil.singularizar(token));
         }
         return resultado;
@@ -83,7 +82,7 @@ public final class SimilarityEngine {
     }
 
     private static int caracteresCasados(String a, String b, int alo, int ahi, int blo, int bhi) {
-        int[] melhor = maiorBlocoComum(a, b, alo, ahi, blo, bhi); 
+        int[] melhor = maiorBlocoComum(a, b, alo, ahi, blo, bhi);
         int i = melhor[0];
         int j = melhor[1];
         int k = melhor[2];

@@ -1,3 +1,161 @@
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { debounce } from '../services/tempo'
+import BadgeException from './BadgeExcecao.vue'
+import type { Item } from '../types'
+
+const props = withDefaults(defineProps<{
+  placeholder?: string
+  load: (term: string) => Promise<unknown[]>
+  nameOf?: (entry: Item) => string
+  idOf?: (entry: Item) => string
+  sapOf?: (entry: Item) => string
+  allowCreate?: boolean
+  allowRemove?: boolean
+  modelValue?: Item | string | null
+}>(), {
+  placeholder: 'Digite para buscar…',
+  nameOf: (entry: Item) => String(entry?.nome ?? entry?.descricao ?? entry),
+  idOf: (entry: Item) => (entry?.id ? String(entry.id) : ''),
+  sapOf: () => '',
+  allowCreate: true,
+  allowRemove: false,
+  modelValue: null
+})
+
+const emit = defineEmits<{
+  (event: 'update:modelValue', v: Item | null): void
+  (event: 'createNew', typedText: string): void
+  (event: 'remove', item: Item): void
+}>()
+
+const typedText = ref('')
+const options = ref<Item[]>([])
+const isOpen = ref(false)
+const focado = ref(false)
+const loading = ref(false)
+const searched = ref(false)
+const searchError = ref(false)
+const highlight = ref(-1)
+const root = ref<HTMLElement | null>(null)
+const field = ref<HTMLInputElement | null>(null)
+
+let requisicaoId = 0
+
+const debouncedSearch = debounce((term: string) => void search(term), 250)
+
+const showCreateOption = computed(() => props.allowCreate && typedText.value.trim().length > 0 && !searchError.value)
+
+async function search(term: string): Promise<void> {
+  const id = ++requisicaoId
+  loading.value = true
+  searchError.value = false
+  try {
+    const itens = await props.load(term)
+    if (id !== requisicaoId) return
+    options.value = Array.isArray(itens) ? (itens as Item[]) : []
+    searched.value = true
+    highlight.value = -1
+    isOpen.value = true
+  } catch {
+    if (id === requisicaoId) {
+      options.value = []
+      searched.value = true
+      searchError.value = true
+      isOpen.value = true
+    }
+  } finally {
+    if (id === requisicaoId) loading.value = false
+  }
+}
+
+function aoDigitar(): void {
+  emit('update:modelValue', null)
+  debouncedSearch(typedText.value.trim())
+}
+
+function clearSearch(): void {
+  typedText.value = ''
+  emit('update:modelValue', null)
+  void search('')
+}
+
+function onFocus(): void {
+  focado.value = true
+  if (!typedText.value) search('')
+  else isOpen.value = true
+}
+
+function select(item: Item): void {
+  typedText.value = props.nameOf(item)
+  isOpen.value = false
+  emit('update:modelValue', item)
+}
+
+function createNew(): void {
+  const term = typedText.value.trim()
+  isOpen.value = false
+  emit('createNew', term)
+}
+
+function onKeyDown(event: KeyboardEvent): void {
+  const total = options.value.length + (showCreateOption.value ? 1 : 0)
+  if (event.key === 'ArrowDown') {
+    event.preventDefault()
+    isOpen.value = true
+    highlight.value = (highlight.value + 1) % Math.max(total, 1)
+  } else if (event.key === 'ArrowUp') {
+    event.preventDefault()
+    highlight.value = (highlight.value - 1 + total) % Math.max(total, 1)
+  } else if (event.key === 'Enter') {
+    if (highlight.value >= 0 && highlight.value < options.value.length) {
+      event.preventDefault()
+      select(options.value[highlight.value])
+    } else if (showCreateOption.value && highlight.value === options.value.length) {
+      event.preventDefault()
+      createNew()
+    }
+  } else if (event.key === 'Escape') {
+    isOpen.value = false
+    highlight.value = -1
+  }
+}
+
+function onClickOutside(event: MouseEvent): void {
+  if (root.value && event.target instanceof Node && !root.value.contains(event.target)) isOpen.value = false
+}
+
+watch(
+  () => props.modelValue,
+  (novo) => {
+    if (!novo) {
+      typedText.value = ''
+      options.value = []
+      highlight.value = -1
+    } else if (typeof novo === 'object') {
+      typedText.value = props.nameOf(novo)
+    }
+  }
+)
+
+onMounted(() => document.addEventListener('mousedown', onClickOutside))
+onBeforeUnmount(() => {
+  document.removeEventListener('mousedown', onClickOutside)
+  debouncedSearch.cancel()
+})
+
+defineExpose({
+  field,
+  setText(text: string): void {
+    typedText.value = text
+  },
+
+  reload(): void {
+    void search(typedText.value.trim())
+  }
+})
+</script>
+
 <template>
   <div class="combobox" ref="raiz">
     <div class="cb-campo" :class="{ focado }">
@@ -6,219 +164,57 @@
         type="text"
         autocomplete="off"
         :placeholder="placeholder"
-        v-model="texto"
+        v-model="typedText"
         @input="aoDigitar"
-        @focus="aoFocar"
-        @keydown="aoTeclar"
+        @focus="onFocus"
+        @keydown="onKeyDown"
       />
-      <span v-if="carregando" class="suave" style="font-size: 0.78rem">…</span>
-      <button v-if="texto" type="button" class="cb-limpar" title="Limpar busca" @click="limparBusca">✕</button>
+      <span v-if="loading" class="suave" style="font-size: 0.78rem">…</span>
+      <button v-if="typedText" type="button" class="cb-limpar" title="Limpar busca" @click="clearSearch">✕</button>
     </div>
 
-    <ul v-if="aberto && (opcoes.length || mostrarCriar || (jaBuscou && !carregando))" class="cb-lista" role="listbox">
+    <ul v-if="isOpen && (options.length || showCreateOption || (searched && !loading))" class="cb-lista" role="listbox">
       <li
-        v-for="(item, i) in opcoes"
-        :key="i"
+        v-for="(item, entry) in options"
+        :key="entry"
         role="option"
-        :class="{ ativo: i === destaque }"
-        @mousedown.prevent="selecionar(item)"
-        @mouseenter="destaque = i"
+        :class="{ ativo: entry === highlight }"
+        @mousedown.prevent="select(item)"
+        @mouseenter="highlight = entry"
       >
-        <span v-if="idDe(item)" class="cb-item-id">{{ idDe(item) }} -</span>
-        <span class="cb-item-nome">{{ nomeDe(item) }}</span>
-        <span
-          v-if="item.casoIsolado"
-          class="badge-excecao"
-          :title="'Caso especial registrado.' + (String(item.motivoCasoIsolado || '') ? ' Motivo: ' + item.motivoCasoIsolado : '')"
-        >!</span>
-        <span v-if="sapDe(item)" class="cb-sap">{{ sapDe(item) }}</span>
+        <span v-if="idOf(item)" class="cb-item-id">{{ idOf(item) }} -</span>
+        <span class="cb-item-nome">{{ nameOf(item) }}</span>
+        <BadgeException v-if="item.casoIsolado" :motivo="item.motivoCasoIsolado" />
+        <span v-if="sapOf(item)" class="cb-sap">{{ sapOf(item) }}</span>
         <button
-          v-if="permiteExcluir"
+          v-if="allowRemove"
           class="cb-excluir"
           type="button"
           title="Desativar este item (ADMIN) — sai das listas e pode ser reativado no Catálogo"
           @mousedown.stop.prevent
-          @click.stop="emit('excluir', item)"
+          @click.stop="emit('remove', item)"
         >
           ✕
         </button>
       </li>
 
       <li
-        v-if="mostrarCriar"
+        v-if="showCreateOption"
         role="option"
         class="cb-criar"
-        :class="{ ativo: destaque === opcoes.length }"
-        @mousedown.prevent="criarNovo"
-        @mouseenter="destaque = opcoes.length"
+        :class="{ ativo: highlight === options.length }"
+        @mousedown.prevent="createNew"
+        @mouseenter="highlight = options.length"
       >
-        <span class="cb-item-nome">＋ Cadastrar Novo Item: “{{ texto.trim() }}”</span>
+        <span class="cb-item-nome">＋ Cadastrar Novo Item: “{{ typedText.trim() }}”</span>
       </li>
 
-      <li v-if="erroBusca && !carregando" class="cb-vazio">
+      <li v-if="searchError && !loading" class="cb-vazio">
         ⚠ Falha ao buscar — verifique a conexão e tente de novo.
       </li>
-      <li v-else-if="!opcoes.length && !carregando && jaBuscou" class="cb-vazio">
-        Nenhum resultado para “{{ texto }}”.
+      <li v-else-if="!options.length && !loading && searched" class="cb-vazio">
+        Nenhum resultado para “{{ typedText }}”.
       </li>
     </ul>
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-
-type Item = Record<string, unknown>
-
-const props = withDefaults(defineProps<{
-  placeholder?: string
-  carregar: (termo: string) => Promise<unknown[]>
-  nomeDe?: (i: Item) => string
-  idDe?: (i: Item) => string
-  sapDe?: (i: Item) => string
-  permiteCriar?: boolean
-  permiteExcluir?: boolean
-  modelValue?: Item | string | null
-}>(), {
-  placeholder: 'Digite para buscar…',
-  nomeDe: (i: Item) => String(i?.nome ?? i?.descricao ?? i),
-  idDe: (i: Item) => (i?.id ? String(i.id) : ''),
-  sapDe: () => '',
-  permiteCriar: true,
-  permiteExcluir: false,
-  modelValue: null
-})
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', v: Item | null): void
-  (e: 'criarNovo', texto: string): void
-  (e: 'excluir', item: Item): void
-}>()
-
-const texto = ref('')
-const opcoes = ref<Item[]>([])
-const aberto = ref(false)
-const focado = ref(false)
-const carregando = ref(false)
-const jaBuscou = ref(false)
-const erroBusca = ref(false)
-const destaque = ref(-1)
-const raiz = ref<HTMLElement | null>(null)
-const campo = ref<HTMLInputElement | null>(null)
-
-let debounce: ReturnType<typeof setTimeout> | null = null
-let requisicaoId = 0
-
-const mostrarCriar = computed(() => props.permiteCriar && texto.value.trim().length > 0 && !erroBusca.value)
-
-async function buscar(termo: string): Promise<void> {
-  const id = ++requisicaoId
-  carregando.value = true
-  erroBusca.value = false
-  try {
-    const itens = await props.carregar(termo)
-    if (id !== requisicaoId) return
-    opcoes.value = Array.isArray(itens) ? (itens as Item[]) : []
-    jaBuscou.value = true
-    destaque.value = -1
-    aberto.value = true
-  } catch {
-    if (id === requisicaoId) {
-      opcoes.value = []
-      jaBuscou.value = true
-      erroBusca.value = true
-      aberto.value = true
-    }
-  } finally {
-    if (id === requisicaoId) carregando.value = false
-  }
-}
-
-function aoDigitar(): void {
-  emit('update:modelValue', null)
-  if (debounce) clearTimeout(debounce)
-  debounce = setTimeout(() => buscar(texto.value.trim()), 250)
-}
-
-function limparBusca(): void {
-  texto.value = ''
-  emit('update:modelValue', null)
-  void buscar('')
-}
-
-function aoFocar(): void {
-  focado.value = true
-  if (!texto.value) buscar('')
-  else aberto.value = true
-}
-
-function selecionar(item: Item): void {
-  texto.value = props.nomeDe(item)
-  aberto.value = false
-  emit('update:modelValue', item)
-}
-
-function criarNovo(): void {
-  const termo = texto.value.trim()
-  aberto.value = false
-  emit('criarNovo', termo)
-}
-
-function aoTeclar(e: KeyboardEvent): void {
-  const total = opcoes.value.length + (mostrarCriar.value ? 1 : 0)
-  if (e.key === 'ArrowDown') {
-    e.preventDefault()
-    aberto.value = true
-    destaque.value = (destaque.value + 1) % Math.max(total, 1)
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault()
-    destaque.value = (destaque.value - 1 + total) % Math.max(total, 1)
-  } else if (e.key === 'Enter') {
-    if (destaque.value >= 0 && destaque.value < opcoes.value.length) {
-      e.preventDefault()
-      selecionar(opcoes.value[destaque.value])
-    } else if (mostrarCriar.value && destaque.value === opcoes.value.length) {
-      e.preventDefault()
-      criarNovo()
-    }
-  } else if (e.key === 'Escape') {
-    aberto.value = false
-    destaque.value = -1
-  }
-}
-
-function aoCliqueFora(e: MouseEvent): void {
-  if (raiz.value && e.target instanceof Node && !raiz.value.contains(e.target)) aberto.value = false
-}
-
-
-watch(
-  () => props.modelValue,
-  (novo) => {
-    if (!novo) {
-      texto.value = ''
-      opcoes.value = []
-      destaque.value = -1
-    } else if (typeof novo === 'object') {
-      texto.value = props.nomeDe(novo)
-    }
-  }
-)
-
-onMounted(() => document.addEventListener('mousedown', aoCliqueFora))
-onBeforeUnmount(() => {
-  document.removeEventListener('mousedown', aoCliqueFora)
-  if (debounce) clearTimeout(debounce)
-})
-
-defineExpose({
-  campo,
-  definirTexto(t: string): void {
-    texto.value = t
-  },
-  
-  recarregar(): void {
-    void buscar(texto.value.trim())
-  }
-})
-</script>

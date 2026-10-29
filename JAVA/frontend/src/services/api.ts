@@ -1,246 +1,234 @@
-
-
 import type {
-  CandidatoSimilar,
-  CodigoCompletoResponse,
-  CodigoFornecedor,
-  CodigoServico,
-  CriarCodigoCompletoPayload,
-  Estatisticas,
-  EventoAuditoria,
-  Fechamentos,
-  GrupoServico,
-  ItemGovernanca,
-  ItemImportacao,
-  LoteSimilaridade,
-  MatrizDePara,
+  SimilarCandidate,
+  FullCodeResponse,
+  SupplierCode,
+  ServiceCode,
+  CreateFullCodePayload,
+  Statistics,
+  AuditEvent,
+  Closings,
+  ServiceGroup,
+  GovernanceItem,
+  ImportItem,
+  SimilarityBatch,
+  MappingMatrix,
   PreviewResponse,
-  ResumoGovernanca,
-  ResultadoImportacao,
-  ResultadoVinculacaoLote,
-  SimilaridadeResponse,
+  GovernanceSummary,
+  ImportResult,
+  BatchLinkResult,
+  SimilarityResponse,
   TipoComponente,
-  UnidadeMedida
+  UnitOfMeasure
 } from '../types'
+import { currentRole, currentUser } from './usuario'
 
 const BASE = '/api/v1'
 
-export interface ErroApi extends Error {
+export interface ApiError extends Error {
   status: number
   detalhes?: { code?: string; message?: string; correlationId?: string }
 }
 
-function identidade(): Record<string, string> {
-  // Identidade de demonstracao (headers). Em producao o papel vem do token autenticado —
-  // ver a nota de permissoes no backend: config/AutorizacaoInterceptor.java
+export function isConflict(error: unknown): boolean {
+  return (error as { status?: number } | null)?.status === 409
+}
+
+export function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
+function identityHeaders(): Record<string, string> {
   return {
-    'X-Usuario-Id': localStorage.getItem('usuario') || '403921',
-    'X-Usuario-Papel': localStorage.getItem('papel') || 'USUARIO',
+    'X-Usuario-Id': currentUser(),
+    'X-Usuario-Papel': currentRole(),
     'X-Correlation-Id': crypto.randomUUID()
   }
 }
 
-async function requisitarDetalhe<T>(caminho: string, opcoes: RequestInit = {}): Promise<{ dados: T; status: number }> {
-  const { headers, ...resto } = opcoes
-  const resposta = await fetch(BASE + caminho, {
+async function requestWithStatus<T>(path: string, options: RequestInit = {}): Promise<{ data: T; status: number }> {
+  const { headers, ...resto } = options
+  const response = await fetch(BASE + path, {
     ...resto,
-    headers: { 'Content-Type': 'application/json', ...identidade(), ...(headers as Record<string, string>) }
+    headers: { 'Content-Type': 'application/json', ...identityHeaders(), ...(headers as Record<string, string>) }
   })
-  const dados = resposta.status === 204 ? null : await resposta.json().catch(() => null)
-  if (!resposta.ok) {
-    const erro = new Error(dados?.message || `Erro ${resposta.status}`) as ErroApi
-    erro.status = resposta.status
-    erro.detalhes = dados
-    throw erro
+  const data = response.status === 204 ? null : await response.json().catch(() => null)
+  if (!response.ok) {
+    const error = new Error(data?.message || `Erro ${response.status}`) as ApiError
+    error.status = response.status
+    error.detalhes = data
+    throw error
   }
-  return { dados: dados as T, status: resposta.status }
+  return { data: data as T, status: response.status }
 }
 
-async function requisitar<T>(caminho: string, opcoes: RequestInit = {}): Promise<T> {
-  return (await requisitarDetalhe<T>(caminho, opcoes)).dados
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  return (await requestWithStatus<T>(path, options)).data
 }
 
-const lista = <T>(caminho: string) => requisitar<T[]>(caminho)
+const list = <T>(path: string) => request<T[]>(path)
 
-/**
- * Segmento de caminho da URL. IDs de vínculo podem conter "#" (sufixo #2, #3...,
- * de composições repetidas) — SEMPRE codificar: sem isso o navegador trata o
- * resto da URL como fragmento e a rota chega cortada no backend (404 "Rota não
- * encontrada" ao aprovar/rejeitar na governança).
- */
-const seg = (valor: string) => encodeURIComponent(valor)
+const encodePath = (value: string) => encodeURIComponent(value)
 
-const criar = <T extends object>(caminho: string, dados: unknown, idempotencyKey?: string) =>
-  // 200 = requisição repetida (nada novo criado); 201 = criação real
-  requisitarDetalhe<T>(caminho, {
+const create = <T extends object>(path: string, data: unknown, idempotencyKey?: string) =>
+  requestWithStatus<T>(path, {
     method: 'POST',
-    body: JSON.stringify(dados),
+    body: JSON.stringify(data),
     headers: idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}
-  }).then(({ dados: corpo, status }) => ({ ...corpo, requisicaoRepetida: status === 200 }))
+  }).then(({ data: body, status }) => ({ ...body, requisicaoRepetida: status === 200 }))
 
-export function chaveIdempotente(prefixo: string, ...partes: (string | null | undefined)[]): string {
-  const texto = partes.map((p) => (p ?? '').trim()).join('|')
+export function buildIdempotencyKey(prefix: string, ...parts: (string | null | undefined)[]): string {
+  const content = parts.map((parte) => (parte ?? '').trim()).join('|')
   let hash = 5381
-  for (let i = 0; i < texto.length; i++) hash = ((hash << 5) + hash + texto.charCodeAt(i)) >>> 0
-  // o conteúdo entra por inteiro na chave: dois envios diferentes nunca podem
-  // colidir na mesma Idempotency-Key (o hash sozinho tem 32 bits e colide)
-  return prefixo + hash.toString(36) + '-' + texto
+  for (let index = 0; index < content.length; index++) hash = ((hash << 5) + hash + content.charCodeAt(index)) >>> 0
+  return prefix + hash.toString(36) + '-' + content
 }
 
 export const api = {
-  
-  gruposServico: {
-    listar: (query = '', limite = 20000, incluirTodos = false) =>
-      lista<GrupoServico>(`/grupos-servico?query=${encodeURIComponent(query)}&limite=${limite}&incluirTodos=${incluirTodos}`),
-    criar: (dados: { nome: string }) => criar<GrupoServico>('/grupos-servico', dados)
+  serviceGroups: {
+    list: (query = '', limite = 20000, incluirTodos = false) =>
+      list<ServiceGroup>(`/grupos-servico?query=${encodeURIComponent(query)}&limite=${limite}&incluirTodos=${incluirTodos}`),
+    create: (data: { nome: string }) => create<ServiceGroup>('/grupos-servico', data)
   },
-  codigosFornecedor: {
-    listar: (query = '', limite = 20000, incluirTodos = false) =>
-      lista<CodigoFornecedor>(`/codigos-fornecedor?query=${encodeURIComponent(query)}&limite=${limite}&incluirTodos=${incluirTodos}`),
-    criar: (dados: { nome: string; codigoSap?: string | null }) => criar<CodigoFornecedor>('/codigos-fornecedor', dados)
+  supplierCodes: {
+    list: (query = '', limite = 20000, incluirTodos = false) =>
+      list<SupplierCode>(`/codigos-fornecedor?query=${encodeURIComponent(query)}&limite=${limite}&incluirTodos=${incluirTodos}`),
+    create: (data: { nome: string; codigoSap?: string | null }) => create<SupplierCode>('/codigos-fornecedor', data)
   },
-  codigosServico: {
-    listar: (query = '', limite = 20000, incluirTodos = false) =>
-      lista<CodigoServico>(`/codigos-servico?query=${encodeURIComponent(query)}&limite=${limite}&incluirTodos=${incluirTodos}`),
-    criar: (dados: { descricao: string }) => criar<CodigoServico>('/codigos-servico', dados)
+  serviceCodes: {
+    list: (query = '', limite = 20000, incluirTodos = false) =>
+      list<ServiceCode>(`/codigos-servico?query=${encodeURIComponent(query)}&limite=${limite}&incluirTodos=${incluirTodos}`),
+    create: (data: { descricao: string }) => create<ServiceCode>('/codigos-servico', data)
   },
-  unidadesMedida: {
-    listar: (query = '', limite = 20000, incluirTodos = false) =>
-      lista<UnidadeMedida>(`/unidades-medida?query=${encodeURIComponent(query)}&limite=${limite}&incluirTodos=${incluirTodos}`),
-    criar: (dados: { sigla: string; nome?: string }) => criar<UnidadeMedida>('/unidades-medida', dados)
+  unitsOfMeasure: {
+    list: (query = '', limite = 20000, incluirTodos = false) =>
+      list<UnitOfMeasure>(`/unidades-medida?query=${encodeURIComponent(query)}&limite=${limite}&incluirTodos=${incluirTodos}`),
+    create: (data: { sigla: string; nome?: string }) => create<UnitOfMeasure>('/unidades-medida', data)
   },
 
-  componentes: {
-    excluir: (tipo: 'GS' | 'CF' | 'CS' | 'UM', id: string) => {
-      const caminhos = {
+  components: {
+    remove: (tipo: TipoComponente, id: string) => {
+      const paths = {
         GS: 'grupos-servico',
         CF: 'codigos-fornecedor',
         CS: 'codigos-servico',
         UM: 'unidades-medida'
       } as const
-      return requisitar<void>(`/${caminhos[tipo]}/${seg(id)}`, { method: 'DELETE' })
+      return request<void>(`/${paths[tipo]}/${encodePath(id)}`, { method: 'DELETE' })
     }
   },
 
-  situacaoComponentes: (tipo: 'GS' | 'CF' | 'CS' | 'UM', ids: string[], situacao: 'DESATIVADO' | 'ATIVO') =>
-    requisitar<{ id: string; alterado: boolean; motivo: string }[]>('/catalogo/situacao', {
+  setComponentStatus: (tipo: TipoComponente, ids: string[], situacao: 'DESATIVADO' | 'ATIVO') =>
+    request<{ id: string; alterado: boolean; motivo: string }[]>('/catalogo/situacao', {
       method: 'POST',
       body: JSON.stringify({ tipo, ids, situacao })
     }),
 
   catalogo: {
-    /** marca o item como caso especial: ganha o (!) com o motivo no hover */
-    marcarExcecao: (id: string, motivo: string) =>
-      requisitar<{ marcados: number }>('/catalogo/marcar-excecao', {
+    markException: (id: string, motivo: string) =>
+      request<{ marcados: number }>('/catalogo/marcar-excecao', {
         method: 'POST',
         body: JSON.stringify({ ids: [id], motivo })
       }),
-    /** resolve o caso especial do item: remove o (!) */
-    limparCasoIsolado: (id: string) =>
-      requisitar<{ limpos: number }>('/catalogo/marcar-excecao', {
+    clearSpecialCase: (id: string) =>
+      request<{ limpos: number }>('/catalogo/marcar-excecao', {
         method: 'POST',
-        body: JSON.stringify({ ids: [id], limpar: true })
+        body: JSON.stringify({ ids: [id], clearAll: true })
       }),
-    /** quantos códigos completos referenciam o componente */
-    vinculos: (tipo: 'GS' | 'CF' | 'CS' | 'UM', id: string) =>
-      requisitar<{ total: number }>(`/catalogo/vinculos?tipo=${tipo}&id=${seg(id)}`),
-    /** transfere os vínculos para outro componente e (opcionalmente) exclui o de origem */
-    transferirVinculos: (dados: { tipo: 'GS' | 'CF' | 'CS' | 'UM'; de: string; para: string; excluirOrigem?: boolean }) =>
-      requisitar<{ transferidos: number; mesclados: number; conflitos: string[]; excluido: boolean }>('/catalogo/transferir-vinculos', {
+    vinculos: (tipo: TipoComponente, id: string) =>
+      request<{ total: number }>(`/catalogo/vinculos?tipo=${tipo}&id=${encodePath(id)}`),
+    transferLinks: (data: { tipo: TipoComponente; de: string; para: string; excluirOrigem?: boolean }) =>
+      request<{ transferidos: number; mesclados: number; conflitos: string[]; excluido: boolean }>('/catalogo/transferir-vinculos', {
         method: 'POST',
-        body: JSON.stringify(dados)
+        body: JSON.stringify(data)
       })
   },
 
-  exclusaoEmMassa: (tipo: 'GS' | 'CF' | 'CS' | 'UM', ids: string[]) =>
-    requisitar<{ id: string; excluido: boolean; motivo: string }[]>('/catalogo/exclusao-em-massa', {
+  bulkDelete: (tipo: TipoComponente, ids: string[]) =>
+    request<{ id: string; excluido: boolean; motivo: string }[]>('/catalogo/exclusao-em-massa', {
       method: 'POST',
       body: JSON.stringify({ tipo, ids })
     }),
 
-  importarCatalogo: (tipo: 'GS' | 'CF' | 'CS' | 'UM', itens: ItemImportacao[]) =>
-    requisitar<ResultadoImportacao>('/catalogo/importacao', {
+  importCatalog: (tipo: TipoComponente, itens: ImportItem[]) =>
+    request<ImportResult>('/catalogo/importacao', {
       method: 'POST',
       body: JSON.stringify({ tipo, itens })
     }),
 
-  preview: (payload: CriarCodigoCompletoPayload) =>
-    requisitar<PreviewResponse>('/codigos-completos/preview', { method: 'POST', body: JSON.stringify(payload) }),
-  criarCodigoCompleto: (payload: CriarCodigoCompletoPayload, idempotencyKey?: string) =>
-    criar<CodigoCompletoResponse>('/codigos-completos', payload, idempotencyKey),
+  preview: (buildPayload: CreateFullCodePayload) =>
+    request<PreviewResponse>('/codigos-completos/preview', { method: 'POST', body: JSON.stringify(buildPayload) }),
+  createFullCode: (buildPayload: CreateFullCodePayload, idempotencyKey?: string) =>
+    create<FullCodeResponse>('/codigos-completos', buildPayload, idempotencyKey),
 
-  codigosCompletos: {
-    buscar: (id: string) =>
-      requisitar<CodigoCompletoResponse>(`/codigos-completos/${seg(id)}`),
-    atualizarPedido: (id: string, dados: { descricao?: string | null; justificativa?: string | null }) =>
-      requisitar<CodigoCompletoResponse>(`/codigos-completos/${seg(id)}`, {
+  fullCodes: {
+    getById: (id: string) =>
+      request<FullCodeResponse>(`/codigos-completos/${encodePath(id)}`),
+    updateRequest: (id: string, data: { descricao?: string | null; justificativa?: string | null }) =>
+      request<FullCodeResponse>(`/codigos-completos/${encodePath(id)}`, {
         method: 'PATCH',
-        body: JSON.stringify(dados)
+        body: JSON.stringify(data)
       }),
-    cancelarPedido: (id: string) =>
-      requisitar<CodigoCompletoResponse>(`/codigos-completos/${seg(id)}/cancelar`, {
+    cancelRequest: (id: string) =>
+      request<FullCodeResponse>(`/codigos-completos/${encodePath(id)}/cancelar`, {
         method: 'POST'
       })
   },
 
-  pendentes: (origem = 'TODOS', query = '', limite = 50, status = 'PENDENTE', decision?: string, pagina = 0) =>
-    lista<ItemGovernanca>(
+  pendentes: (origem = 'TODOS', query = '', limite = 50, status = 'PENDENTE', decision?: string, page = 0) =>
+    list<GovernanceItem>(
       `/governanca/pendentes?origem=${origem}&query=${encodeURIComponent(query)}&limite=${limite}` +
-      `&status=${status}${decision ? `&decision=${decision}` : ''}&pagina=${pagina}`
+      `&status=${status}${decision ? `&decision=` : ''}&pagina=${page}`
     ),
-  resumo: () => requisitar<ResumoGovernanca>('/governanca/resumo'),
-  estatisticas: () => requisitar<Estatisticas>('/governanca/estatisticas'),
-  fechamentos: (de?: string, ate?: string) =>
-    requisitar<Fechamentos>(
-      `/governanca/fechamentos${de ? `&de=${de}` : ''}${ate ? `&ate=${ate}` : ''}`.replace('&', '?')
+  summary: () => request<GovernanceSummary>('/governanca/resumo'),
+  statistics: () => request<Statistics>('/governanca/estatisticas'),
+  closings: (de?: string, ate?: string) =>
+    request<Closings>(
+      `/governanca/fechamentos${de ? `&de=` : ''}${ate ? `&ate=` : ''}`.replace('&', '?')
     ),
-  contarFila: (origem = 'TODOS', status = 'PENDENTE', decision?: string, query = '') =>
-    requisitar<{ total: number }>(
+  countQueue: (origem = 'TODOS', status = 'PENDENTE', decision?: string, query = '') =>
+    request<{ total: number }>(
       `/governanca/fila/contagem?origem=${origem}&status=${status}` +
-      `${decision ? `&decision=${decision}` : ''}&query=${encodeURIComponent(query)}`
+      `${decision ? `&decision=` : ''}&query=${encodeURIComponent(query)}`
     ),
-  revisarHistorico: (id: string, corpo: { revisadoPor: string; acao?: string; observacao?: string | null }) =>
-    requisitar<ItemGovernanca>(`/governanca/historico/${seg(id)}/revisar`, { method: 'POST', body: JSON.stringify(corpo) }),
-  reverterRevisao: (id: string, corpo: { revisadoPor: string; observacao?: string | null }) =>
-    requisitar<ItemGovernanca>(`/governanca/historico/${seg(id)}/reverter`, { method: 'POST', body: JSON.stringify(corpo) }),
-  aprovar: (id: string, corpo: { aprovadoPor: string; observacao?: string | null }) =>
-    requisitar<ItemGovernanca>(`/governanca/pendentes/${seg(id)}/aprovar`, { method: 'POST', body: JSON.stringify(corpo) }),
-  rejeitar: (id: string, corpo: { aprovadoPor: string; observacao?: string | null }) =>
-    requisitar<ItemGovernanca>(`/governanca/pendentes/${seg(id)}/rejeitar`, { method: 'POST', body: JSON.stringify(corpo) }),
-  /** a Governança escolhe um dos matches ignorados pelo usuário e o pedido segue por ele */
-  reutilizarNovo: (id: string, corpo: { escolhidoId: string; escolhidoTipo?: string | null; aprovadoPor: string; observacao?: string | null }) =>
-    requisitar<ItemGovernanca>(`/governanca/pendentes/${seg(id)}/reutilizar`, { method: 'POST', body: JSON.stringify(corpo) }),
+  reviewHistory: (id: string, body: { revisadoPor: string; acao?: string; observacao?: string | null }) =>
+    request<GovernanceItem>(`/governanca/historico/${encodePath(id)}/revisar`, { method: 'POST', body: JSON.stringify(body) }),
+  revertReview: (id: string, body: { revisadoPor: string; observacao?: string | null }) =>
+    request<GovernanceItem>(`/governanca/historico/${encodePath(id)}/reverter`, { method: 'POST', body: JSON.stringify(body) }),
+  approve: (id: string, body: { aprovadoPor: string; observacao?: string | null }) =>
+    request<GovernanceItem>(`/governanca/pendentes/${encodePath(id)}/aprovar`, { method: 'POST', body: JSON.stringify(body) }),
+  reject: (id: string, body: { aprovadoPor: string; observacao?: string | null }) =>
+    request<GovernanceItem>(`/governanca/pendentes/${encodePath(id)}/rejeitar`, { method: 'POST', body: JSON.stringify(body) }),
+  reuseCandidate: (id: string, body: { escolhidoId: string; escolhidoTipo?: string | null; aprovadoPor: string; observacao?: string | null }) =>
+    request<GovernanceItem>(`/governanca/pendentes/${encodePath(id)}/reutilizar`, { method: 'POST', body: JSON.stringify(body) }),
 
-  similaridade: (descricao: string, limite = 5, tipo: TipoComponente | string = 'CS') =>
-    requisitar<SimilaridadeResponse>(
-      `/itens/similaridade?descricao=${seg(descricao)}&limite=${limite}&tipo=${tipo}`
+  similarity: (descricao: string, limite = 5, tipo: TipoComponente | string = 'CS') =>
+    request<SimilarityResponse>(
+      `/itens/similaridade?descricao=${encodePath(descricao)}&limite=${limite}&tipo=${tipo}`
     ),
-  /** avalia uma lista de códigos e diz o que já está disponível e o que precisa ser criado */
-  similaridadeLote: (textos: string[], tipo: TipoComponente | string = 'CS', limite = 3) =>
-    requisitar<LoteSimilaridade>('/itens/similaridade/lote', {
+  similarityBatch: (textos: string[], tipo: TipoComponente | string = 'CS', limite = 3) =>
+    request<SimilarityBatch>('/itens/similaridade/lote', {
       method: 'POST',
       body: JSON.stringify({ textos, tipo, limite })
     }),
 
-  /** vinculação em massa: GS/CF/UM fixos + vários Códigos de Serviço de uma vez */
-  vincularLote: (corpo: {
+  linkBatch: (body: {
     gsId: string
     cfId: string
     umId: string
     itens: { csId?: string | null; texto?: string | null }[]
     usuarioCriacaoId?: string | null
   }, idempotencyKey?: string) =>
-    requisitar<ResultadoVinculacaoLote>('/codigos-completos/lote', {
+    request<BatchLinkResult>('/codigos-completos/lote', {
       method: 'POST',
-      body: JSON.stringify(corpo),
+      body: JSON.stringify(body),
       headers: idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}
     }),
 
-  eventos: (acao?: string) =>
-    lista<EventoAuditoria>(`/governanca/eventos${acao ? `?acao=${acao}` : ''}`),
+  events: (acao?: string) =>
+    list<AuditEvent>(`/governanca/eventos${acao ? `?acao=` : ''}`),
 
   matriz: (query = '', limite = 50) =>
-    lista<MatrizDePara>(`/matriz-de-para?query=${encodeURIComponent(query)}&limite=${limite}`)
+    list<MappingMatrix>(`/matriz-de-para?query=${encodeURIComponent(query)}&limite=${limite}`)
 }
 
-export type { CandidatoSimilar }
+export type { SimilarCandidate }

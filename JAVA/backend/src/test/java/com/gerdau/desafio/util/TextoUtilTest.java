@@ -12,37 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TextoUtilTest {
 
     @Test
-    void nucleoIgnoraSiglasPluralENumeracaoColada() {
-        assertEquals(TextoUtil.nucleo("teste"), TextoUtil.nucleo("teste1"));
-        assertEquals(TextoUtil.nucleo("teste"), TextoUtil.nucleo("SV - teste"));
-        assertEquals(TextoUtil.nucleo("teste"), TextoUtil.nucleo("TESTE"));
-        assertEquals(TextoUtil.nucleo("teste"), TextoUtil.nucleo("testes"));
-        assertEquals(TextoUtil.nucleo("servico teste"), TextoUtil.nucleo("teste servico"));
-        // palavras reais a mais mudam o núcleo — e deixam passar
-        assertFalse(TextoUtil.nucleo("teste").equals(TextoUtil.nucleo("Teste de algo")));
-        // medidas/códigos curtos com número são diferenças reais
-        assertFalse(TextoUtil.nucleo("Pintura m2").equals(TextoUtil.nucleo("Pintura m3")));
-        // números isolados também contam como diferença
-        assertFalse(TextoUtil.nucleo("Válvula 2").equals(TextoUtil.nucleo("Válvula 3")));
-    }
-
-    @Test
-    void saoEssencialmenteIguaisSoComNucleoPreenchido() {
-        assertTrue(TextoUtil.saoEssencialmenteIguais("SV - teste", "teste1"));
-        assertTrue(TextoUtil.saoEssencialmenteIguais("Teste!", "testes"));
-        assertFalse(TextoUtil.saoEssencialmenteIguais("Teste de algo", "teste"));
-        assertFalse(TextoUtil.saoEssencialmenteIguais("SV", "UN")); // núcleo vazio não vale
-    }
-
-    @Test
-    void nucleoColapsaLetrasRepetidas() {
-        assertEquals(TextoUtil.nucleo("telhados"), TextoUtil.nucleo("telhadosss"));
-        assertEquals(TextoUtil.nucleo("telhados"), TextoUtil.nucleo("telhadossss"));
-        assertEquals(TextoUtil.nucleo("telhado"), TextoUtil.nucleo("telhadoo"));
-        assertTrue(TextoUtil.saoEssencialmenteIguais("telhadosss", "TELHADO"));
-    }
-
-    @Test
     void palavrasSemNumerosTratamNumeroColadoEComEspacoIgual() {
         assertEquals(TextoUtil.palavrasDoNucleoSemNumeros("telhado 2"),
                 TextoUtil.palavrasDoNucleoSemNumeros("telhado2"));
@@ -50,6 +19,12 @@ class TextoUtilTest {
                 TextoUtil.palavrasDoNucleoSemNumeros("telhado 2"));
         assertEquals(TextoUtil.palavrasDoNucleoSemNumeros("Pintura m2"),
                 TextoUtil.palavrasDoNucleoSemNumeros("pinturas"));
+    }
+
+    @Test
+    void palavrasSemNumerosColapsamLetrasRepetidas() {
+        assertEquals(TextoUtil.palavrasDoNucleoSemNumeros("telhadosss"),
+                TextoUtil.palavrasDoNucleoSemNumeros("telhado"));
     }
 
     @Test

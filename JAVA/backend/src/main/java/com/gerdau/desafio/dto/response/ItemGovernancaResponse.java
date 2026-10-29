@@ -4,9 +4,9 @@ import java.util.List;
 
 public record ItemGovernancaResponse(
 
-        String origem,           
-        String id,               
-        String identificador,    
+        String origem,
+        String id,
+        String identificador,
         String descricao,
         String grupoServico,
         String fornecedor,

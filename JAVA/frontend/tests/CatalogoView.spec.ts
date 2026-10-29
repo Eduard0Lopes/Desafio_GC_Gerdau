@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
-import CatalogoView from '../src/views/CatalogoView.vue'
-import ComboboxBusca from '../src/components/ComboboxBusca.vue'
+import CatalogView from '../src/views/CatalogoView.vue'
+import SearchCombobox from '../src/components/ComboboxBusca.vue'
 import { toast } from '../src/services/toast'
 
 const GRUPOS = [
@@ -17,7 +17,7 @@ function mockFetch() {
   return vi.fn(async (url: string, init?: RequestInit) => {
     const rota = String(url)
     if (init?.method === 'DELETE' && rota.includes('/grupos-servico/civil')) {
-      // CIVIL tem vínculos: a exclusão precisa de transferência antes
+      
       return {
         ok: false,
         status: 409,
@@ -50,21 +50,21 @@ function mockFetch() {
       }
     }
     if (rota.includes('/catalogo/situacao')) {
-      const corpo = JSON.parse(String(init?.body ?? '{}'))
+      const body = JSON.parse(String(init?.body ?? '{}'))
       return {
         ok: true,
         status: 200,
-        json: async () => [{ id: 'civil', alterado: true, motivo: `Situacao ${corpo.situacao} aplicada.` }]
+        json: async () => [{ id: 'civil', alterado: true, motivo: `Situacao ${body.situacao} aplicada.` }]
       }
     }
     if (rota.includes('/catalogo/importacao')) {
-      const corpo = JSON.parse(String(init?.body ?? '{}'))
-      const itens: { nome?: string }[] = corpo.itens ?? []
+      const body = JSON.parse(String(init?.body ?? '{}'))
+      const itens: { nome?: string }[] = body.itens ?? []
       return {
         ok: true,
         status: 200,
         json: async () => ({
-          tipo: corpo.tipo,
+          tipo: body.tipo,
           total: itens.length,
           adicionados: itens.length ? 1 : 0,
           idsAdicionados: itens.length ? ['importado-1'] : [],
@@ -83,8 +83,8 @@ function mockFetch() {
   })
 }
 
-function montar(papel: string) {
-  return mount(CatalogoView, { props: { usuario: '403921', papel } })
+function montar(role: string) {
+  return mount(CatalogView, { props: { user: '403921', role } })
 }
 
 let fetchMock: ReturnType<typeof mockFetch>
@@ -93,7 +93,7 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
   beforeEach(() => {
     fetchMock = mockFetch()
     vi.stubGlobal('fetch', fetchMock)
-    toast.estado.itens.splice(0)
+    toast.state.itens.splice(0)
   })
 
   it('lista todos os itens com selo de status (inclusive os em aprovação)', async () => {
@@ -151,7 +151,7 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     await flushPromises()
 
     const caixas = wrapper.findAll('input[type="checkbox"]')
-    await caixas[3].setValue(true) // HIDRAULICA está desativada
+    await caixas[3].setValue(true) 
     await flushPromises()
 
     const botao = wrapper.findAll('button').find((b) => b.text().includes('Reativar selecionados'))
@@ -175,20 +175,20 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     await flushPromises()
     const textosBotoes = () => wrapper.findAll('button').map((b) => b.text())
 
-    expect(textosBotoes().some((t) => t.includes('Desativar selecionados'))).toBe(false)
-    expect(textosBotoes().some((t) => t.includes('Reativar selecionados'))).toBe(false)
+    expect(textosBotoes().some((notification) => notification.includes('Desativar selecionados'))).toBe(false)
+    expect(textosBotoes().some((notification) => notification.includes('Reativar selecionados'))).toBe(false)
 
     const caixas = wrapper.findAll('input[type="checkbox"]')
-    await caixas[1].setValue(true) // CIVIL está ativa
+    await caixas[1].setValue(true) 
     await flushPromises()
-    expect(textosBotoes().some((t) => t.includes('Desativar selecionados'))).toBe(true)
-    expect(textosBotoes().some((t) => t.includes('Reativar selecionados'))).toBe(false)
+    expect(textosBotoes().some((notification) => notification.includes('Desativar selecionados'))).toBe(true)
+    expect(textosBotoes().some((notification) => notification.includes('Reativar selecionados'))).toBe(false)
 
     await caixas[1].setValue(false)
-    await caixas[3].setValue(true) // HIDRAULICA está desativada
+    await caixas[3].setValue(true) 
     await flushPromises()
-    expect(textosBotoes().some((t) => t.includes('Desativar selecionados'))).toBe(false)
-    expect(textosBotoes().some((t) => t.includes('Reativar selecionados'))).toBe(true)
+    expect(textosBotoes().some((notification) => notification.includes('Desativar selecionados'))).toBe(false)
+    expect(textosBotoes().some((notification) => notification.includes('Reativar selecionados'))).toBe(true)
   })
 
   it('ordena por "Criado em" ao clicar no cabeçalho e no 3º clique volta à ordem normal', async () => {
@@ -201,8 +201,8 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     await thCriadoEm!.trigger('click')
     await flushPromises()
     let linhas = wrapper.findAll('tbody tr').map((tr) => tr.text())
-    expect(linhas[0]).toContain('ELETRICA') // 2026-03 (mais recentes primeiro)
-    expect(linhas[2]).toContain('CIVIL') // 2026-01
+    expect(linhas[0]).toContain('ELETRICA') 
+    expect(linhas[2]).toContain('CIVIL') 
 
     await thCriadoEm!.trigger('click')
     await flushPromises()
@@ -231,7 +231,7 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     expect(linhaNormal.classes()).not.toContain('linha-excecao')
     expect(linhaNormal.findAll('.badge-excecao').length).toBe(0)
 
-    // o catálogo explica o que é o !
+    
     expect(wrapper.text()).toContain('Caso especial')
     expect(wrapper.find('.legenda-excecao .badge-excecao').exists()).toBe(true)
   })
@@ -280,7 +280,7 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     const importacao = chamadas.find(([url]) => String(url).includes('/catalogo/importacao'))
     expect(importacao).toBeTruthy()
     expect(String(importacao![1]?.body)).toContain('novo grupo importado')
-    expect(toast.estado.itens.some((t) => t.tipo === 'sucesso' && t.mensagem.includes('adicionado'))).toBe(true)
+    expect(toast.state.itens.some((notification) => notification.tipo === 'success' && notification.message.includes('adicionado'))).toBe(true)
     expect(wrapper.text()).not.toContain('Qual tabela será alimentada?')
   })
 
@@ -305,8 +305,8 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     await flushPromises()
 
     expect(
-      toast.estado.itens.some(
-        (t) => t.tipo === 'sucesso' && t.mensagem.includes('1 novo(s) adicionado(s)') && t.mensagem.includes('5 já existiam')
+      toast.state.itens.some(
+        (notification) => notification.tipo === 'success' && notification.message.includes('1 novo(s) adicionado(s)') && notification.message.includes('5 já existiam')
       )
     ).toBe(true)
     expect(wrapper.text()).not.toContain('Qual tabela será alimentada?')
@@ -326,7 +326,7 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     await flushPromises()
 
     expect(
-      toast.estado.itens.some((t) => t.tipo === 'erro' && t.mensagem.includes('Grupo de Serviço'))
+      toast.state.itens.some((notification) => notification.tipo === 'error' && notification.message.includes('Grupo de Serviço'))
     ).toBe(true)
     expect(wrapper.text()).not.toContain('Só o que é novo entra')
     expect(wrapper.text()).toContain('Nada novo para importar')
@@ -357,7 +357,7 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     const desfazer = chamadas.find(([url]) => String(url).includes('/catalogo/exclusao-em-massa'))
     expect(desfazer).toBeTruthy()
     expect(String(desfazer![1]?.body)).toContain('importado-1')
-    expect(toast.estado.itens.some((t) => t.tipo === 'sucesso' && t.mensagem.includes('Importação desfeita'))).toBe(true)
+    expect(toast.state.itens.some((notification) => notification.tipo === 'success' && notification.message.includes('Importação desfeita'))).toBe(true)
   })
 
   it('busca entende plural e singular (eletricas ↔ eletrica, civis ↔ civil)', async () => {
@@ -379,17 +379,17 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     const wrapper = montar('USUARIO')
     await flushPromises()
 
-    const filtro = wrapper.get('.botao-filtro-excecao')
-    expect(filtro.text()).toContain('Casos especiais')
+    const filter = wrapper.get('.botao-filtro-excecao')
+    expect(filter.text()).toContain('Casos especiais')
 
-    await filtro.trigger('click')
+    await filter.trigger('click')
     await flushPromises()
     const linhas = wrapper.findAll('tbody tr')
     expect(linhas.length).toBe(1)
     expect(linhas[0].text()).toContain('ELETRICA')
-    expect(filtro.classes()).toContain('ativo')
+    expect(filter.classes()).toContain('ativo')
 
-    await filtro.trigger('click')
+    await filter.trigger('click')
     await flushPromises()
     expect(wrapper.findAll('tbody tr').length).toBe(3)
   })
@@ -410,7 +410,7 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     await confirmar.trigger('click')
     await flushPromises()
 
-    expect(toast.estado.itens.some((t) => t.mensagem.includes('Caso resolvido'))).toBe(true)
+    expect(toast.state.itens.some((notification) => notification.message.includes('Caso resolvido'))).toBe(true)
     expect(wrapper.findAll('tbody button.badge-excecao').length).toBe(0)
     expect(fetchMock.mock.calls.some(([u]) => String(u).includes('/catalogo/marcar-excecao'))).toBe(true)
   })
@@ -424,8 +424,8 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     await wrapper.get('tbody button.badge-excecao').trigger('click')
     await flushPromises()
 
-    const excluir = wrapper.findAll('.modal button').find((b) => b.text().includes('Excluir definitivamente'))!
-    await excluir.trigger('click')
+    const remove = wrapper.findAll('.modal button').find((b) => b.text().includes('Excluir definitivamente'))!
+    await remove.trigger('click')
     await flushPromises()
     expect(wrapper.text()).toContain('Excluir definitivamente?')
     expect(wrapper.text()).toContain('NÃO pode ser desfeita')
@@ -434,7 +434,7 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     await confirmar.trigger('click')
     await flushPromises()
 
-    expect(toast.estado.itens.some((t) => t.mensagem.includes('excluído definitivamente'))).toBe(true)
+    expect(toast.state.itens.some((notification) => notification.message.includes('excluído definitivamente'))).toBe(true)
     expect(
       fetchMock.mock.calls.some(([u, i]) => String(u).includes('/grupos-servico/') && (i as RequestInit)?.method === 'DELETE')
     ).toBe(true)
@@ -450,7 +450,7 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
 
     await wrapper.get('.modal textarea').setValue('Conferir se é duplicidade do item X')
     await marcar(wrapper)
-    expect(toast.estado.itens.some((t) => t.mensagem.includes('marcado com'))).toBe(true)
+    expect(toast.state.itens.some((notification) => notification.message.includes('marcado com'))).toBe(true)
     expect(
       fetchMock.mock.calls.some(([u, i]) =>
         String(u).includes('/catalogo/marcar-excecao') &&
@@ -480,7 +480,7 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
     const wrapper = montar('USUARIO')
     await flushPromises()
 
-    // marca CIVIL e pede a exclusão dele (o mock bloqueia CIVIL por vínculo)
+    
     await wrapper.get('tbody .btn-marcar-excecao').trigger('click')
     await wrapper.get('.modal textarea').setValue('testar transferencia')
     await marcar(wrapper)
@@ -493,7 +493,7 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
 
     expect(wrapper.text()).toContain('Transferir vínculos para excluir')
 
-    const cb = wrapper.findComponent(ComboboxBusca)
+    const cb = wrapper.findComponent(SearchCombobox)
     await cb.get('input').trigger('focus')
     await flushPromises()
     await cb.findAll('.cb-lista li')[1].trigger('mousedown')
@@ -508,7 +508,7 @@ describe('CatalogoView — leitura para todos, exclusão em massa só para ADMIN
       fetchMock.mock.calls.some(([u, i]) =>
         String(u).includes('/catalogo/transferir-vinculos') && (i as RequestInit)?.method === 'POST')
     ).toBe(true)
-    expect(toast.estado.itens.some((t) => t.mensagem.includes('excluído definitivamente'))).toBe(true)
+    expect(toast.state.itens.some((notification) => notification.message.includes('excluído definitivamente'))).toBe(true)
   })
 
   it('lista os itens alterados e excluídos na base (histórico)', async () => {

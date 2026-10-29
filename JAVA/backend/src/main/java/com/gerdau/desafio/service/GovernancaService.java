@@ -19,11 +19,11 @@ import com.gerdau.desafio.model.RegistroSimilar;
 import com.gerdau.desafio.model.StatusComponente;
 import com.gerdau.desafio.model.UnidadeMedida;
 import com.gerdau.desafio.repository.*;
+import com.gerdau.desafio.util.TextoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -68,7 +68,7 @@ public class GovernancaService {
         List<ItemGovernancaResponse> itens = new ArrayList<>();
         boolean incluiHistorico = origem == null || origem.isBlank()
                 || "TODOS".equalsIgnoreCase(origem) || "HISTORICO".equalsIgnoreCase(origem);
-        
+
         String decisao = (decision == null || decision.isBlank() || "TODOS".equalsIgnoreCase(decision))
                 ? null : decision.trim().toUpperCase();
         boolean incluiNovos = (origem == null || origem.isBlank()
@@ -82,7 +82,7 @@ public class GovernancaService {
         if (incluiHistorico) {
             List<MatrizDePara> matriz;
             if (query != null && !query.isBlank()) {
-                matriz = matrizDeParaRepository.buscarPorTexto(regex(query), PageRequest.of(0, limite)).stream()
+                matriz = matrizDeParaRepository.buscarPorTexto(TextoUtil.padraoBusca(query), PageRequest.of(0, limite)).stream()
                         .filter(m -> statusMatriz.equals(m.getStatusRevisao()))
                         .filter(m -> decisao == null || decisao.equals(m.getDecision()))
                         .limit(limite).toList();
@@ -137,14 +137,6 @@ public class GovernancaService {
         return grupos;
     }
 
-    /**
-     * Decide um item do histórico (base legada):
-     *   - MANTER  → aceita a possível repetição; se havia sinal de DUPLICIDADE/ALERTA,
-     *               vira caso especial: o (!) marca o item com o motivo registrado;
-     *   - EXCLUIR → "apagar do catálogo" de verdade: soft delete do Código de Serviço
-     *               (o registro histórico continua preservado).
-     * A ação é validada (só MANTER/EXCLUIR) e só decide itens ainda pendentes.
-     */
     public ItemGovernancaResponse revisarHistorico(String id, RevisaoMatrizRequest request) {
         MatrizDePara doc = matrizDeParaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Registro da matriz", id));
@@ -167,13 +159,11 @@ public class GovernancaService {
         doc.setObservacaoRevisao((request.acao() == null ? "" : request.acao() + " — ") + motivo);
         MatrizDePara salvo = matrizDeParaRepository.save(doc);
 
-        // aceitar uma possível repetição é uma exceção aprovada — o item fica marcado
         boolean aceitouRepeticao = "MANTER".equalsIgnoreCase(request.acao())
                 && ("DUPLICIDADE".equals(doc.getDecision()) || "ALERTA".equals(doc.getDecision()));
         if (aceitouRepeticao) {
             catalogoService.marcarCasoIsolado(doc.getNewId(), motivo);
         }
-        // "Apagar do catálogo" precisa tirar o item da lista ativa (o registro fica no histórico)
         if ("EXCLUIR".equalsIgnoreCase(request.acao())) {
             catalogoService.definirStatusServico(doc.getNewId(), StatusComponente.DESATIVADO);
         }
@@ -187,14 +177,6 @@ public class GovernancaService {
         return paraItemHistorico(salvo);
     }
 
-    /**
-     * Aprova um cadastro novo que está pendente de validação.
-     *
-     * Regra do badge (!) — exceção aprovada: quando a similaridade sinalizou o cadastro
-     * (ALERTAR/REVISAR), a aprovação é uma EXCEÇÃO consciente e, por isso:
-     *   - exige justificativa escrita (motivo);
-     *   - marca o Código de Serviço com o (!), que passa a perseguir o item em toda a tela.
-     */
     public ItemGovernancaResponse aprovarNovo(String id, GovernancaDecisaoRequest request) {
         CodigoCompleto model = exigirPendenteNovo(id);
 
@@ -229,7 +211,6 @@ public class GovernancaService {
         model.setAprovadoPor(request.aprovadoPor());
         model.setObservacaoAprovacao(request.observacao());
         model.setAprovadoEm(Instant.now());
-        // rejeitado pode ser corrigido e reenviado — a Idempotency-Key é liberada
         model.setIdempotencyKey(null);
         model.setIdempotencyHash(null);
         CodigoCompleto salvo = codigoCompletoRepository.save(model);
@@ -240,16 +221,6 @@ public class GovernancaService {
         return paraItemNovo(salvo);
     }
 
-    /**
-     * Decide um pedido novo reutilizando um dos matches que o solicitante NÃO escolheu
-     * (o radio do bloqueio de duplicidade que foi ignorado ao enviar para a Governança).
-     *
-     * "A Governança escolhe e segue": em vez de aprovar/rejeitar às cegas, quem decide
-     * pode apontar o código existente certo e o pedido continua por ele:
-     *   - a composição passa a referenciar o código existente escolhido;
-     *   - o componente que nasceu com o pedido e ficou sem uso sai de cena (não vira órfão);
-     *   - o pedido é aprovado como REUTILIZAÇÃO — o catálogo não ganha duplicata.
-     */
     public ItemGovernancaResponse reutilizarNovo(String id, GovernancaReutilizarRequest request) {
         CodigoCompleto model = exigirPendenteNovo(id);
         String escolhidoId = request.escolhidoId() == null ? "" : request.escolhidoId().trim();
@@ -265,14 +236,8 @@ public class GovernancaService {
                 ? escolhido.getTipo()
                 : request.escolhidoTipo().trim().toUpperCase(java.util.Locale.ROOT);
 
-        // o componente que nasceu com o pedido (e não serve mais) não pode ficar órfão
-        boolean gsEmUso = codigoCompletoRepository.contarOutrosGs(model.getGsId(), model.getId()) > 0;
-        boolean cfEmUso = codigoCompletoRepository.contarOutrosCf(model.getCfId(), model.getId()) > 0;
-        boolean csEmUso = codigoCompletoRepository.contarOutrosCs(model.getCsId(), model.getId()) > 0;
-        boolean umEmUso = codigoCompletoRepository.contarOutrosUm(model.getUmId(), model.getId()) > 0;
-        catalogoService.desativarPendentesNaoUsados(model, gsEmUso, cfEmUso, csEmUso, umEmUso);
+        catalogoService.desativarPendentesNaoUsados(model);
 
-        // a composição passa a apontar para o código existente escolhido
         String substituido = switch (tipo) {
             case "GS" -> {
                 String antes = model.getGsId();
@@ -295,9 +260,8 @@ public class GovernancaService {
                 yield antes;
             }
         };
-        PreviewService.ComponentesResolvidos resolvidos = previewService.resolver(new PreviewRequest(
-                model.getGsId(), null, model.getCfId(), null, null,
-                model.getCsId(), null, model.getUmId(), null, null), false);
+        PreviewService.ComponentesResolvidos resolvidos = previewService.resolver(PreviewRequest.deComposicao(
+                model.getGsId(), model.getCfId(), model.getCsId(), model.getUmId()), false);
         model.setIdCompleto(PreviewService.montarIdCompleto(resolvidos));
         model.setDescricaoSnapshot(previewService.montarSnapshot(resolvidos));
 
@@ -453,7 +417,7 @@ public class GovernancaService {
     }
 
     public long contarFila(String origem, String status, String decision, String query) {
-        
+
         String statusMatriz = (status == null || status.isBlank() || "TODOS".equalsIgnoreCase(status))
                 ? MatrizDePara.STATUS_PENDENTE : status.trim().toUpperCase();
         String decisao = (decision == null || decision.isBlank() || "TODOS".equalsIgnoreCase(decision))
@@ -465,7 +429,7 @@ public class GovernancaService {
             criterios = criterios.and("decision").is(decisao);
         }
         if (query != null && !query.isBlank()) {
-            String expr = regex(query);
+            String expr = TextoUtil.padraoBusca(query);
             criterios = criterios.andOperator(new org.springframework.data.mongodb.core.query.Criteria().orOperator(
                     org.springframework.data.mongodb.core.query.Criteria.where("newId").regex(expr),
                     org.springframework.data.mongodb.core.query.Criteria.where("descricaoCanonica").regex(expr),
@@ -668,9 +632,4 @@ public class GovernancaService {
                 casoIsolado,
                 motivoCasoIsolado);
     }
-
-    private static String regex(String termo) {
-        return com.gerdau.desafio.util.TextoUtil.padraoBusca(termo);
-    }
 }
-

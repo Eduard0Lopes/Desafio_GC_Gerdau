@@ -1,61 +1,61 @@
 import { describe, expect, it } from 'vitest'
-import { casaComTermo, normalizar, singularizar, variantesPalavra } from '../src/services/texto'
+import { matchesTerm, normalize, singularize, wordVariants } from '../src/services/texto'
 
 describe('texto — normalização e plural/singular', () => {
   it('normaliza acentos e caixa', () => {
-    expect(normalizar('Soluções Químicas')).toBe('solucoes quimicas')
-    expect(normalizar('MANUTENÇÃO')).toBe('manutencao')
+    expect(normalize('Soluções Químicas')).toBe('solucoes quimicas')
+    expect(normalize('MANUTENÇÃO')).toBe('manutencao')
   })
 
   it('singulariza plurais comuns do português', () => {
-    expect(singularizar('telhados')).toBe('telhado')
-    expect(singularizar('telhado')).toBe('telhado')
-    expect(singularizar('caixas')).toBe('caixa')
-    expect(singularizar('solucoes')).toBe('solucao')
-    expect(singularizar('acoes')).toBe('acao')
-    expect(singularizar('bens')).toBe('bem')
-    expect(singularizar('jardins')).toBe('jardim')
-    expect(singularizar('luzes')).toBe('luz')
-    expect(singularizar('papeis')).toBe('papel')
-    expect(singularizar('materiais')).toBe('material')
-    expect(singularizar('civis')).toBe('civil')
-    expect(singularizar('tratores')).toBe('trator')
+    expect(singularize('telhados')).toBe('telhado')
+    expect(singularize('telhado')).toBe('telhado')
+    expect(singularize('caixas')).toBe('caixa')
+    expect(singularize('solucoes')).toBe('solucao')
+    expect(singularize('acoes')).toBe('acao')
+    expect(singularize('bens')).toBe('bem')
+    expect(singularize('jardins')).toBe('jardim')
+    expect(singularize('luzes')).toBe('luz')
+    expect(singularize('papeis')).toBe('papel')
+    expect(singularize('materiais')).toBe('material')
+    expect(singularize('civis')).toBe('civil')
+    expect(singularize('tratores')).toBe('trator')
   })
 
   it('não mexe em códigos, números ou palavras curtas', () => {
-    expect(singularizar('4521')).toBe('4521')
-    expect(singularizar('1/2')).toBe('1/2')
-    expect(singularizar('sv')).toBe('sv')
-    expect(singularizar('eixo')).toBe('eixo')
+    expect(singularize('4521')).toBe('4521')
+    expect(singularize('1/2')).toBe('1/2')
+    expect(singularize('sv')).toBe('sv')
+    expect(singularize('eixo')).toBe('eixo')
   })
 
   it('gera variantes com a forma digitada, o singular e os plurais', () => {
-    const formas = variantesPalavra('telhados')
+    const formas = wordVariants('telhados')
     expect(formas).toContain('telhados')
     expect(formas).toContain('telhado')
-    expect(variantesPalavra('telhado')).toContain('telhados')
-    expect(variantesPalavra('Soluções')).toContain('solucao')
-    expect(variantesPalavra('Soluções')).toContain('solucoes')
+    expect(wordVariants('telhado')).toContain('telhados')
+    expect(wordVariants('Soluções')).toContain('solucao')
+    expect(wordVariants('Soluções')).toContain('solucoes')
   })
 
   it('casa plural ↔ singular nos dois sentidos', () => {
-    expect(casaComTermo('cobertura de telhado galvanizado', 'telhados')).toBe(true)
-    expect(casaComTermo('telhados metalicos', 'telhado')).toBe(true)
-    expect(casaComTermo('registro de solucao quimica', 'solucoes')).toBe(true)
-    expect(casaComTermo('solucoes industriais', 'solucao')).toBe(true)
-    expect(casaComTermo('obras civis', 'civil')).toBe(true)
-    expect(casaComTermo('pintura predial', 'telhados')).toBe(false)
+    expect(matchesTerm('cobertura de telhado galvanizado', 'telhados')).toBe(true)
+    expect(matchesTerm('telhados metalicos', 'telhado')).toBe(true)
+    expect(matchesTerm('registro de solucao quimica', 'solucoes')).toBe(true)
+    expect(matchesTerm('solucoes industriais', 'solucao')).toBe(true)
+    expect(matchesTerm('obras civis', 'civil')).toBe(true)
+    expect(matchesTerm('pintura predial', 'telhados')).toBe(false)
   })
 
   it('continua entendendo acentos ausentes e várias palavras em qualquer ordem', () => {
-    expect(casaComTermo('servico de manutenção mecânica', 'manutencao mecanica')).toBe(true)
-    expect(casaComTermo('telhado metalico galvanizado', 'telhados galvanizados')).toBe(true)
-    expect(casaComTermo('metalico de telhado', 'telhado metalico')).toBe(true)
-    expect(casaComTermo('telhado pintado', 'telhado metalico')).toBe(false)
+    expect(matchesTerm('servico de manutenção mecânica', 'manutencao mecanica')).toBe(true)
+    expect(matchesTerm('telhado metalico galvanizado', 'telhados galvanizados')).toBe(true)
+    expect(matchesTerm('metalico de telhado', 'telhado metalico')).toBe(true)
+    expect(matchesTerm('telhado pintado', 'telhado metalico')).toBe(false)
   })
 
   it('códigos continuam casando de forma literal', () => {
-    expect(casaComTermo('sv eletroduto pvc 1/2', '1/2')).toBe(true)
-    expect(casaComTermo('sv eletroduto pvc 3/4', '1/2')).toBe(false)
+    expect(matchesTerm('sv eletroduto pvc 1/2', '1/2')).toBe(true)
+    expect(matchesTerm('sv eletroduto pvc 3/4', '1/2')).toBe(false)
   })
 })

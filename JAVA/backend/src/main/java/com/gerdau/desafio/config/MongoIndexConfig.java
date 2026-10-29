@@ -37,8 +37,6 @@ public class MongoIndexConfig {
             log.info("[MONGO] Verificando índices (seção 14.3)...");
 
             IndexOperations idxCompletos = mongoTemplate.indexOps(CodigoCompleto.class);
-            // vínculos repetidos são permitidos (a composição pode ser usada quantas vezes
-            // forem necessárias): o índice antigo de idCompleto era UNIQUE e precisa sair
             try {
                 idxCompletos.dropIndex("idCompleto_1");
                 log.info("[MONGO] Índice único 'idCompleto_1' removido (vínculos repetidos permitidos).");

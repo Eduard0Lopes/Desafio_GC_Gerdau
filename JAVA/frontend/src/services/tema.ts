@@ -1,35 +1,33 @@
-
-
 import { reactive } from 'vue'
 
-export type Tema = 'claro' | 'escuro'
+export type Theme = 'claro' | 'escuro'
 
-const estado = reactive<{ tema: Tema }>({
-  tema: (localStorage.getItem('tema') as Tema) || 'claro'
+const state = reactive<{ theme: Theme }>({
+  theme: (localStorage.getItem('theme') as Theme) || 'claro'
 })
 
-function aplicar(): void {
-  document.documentElement.setAttribute('data-tema', estado.tema)
-  localStorage.setItem('tema', estado.tema)
+function apply(): void {
+  document.documentElement.setAttribute('data-tema', state.theme)
+  localStorage.setItem('theme', state.theme)
 }
 
-function alternar(): void {
-  estado.tema = estado.tema === 'claro' ? 'escuro' : 'claro'
-  aplicar()
+function toggle(): void {
+  state.theme = state.theme === 'claro' ? 'escuro' : 'claro'
+  apply()
 }
 
-function cor(nome: string, padrao: string): string {
+function color(nome: string, padrao: string): string {
   try {
-    const valor = getComputedStyle(document.documentElement).getPropertyValue(nome).trim()
-    return valor || padrao
+    const value = getComputedStyle(document.documentElement).getPropertyValue(nome).trim()
+    return value || padrao
   } catch {
     return padrao
   }
 }
 
-export const tema = {
-  estado,
-  alternar,
-  aplicar,
-  cor
+export const theme = {
+  state,
+  toggle,
+  apply,
+  color
 }

@@ -29,12 +29,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Vinculação em massa (feedback Gerdau): GS/CF/UM fixos + vários Códigos de
- * Serviço marcados com checkbox. Cada linha segue as regras de negócio:
- * reutiliza o disponível, cria o novo e manda para a Governança o que tem
- * similaridade alertada. Uma linha que falha não derruba as demais.
- */
 class VinculacaoLoteTest {
 
     private CodigoCompletoService codigoCompletoService;
@@ -195,7 +189,6 @@ class VinculacaoLoteTest {
                 new ItemVinculacaoLote("CS-EXIST", null),
                 new ItemVinculacaoLote("CS-EXIST", null));
 
-        // cada ocorrência vira um vínculo próprio — nada é barrado por repetição
         assertEquals(2, resposta.criados());
         assertEquals(2, resposta.reutilizados());
         assertEquals(4, resposta.vinculados());

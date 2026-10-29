@@ -1,7 +1,3 @@
-
-
-
-
 :root {
   --azul: #005eb8;
   --azul-escuro: #00205b;
@@ -31,12 +27,7 @@
   --barra-4: #4d9be6;
 }
 
-
-
-
 html[data-tema='escuro'] {
-  /* Paleta Gerdau em azul profundo: o fundo nasce do azul-marinho da marca (#00205b),
-     com os acentos no azul Gerdau (#005eb8) e no amarelo Gerdau (#ffc72c). */
   --azul: #4fa3e8;
   --azul-escuro: #9cc8f2;
   --azul-medio: #3b8cd4;
@@ -55,7 +46,7 @@ html[data-tema='escuro'] {
   --vermelho-fundo: rgba(240, 113, 103, 0.14);
   --amarelo-alerta: #ffd45e;
   --sombra: 0 6px 22px rgba(1, 12, 32, 0.45);
-  
+
   --botao-secundario-bg: #0f2f5e;
   --botao-secundario-texto: #e8f1fb;
   --botao-secundario-borda: #2a5c97;
@@ -98,7 +89,6 @@ html, body {
 #app { min-height: 100vh; display: flex; flex-direction: column; }
 a { color: inherit; text-decoration: none; }
 
-
 .barra-sistema {
   background: var(--azul-escuro);
   border-bottom: 4px solid var(--amarelo);
@@ -131,7 +121,6 @@ a { color: inherit; text-decoration: none; }
   color: var(--texto-forte); background: #ffffff; border-color: #ffffff; font-weight: 800;
 }
 
-
 .area { flex: 1; width: 100%; max-width: 1240px; margin: 0 auto; padding: 30px 26px 64px; }
 
 .grade-seletores {
@@ -154,7 +143,6 @@ a { color: inherit; text-decoration: none; }
   border-top: 3px solid var(--azul);
 }
 
-
 .grade-graficos {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
   max-width: 1180px; margin: 22px auto 0;
@@ -173,7 +161,6 @@ a { color: inherit; text-decoration: none; }
   .grade-graficos .painel { height: auto; min-height: 420px; }
 }
 
-
 * { scrollbar-width: thin; scrollbar-color: var(--borda) transparent; }
 ::-webkit-scrollbar { width: 9px; height: 9px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -185,7 +172,6 @@ a { color: inherit; text-decoration: none; }
 .painel-rotulo {
   display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: var(--azul-escuro);
 }
-
 
 .combobox { position: relative; }
 .cb-campo {
@@ -244,7 +230,6 @@ a { color: inherit; text-decoration: none; }
 }
 .cb-vazio { color: var(--texto-suave); cursor: default !important; justify-content: center; font-size: 0.83rem; }
 
-
 .botao {
   border: none; border-radius: 9px; padding: 11px 22px; font-size: 0.93rem;
   font-weight: 700; cursor: pointer; transition: filter 0.15s, transform 0.05s;
@@ -269,7 +254,6 @@ a { color: inherit; text-decoration: none; }
 .botao-vermelho:hover:not(:disabled) { filter: brightness(1.08); }
 .linha-botoes { display: flex; gap: 14px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
 
-
 .cartao-central {
   max-width: 640px; margin: 26px auto; background: var(--cartao);
   border: 1px solid var(--borda); border-radius: 16px; padding: 34px 38px; box-shadow: var(--sombra);
@@ -292,7 +276,6 @@ a { color: inherit; text-decoration: none; }
 }
 .contador-sap.estourado { background: var(--vermelho); color: #fff; }
 
-
 .modal-fundo {
   position: fixed; inset: 0; background: rgba(0, 32, 91, 0.45);
   display: grid; place-items: center; z-index: 100; padding: 22px;
@@ -309,7 +292,6 @@ a { color: inherit; text-decoration: none; }
   padding: 14px 18px; font-size: 0.92rem; line-height: 1.55; margin-bottom: 20px;
 }
 .aviso-amarelo { background: var(--amarelo-fundo); border: 1px solid var(--amarelo); color: var(--amarelo-alerta); }
-/* azul-escuro no claro (azul bem escuro) e azul-escuro claro no escuro: legível nos dois temas */
 .aviso-azul { background: var(--azul-claro); border: 1px solid var(--azul); color: var(--azul-escuro); }
 .aviso-verde { background: var(--verde-fundo); border: 1px solid var(--verde); color: var(--verde); }
 .aviso .icone { font-size: 1.15rem; line-height: 1.3; }
@@ -321,7 +303,6 @@ a { color: inherit; text-decoration: none; }
 }
 .match { margin-left: auto; color: var(--verde); font-weight: 800; }
 .match.alerta { color: var(--amarelo-alerta); }
-
 
 .tabela { width: 100%; border-collapse: collapse; font-size: 0.89rem; }
 .tabela th {
@@ -337,7 +318,6 @@ textarea {
 }
 textarea:focus { border-color: var(--azul); }
 
-
 .badge {
   display: inline-flex; align-items: center; gap: 5px; padding: 3px 11px;
   border-radius: 999px; font-size: 0.76rem; font-weight: 800;
@@ -345,14 +325,6 @@ textarea:focus { border-color: var(--azul); }
 .badge-permitir { background: var(--verde-fundo); color: var(--verde); border: 1px solid var(--verde); }
 .badge-alertar { background: var(--amarelo-fundo); color: var(--amarelo-alerta); border: 1px solid var(--amarelo); }
 .badge-revisar { background: var(--vermelho-fundo); color: var(--vermelho); border: 1px solid var(--vermelho); }
-/* ============================================================================
-   MODO APRESENTAÇÃO — fora da tela, mas mantidos no código:
-   o badge "(!)", o botão de marcar manualmente, o filtro "Casos especiais",
-   a legenda explicativa, o "📋 Alterações" e o realce das linhas marcadas.
-   Nada é apagado — só não aparece.
-   Para REEXIBIR qualquer um: troque `display: none` por `display: inline-flex`
-   (ou remova o item do seletor) — e, no caso do realce, remova a neutralização.
-   ========================================================================== */
 .badge-excecao,
 .btn-marcar-excecao,
 .botao-filtro-excecao,
@@ -365,13 +337,6 @@ textarea:focus { border-color: var(--azul); }
   box-shadow: none !important;
 }
 
-
-/* ============================================================================
-   CASOS ESPECIAIS (badge "(!)")
-   - .badge-excecao      → o círculo amarelo com "!" (hover mostra o motivo);
-   - .btn-marcar-excecao → o "!" tracejado para marcar um item manualmente;
-   - .botao-filtro-excecao → filtro "Casos especiais" e o atalho "📋 Alterações".
-   ========================================================================== */
 .badge-excecao {
   display: inline-flex; align-items: center; justify-content: center;
   width: 20px; height: 20px; padding: 0;
@@ -382,8 +347,6 @@ textarea:focus { border-color: var(--azul); }
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 }
 
-
-/* barras de busca: campo com botão (✕) de limpar */
 .campo-busca-wrap {
   position: relative;
   display: flex;
@@ -419,7 +382,6 @@ textarea:focus { border-color: var(--azul); }
   color: var(--vermelho);
 }
 
-
 .indicadores {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
   gap: 16px; margin-bottom: 26px;
@@ -435,13 +397,11 @@ textarea:focus { border-color: var(--azul); }
 }
 .indicador .valor { font-size: 1.75rem; font-weight: 800; font-variant-numeric: tabular-nums; margin-top: 4px; }
 
-
 .grafico-area { display: flex; gap: 26px; align-items: center; flex-wrap: wrap; }
 .grafico-legenda { display: flex; flex-direction: column; gap: 8px; }
 .grafico-legenda .item { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; }
 .grafico-legenda .cor { width: 13px; height: 13px; border-radius: 4px; }
 .grafico-legenda .valor { margin-left: auto; font-weight: 700; font-variant-numeric: tabular-nums; }
-
 
 .linha {
   display: flex;
@@ -465,7 +425,6 @@ textarea:focus { border-color: var(--azul); }
   background: var(--vermelho-fundo); border: 1px solid var(--vermelho);
   color: var(--vermelho); border-radius: 10px; padding: 14px 18px; margin-bottom: 22px; font-size: 0.92rem;
 }
-
 
 .guia {
   margin-top: 96px;
@@ -502,7 +461,6 @@ textarea:focus { border-color: var(--azul); }
   border-radius: 8px;
 }
 
-
 .paginacao {
   display: flex;
   align-items: center;
@@ -533,7 +491,6 @@ textarea:focus { border-color: var(--azul); }
   cursor: not-allowed;
 }
 
-
 .justificativa-destaque {
   background: var(--azul-claro);
   border-left: 4px solid var(--azul);
@@ -561,7 +518,6 @@ textarea:focus { border-color: var(--azul); }
   color: var(--texto-suave);
 }
 
-
 .barra-tempo {
   height: 6px;
   background: var(--fundo);
@@ -576,7 +532,6 @@ textarea:focus { border-color: var(--azul); }
   transition: width 0.16s linear;
 }
 
-
 .campo-data {
   background: var(--campo);
   border: 1px solid var(--borda);
@@ -586,13 +541,6 @@ textarea:focus { border-color: var(--azul); }
   font-size: 0.85rem;
 }
 
-/* ============================================================================
-   APOIO DA VINCULAÇÃO EM MASSA
-   Indicador de "processando" e ação discreta dentro de listas.
-   Tudo usa as variáveis do tema — funciona igual no claro e no escuro.
-   ========================================================================== */
-
-/* pequeno indicador de "processando" */
 .girando {
   width: 14px; height: 14px; display: inline-block;
   border-radius: 50%;
@@ -603,7 +551,6 @@ textarea:focus { border-color: var(--azul); }
 .girando-azul { color: var(--azul); }
 @keyframes girar { to { transform: rotate(360deg); } }
 
-/* ação discreta dentro de listas (marcar todos, remover todos…) */
 .link-acao {
   background: none; border: none; padding: 0;
   color: var(--azul); font-size: 0.8rem; font-weight: 700;
@@ -611,4 +558,3 @@ textarea:focus { border-color: var(--azul); }
 }
 .link-acao:hover:not(:disabled) { color: var(--azul-medio); }
 .link-acao:disabled { opacity: 0.45; cursor: not-allowed; text-decoration: none; }
-

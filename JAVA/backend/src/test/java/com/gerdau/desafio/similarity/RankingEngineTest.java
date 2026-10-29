@@ -23,7 +23,6 @@ class RankingEngineTest {
         for (String variante : List.of("telado", "telhadoss", "TELHADO!")) {
             List<CandidatoSimilarResponse> r = RankingEngine.ranquear(variante, itens, 5, 0.30);
             assertEquals(1, r.size(), variante);
-            // alerta (>= 0.70), sem virar duplicidade automática (< 1.0)
             assertTrue(r.get(0).score() >= 0.70, variante + ": " + r.get(0).score());
             assertTrue(r.get(0).score() < 1.0, variante);
             assertTrue(r.get(0).motivo().contains("palavra"), variante);
@@ -66,7 +65,6 @@ class RankingEngineTest {
 
     @Test
     void medidasDiferentesNaoViramDuplicidadeComOuSemEspaco() {
-        // "telhado 2" e "telhado2" contra "telhado 3" seguem a regra de medidas
         List<CatalogoItem> itens = List.of(
                 RankingEngine.prepararItem("CS-1", null, List.of(), "telhado 3", null));
         for (String variante : List.of("telhado 2", "telhado2")) {
@@ -123,7 +121,6 @@ class RankingEngineTest {
         List<CatalogoItem> itens = List.of(
                 RankingEngine.prepararItem("CS-1", null, List.of(), "teste", null));
         List<CandidatoSimilarResponse> r = RankingEngine.ranquear("Teste de algo", itens, 5, 0.30);
-        // pode aparecer como sugestão, mas nunca como duplicidade (score < 0.88)
         for (CandidatoSimilarResponse c : r) {
             assertTrue(c.score() < 0.88, c.motivo());
         }
@@ -133,7 +130,7 @@ class RankingEngineTest {
     void descricaoIgualAposNormalizacaoTemScoreUmEEmpateDesempatadoPeloId() {
         List<CandidatoSimilarResponse> r = RankingEngine.ranquear("Manutenção Mecânica Normal!", catalogo, 5, 0.30);
 
-        assertEquals("CS-000001", r.get(0).id()); 
+        assertEquals("CS-000001", r.get(0).id());
         assertEquals("CS-000003", r.get(1).id());
         assertEquals(1.0, r.get(0).score());
         assertEquals(1, r.get(0).posicao());
@@ -176,7 +173,7 @@ class RankingEngineTest {
 
     @Test
     void chaveDeComparacaoERenormalizada() {
-        
+
         CatalogoItem item = RankingEngine.prepararItem("GS-01", null, null, "Eletromecânica", "eletromecânica");
         List<CandidatoSimilarResponse> r = RankingEngine.ranquear("Eletromecanica", List.of(item), 5, 0.30);
         assertEquals(1.0, r.get(0).score());

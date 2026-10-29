@@ -13,9 +13,9 @@ import java.time.Instant;
 public class MatrizDePara {
 
     public static final String STATUS_PENDENTE = "PENDENTE";
-    
+
     public static final String STATUS_REVISADO = "REVISADO";
-    
+
     public static final String STATUS_SEM_PENDENCIA = "SEM_PENDENCIA";
 
     @Id

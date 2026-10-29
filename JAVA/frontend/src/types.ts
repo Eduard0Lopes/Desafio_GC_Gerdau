@@ -1,6 +1,6 @@
+export type Item = Record<string, unknown>
 
-
-export interface GrupoServico {
+export interface ServiceGroup {
   id: string
   nome: string
   nomeNormalizado: string
@@ -10,7 +10,7 @@ export interface GrupoServico {
   criadoPor?: string | null
 }
 
-export interface CodigoFornecedor {
+export interface SupplierCode {
   id: string
   codigoFornecedorSAP: number | null
   nome: string
@@ -21,7 +21,7 @@ export interface CodigoFornecedor {
   criadoPor?: string | null
 }
 
-export interface CodigoServico {
+export interface ServiceCode {
   id: string
   descricao: string
   descricaoNormalizada: string
@@ -35,7 +35,7 @@ export interface CodigoServico {
   motivoCasoIsolado?: string | null
 }
 
-export interface UnidadeMedida {
+export interface UnitOfMeasure {
   id: string
   sigla: string
   nome: string
@@ -46,7 +46,7 @@ export interface UnidadeMedida {
   criadoPor?: string | null
 }
 
-export interface CandidatoSimilar {
+export interface SimilarCandidate {
   posicao: number
   id: string
   codigoOriginal: string | null
@@ -58,12 +58,10 @@ export interface CandidatoSimilar {
   motivo: string
   casoIsolado?: boolean
   motivoCasoIsolado?: string | null
-  /** componente do match: CS, GS, CF ou UM (ausente = CS) */
   tipo?: string | null
 }
 
-/** Linha da criação em massa — classificacao: DISPONIVEL | CRIAR | BLOQUEADA */
-export interface ItemLote {
+export interface BatchItem {
   linha: number
   texto: string
   classificacao: 'DISPONIVEL' | 'CRIAR' | 'BLOQUEADA'
@@ -71,25 +69,20 @@ export interface ItemLote {
   motivo: string
   decisao: string | null
   melhorScore: number
-  similar: CandidatoSimilar | null
+  similar: SimilarCandidate | null
 }
 
-/** Resumo da criação em massa: "há X disponíveis, porém Y precisam ser criados" */
-export interface LoteSimilaridade {
+export interface SimilarityBatch {
   tipo: string
   total: number
-  disponiveis: number
-  aCriar: number
+  available: number
+  toCreate: number
   bloqueadas: number
-  itens: ItemLote[]
+  itens: BatchItem[]
 }
 
-/**
- * Código de Serviço escolhido na vinculação em massa (checkbox).
- * csId presente = já existe no catálogo (reutilizado); ausente = precisa ser criado.
- */
-export interface ItemCsMassa {
-  chave: string
+export interface BulkCodeItem {
+  key: string
   texto: string
   csId: string | null
   classificacao: 'DISPONIVEL' | 'CRIAR'
@@ -98,11 +91,10 @@ export interface ItemCsMassa {
   match: { id: string; descricao: string; score: number } | null
 }
 
-export interface ItemVinculacaoLote {
+export interface BatchLinkItem {
   linha: number
   texto: string
   classificacao: 'DISPONIVEL' | 'CRIAR' | 'BLOQUEADA' | 'FALHA'
-  /** mesma régua do vínculo único: PERMITIR | ALERTAR | REVISAR (null = não avaliado) */
   decisao: string | null
   motivo: string
   csId: string | null
@@ -110,16 +102,16 @@ export interface ItemVinculacaoLote {
   requisicaoRepetida: boolean
 }
 
-export interface ResultadoVinculacaoLote {
+export interface BatchLinkResult {
   total: number
   reutilizados: number
   criados: number
   vinculados: number
   aguardandoValidacao: number
-  itens: ItemVinculacaoLote[]
+  itens: BatchLinkItem[]
 }
 
-export interface SimilaridadeResponse {
+export interface SimilarityResponse {
   descricao: string
   descricaoNormalizada: string
   quantidadeCaracteres: number
@@ -129,16 +121,16 @@ export interface SimilaridadeResponse {
   acaoRecomendada: string
   limiares: Record<string, number>
   totalItensAvaliados: number
-  candidatos: CandidatoSimilar[]
+  candidatos: SimilarCandidate[]
 }
 
-export interface ComponentePreview {
+export interface ComponentPreview {
   id: string
   nome: string
   criadoNovo: boolean
 }
 
-export interface AlertaComponente {
+export interface ComponentAlert {
   tipo: string
   descricaoInformada: string
   itemSimilarId: string
@@ -152,10 +144,10 @@ export interface AlertaComponente {
 
 export interface PreviewResponse {
   idCompleto: string
-  grupoServico: ComponentePreview
-  codigoFornecedor: ComponentePreview
-  codigoServico: ComponentePreview
-  unidadeMedida: ComponentePreview
+  grupoServico: ComponentPreview
+  codigoFornecedor: ComponentPreview
+  codigoServico: ComponentPreview
+  unidadeMedida: ComponentPreview
   descricaoSnapshot: string
   quantidadeCaracteres: number
   excedeLimiteSap: boolean
@@ -165,11 +157,11 @@ export interface PreviewResponse {
   decisao: string
   acaoRecomendada: string
   melhorScore: number
-  similares: CandidatoSimilar[]
-  alertasComponentes: AlertaComponente[]
+  similares: SimilarCandidate[]
+  alertasComponentes: ComponentAlert[]
 }
 
-export interface CodigoCompletoResponse {
+export interface FullCodeResponse {
   id: string
   idCompleto: string
   gsId: string
@@ -187,11 +179,10 @@ export interface CodigoCompletoResponse {
   createdAt: string | null
   aprovadoPor: string | null
   observacaoAprovacao: string | null
-  /** presente só em POST /codigos-completos: true = requisição repetida, nada novo foi criado */
   requisicaoRepetida?: boolean
 }
 
-export interface ItemGovernanca {
+export interface GovernanceItem {
   origem: string
   id: string
   identificador: string
@@ -208,12 +199,12 @@ export interface ItemGovernanca {
   justificativa: string | null
   status: string
   natureza: string | null
-  similares: CandidatoSimilar[]
+  similares: SimilarCandidate[]
   casoIsolado?: boolean
   motivoCasoIsolado?: string | null
 }
 
-export interface ResumoGovernanca {
+export interface GovernanceSummary {
   pendentesHistorico: number
   pendentesNovos: number
   decisionDuplicidade: number
@@ -223,12 +214,12 @@ export interface ResumoGovernanca {
   excecoes: number
 }
 
-export interface ContagemItem {
+export interface CountItem {
   nome: string
   quantidade: number
 }
 
-export interface Fechamentos {
+export interface Closings {
   total: number
   porMes: { mes: string; quantidade: number }[]
   servicosTop: { id: string; nome: string; quantidade: number }[]
@@ -236,13 +227,13 @@ export interface Fechamentos {
   ate: string
 }
 
-export interface Estatisticas {
+export interface Statistics {
   catalogo: {
     grupos: number
     fornecedores: number
     servicos: number
     unidades: number
-    codigosCompletos: number
+    fullCodes: number
   }
   matriz: {
     total: number
@@ -253,23 +244,23 @@ export interface Estatisticas {
     revisados: number
     semPendencia: number
   }
-  grupos: ContagemItem[]
-  porNatureza: ContagemItem[]
-  fornecedoresTop: ContagemItem[]
-  unidades: ContagemItem[]
+  grupos: CountItem[]
+  porNatureza: CountItem[]
+  fornecedoresTop: CountItem[]
+  unidades: CountItem[]
   servicosTop: { nome: string; id: string; grupo: string; quantidade: number }[]
   servicosVinculados: { nome: string; id: string; grupo: string; quantidade: number }[]
   vinculos: { ativos: number; pendentes: number; rejeitados: number }
-  tamanhos: ContagemItem[]
+  tamanhos: CountItem[]
   auditoria: {
-    eventos: number
+    events: number
     criacoes: number
     bloqueios: number
     excecoes: number
   }
 }
 
-export interface CriarCodigoCompletoPayload {
+export interface CreateFullCodePayload {
   gsId?: string | null
   gsNovoNome?: string | null
   cfId?: string | null
@@ -285,7 +276,7 @@ export interface CriarCodigoCompletoPayload {
   usuarioCriacaoId?: string | null
 }
 
-export interface EventoAuditoria {
+export interface AuditEvent {
   id: string
   actorId: string | null
   action: string
@@ -301,7 +292,7 @@ export interface EventoAuditoria {
 
 export type TipoComponente = 'CS' | 'GS' | 'CF' | 'UM'
 
-export interface ItemImportacao {
+export interface ImportItem {
   id?: string | null
   nome?: string | null
   descricao?: string | null
@@ -309,7 +300,7 @@ export interface ItemImportacao {
   codigoSap?: string | null
 }
 
-export interface ResultadoImportacao {
+export interface ImportResult {
   tipo: string
   total: number
   adicionados: number
@@ -317,7 +308,7 @@ export interface ResultadoImportacao {
   ignorados: { linha: number; item: string; motivo: string }[]
 }
 
-export interface MatrizDePara {
+export interface MappingMatrix {
   id: string
   newId: string
   descricaoCanonica: string

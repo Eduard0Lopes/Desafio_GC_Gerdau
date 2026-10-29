@@ -1,3 +1,18 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+withDefaults(defineProps<{ itemClass?: string; descricao?: string }>(), {
+  itemClass: 'Código do Serviço',
+  descricao: ''
+})
+defineEmits<{
+  (event: 'back'): void
+  (event: 'confirm', justificativa: string): void
+}>()
+
+const justificativa = ref('')
+</script>
+
 <template>
   <div class="modal-fundo">
     <div class="modal">
@@ -13,7 +28,7 @@
 
       <dl class="dados-classe">
         <dt>Classe:</dt>
-        <dd>{{ classe }}</dd>
+        <dd>{{ itemClass }}</dd>
 
         <dt>Descrição:</dt>
         <dd>{{ descricao }}</dd>
@@ -25,11 +40,11 @@
       </dl>
 
       <div class="linha-botoes">
-        <button class="botao botao-escuro" @click="$emit('voltar')">Voltar</button>
+        <button class="botao botao-escuro" @click="$emit('back')">Voltar</button>
         <button
           class="botao botao-roxo"
           :disabled="justificativa.trim().length < 10"
-          @click="$emit('confirmar', justificativa.trim())"
+          @click="$emit('confirm', justificativa.trim())"
         >
           Confirmar Envio para Governança
         </button>
@@ -37,18 +52,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-
-withDefaults(defineProps<{ classe?: string; descricao?: string }>(), {
-  classe: 'Código do Serviço',
-  descricao: ''
-})
-defineEmits<{
-  (e: 'voltar'): void
-  (e: 'confirmar', justificativa: string): void
-}>()
-
-const justificativa = ref('')
-</script>

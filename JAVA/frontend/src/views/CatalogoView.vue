@@ -1,1034 +1,524 @@
-<template>
-  <div>
-    <h2 style="margin: 0 0 6px; font-size: 1.35rem; color: var(--azul-escuro)">Catálogo</h2>
-    <p class="suave" style="margin: 0 0 20px">
-      Consulta somente leitura de todos os componentes: grupos, fornecedores, serviços e unidades.
-      Itens aguardando aprovação aparecem com o selo de status — só entram em uso depois de aprovados.
-    </p>
-
-    
-    <div class="abas">
-      <button
-        v-for="a in abas"
-        :key="a.chave"
-        class="aba"
-        :class="{ ativa: aba === a.chave }"
-        @click="trocarAba(a.chave)"
-      >
-        {{ a.rotulo }}
-        <span class="aba-contagem">{{ totais[a.chave] ?? '…' }}</span>
-      </button>
-    </div>
-
-    
-    <div class="linha-campo" style="margin: 18px 0">
-      <div class="campo-busca-wrap">
-        <input
-          v-model="busca"
-          type="text"
-          class="campo-busca"
-          :placeholder="`Buscar em ${abaAtual.rotulo.toLowerCase()} por nome, descrição ou código…`"
-        />
-        <button v-if="busca" type="button" class="btn-limpar-busca" title="Limpar busca" @click="busca = ''">✕</button>
-      </div>
-      <button
-        type="button"
-        class="botao-filtro-excecao"
-        :class="{ ativo: somenteExcecoes }"
-        :title="somenteExcecoes
-          ? 'Mostrando apenas casos especiais — clique para ver todos'
-          : 'Mostrar apenas os itens com (!): exceções aprovadas e duplicidades tratadas'"
-        @click="alternarFiltroExcecao"
-      >
-        <span class="badge-excecao">!</span>
-        Casos especiais
-        <span class="contagem">{{ totalExcecoes }}</span>
-      </button>
-      <button
-        type="button"
-        class="botao-filtro-excecao btn-alteracoes"
-        title="Ver a lista de itens alterados, transferidos e excluídos na base"
-        @click="abrirAlteracoes"
-      >
-        📋 Alterações
-      </button>
-      <span v-if="isAdmin && selecionados.length" class="badge badge-alertar">
-        {{ selecionados.length }} selecionado(s)
-      </span>
-      <span style="flex: 1"></span>
-      <button class="botao botao-escuro" @click="abrirExportacao">⤓ Exportar CSV</button>
-      <button v-if="isAdmin" class="botao botao-escuro" @click="abrirImportacao">⤓ Importar CSV</button>
-      <button
-        v-if="isAdmin && selecionadosAtivos.length"
-        class="botao botao-escuro"
-        :disabled="alterando"
-        @click="confirmando = 'DESATIVADO'"
-      >
-        {{ alterando ? 'Aplicando…' : `✕ Desativar selecionados (${selecionadosAtivos.length})` }}
-      </button>
-      <button
-        v-if="isAdmin && selecionadosDesativados.length"
-        class="botao botao-verde"
-        :disabled="alterando"
-        @click="confirmando = 'ATIVO'"
-      >
-        ↻ Reativar selecionados ({{ selecionadosDesativados.length }})
-      </button>
-    </div>
-
-    
-    <div v-if="ultimaImportacao" class="aviso aviso-azul" style="margin-bottom: 16px">
-      <span class="icone">↩</span>
-      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
-        <span>
-          <strong>Importação concluída:</strong> {{ ultimaImportacao.ids.length }} item(ns)
-          adicionado(s) a {{ ultimaImportacao.rotulo }}.
-        </span>
-        <button class="botao botao-escuro" @click="confirmandoDesfazer = true">Desfazer importação</button>
-        <button class="cb-excluir" title="Dispensar aviso" @click="ultimaImportacao = null">✕</button>
-      </div>
-    </div>
-
-    <div v-if="falhas.length" class="aviso aviso-amarelo" style="margin-bottom: 16px">
-      <span class="icone">⚠</span>
-      <div>
-        <strong>{{ falhas.length }} item(ns) não tiveram a situação alterada:</strong>
-        <div v-for="f in falhas.slice(0, 5)" :key="f.id" style="margin-top: 6px">
-          <strong>{{ f.id }}</strong> — {{ f.motivo }}
-        </div>
-      </div>
-    </div>
-
-    
-    <div class="painel" style="overflow-x: auto">
-      <table class="tabela">
-        <thead>
-          <tr>
-            <th v-if="isAdmin" style="width: 38px">
-              <input
-                type="checkbox"
-                :checked="todosPaginaSelecionados"
-                :indeterminate.prop="algumSelecionadoNaPagina && !todosPaginaSelecionados"
-                title="Selecionar todos desta página"
-                @change="alternarPaginaInteira"
-              />
-            </th>
-            <th
-              v-for="c in abaAtual.colunas"
-              :key="c.chave"
-              class="th-ordenable"
-              :title="`Ordenar por ${c.rotulo.toLowerCase()}`"
-              @click="ordenarPor(c.chave)"
-            >
-              {{ c.rotulo }}
-              <span v-if="ordem?.chave === c.chave" class="seta-ordenacao">{{ ordem.direcao === 1 ? '▲' : '▼' }}</span>
-            </th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in paginaVisivel" :key="String(item.id)" :class="{ 'linha-excecao': item.casoIsolado }">
-            <td v-if="isAdmin">
-              <input type="checkbox" :checked="estaSelecionado(item)" @change="alternarSelecao(item)" />
-            </td>
-            <td v-for="c in abaAtual.colunas" :key="c.chave">
-              <span v-if="c.chave === 'id'" class="id-codigo">{{ valor(item, c.chave) }}</span>
-              <template v-else>{{ valor(item, c.chave) }}</template>
-              <button
-                v-if="item.casoIsolado && (c.chave === 'id' || c.chave === 'sigla' || c.chave === 'nome' || c.chave === 'descricao')"
-                type="button"
-                class="badge-excecao"
-                :title="String(item.motivoCasoIsolado || 'Caso especial registrado') + ' — clique para resolver e remover o (!)'"
-                @click.stop="abrirResolucao(item)"
-              >!</button>
-            </td>
-            <td>
-              <span class="badge" :class="classeStatus(item.status)">{{ rotuloStatus(item.status) }}</span>
-              <button
-                v-if="!item.casoIsolado"
-                type="button"
-                class="btn-marcar-excecao"
-                title="Marcar como caso especial (!) — para revisar, resolver ou excluir depois"
-                @click.stop="abrirMarcacao(item)"
-              >!</button>
-            </td>
-          </tr>
-          <tr v-if="!paginaVisivel.length">
-            <td :colspan="abaAtual.colunas.length + (isAdmin ? 2 : 1)" class="suave centralizado">
-              <template v-if="somenteExcecoes">Nenhum caso especial ({{ totalExcecoes }}) nesta aba.</template>
-              <template v-else>Nenhum item encontrado para “{{ busca }}”.</template>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      
-      <div v-if="totalPaginas > 1" class="paginacao" style="margin-top: 16px">
-        <button class="pulo" :disabled="pagina === 0" @click="pagina = 0" title="Início">|‹</button>
-        <button class="pulo" :disabled="pagina === 0" @click="pagina--" title="Página anterior">‹</button>
-        <span class="info">
-          <strong>{{ pagina + 1 }}</strong> / {{ totalPaginas }} — {{ filtrados.length }} item(ns)
-        </span>
-        <button class="pulo" :disabled="pagina + 1 >= totalPaginas" @click="pagina++" title="Próxima página">›</button>
-        <button class="pulo" :disabled="pagina + 1 >= totalPaginas" @click="pagina = totalPaginas - 1" title="Fim">›|</button>
-      </div>
-    </div>
-
-    
-    <p class="legenda-excecao suave">
-      <span class="badge-excecao">!</span>
-      <span>
-        <strong>Caso especial</strong> — item com exceção aprovada (similar aceito com justificativa)
-        ou duplicidade tratada na varredura. Passe o mouse sobre o ! para ver o motivo.
-      </span>
-    </p>
-
-    <div v-if="modalExportar" class="modal-fundo" @click.self="modalExportar = false">
-      <div class="modal" style="max-width: 540px">
-        <h3>Exportar catálogo (CSV)</h3>
-        <p class="suave" style="margin: -8px 0 16px">
-          O arquivo abre direto no Excel (separador “;”, com acentuação correta).
-        </p>
-        <div class="campo-form">
-          <label for="tabela-exportar">Qual tabela exportar?</label>
-          <select id="tabela-exportar" v-model="exportarTabela">
-            <option value="TODAS">Todas as tabelas (um arquivo por tabela)</option>
-            <option v-for="a in abas" :key="a.chave" :value="a.chave">{{ a.rotulo }}</option>
-          </select>
-        </div>
-        <div class="linha-botoes">
-          <button class="botao botao-escuro" @click="modalExportar = false">Cancelar</button>
-          <button class="botao botao-roxo" @click="executarExportacao">⤓ Exportar</button>
-        </div>
-      </div>
-    </div>
-
-    
-    <div v-if="modalImportar" class="modal-fundo" @click.self="modalImportar = false">
-      <div class="modal" style="max-width: 620px">
-        <h3>Importar catálogo (CSV)</h3>
-        <div class="aviso aviso-verde" style="margin: 0 0 16px">
-          <span class="icone">✓</span>
-          <div>
-            <strong>Só é adicionado o que for novo.</strong> Nada que já existe no banco é
-            apagado ou alterado — linhas repetidas voltam no relatório como “ignoradas”.
-          </div>
-        </div>
-        <div class="campo-form">
-          <label for="tabela-importar">Qual tabela será alimentada?</label>
-          <select id="tabela-importar" v-model="importarTabela" @change="limparImportacao">
-            <option v-for="a in abas" :key="a.chave" :value="a.chave">{{ a.rotulo }}</option>
-          </select>
-        </div>
-        <div class="campo-form">
-          <label for="arquivo-importar">Arquivo CSV</label>
-          <input id="arquivo-importar" type="file" accept=".csv,text/csv" @change="lerArquivoImportacao" />
-        </div>
-        <div class="aviso aviso-azul">
-          <span class="icone">ℹ</span>
-          <div>
-            {{ dicaColunas }}<br />
-            A <strong>primeira linha deve ser o cabeçalho</strong> — exporte antes para ver o formato exato.
-            <strong>“Criado em” e “Criado por” são gravados automaticamente</strong> com o momento e o
-            usuário que fez a importação (valores do arquivo são ignorados).
-          </div>
-        </div>
-
-        
-        <div v-if="itensImportacao.length" class="aviso" :class="previaImportacao.novos.length ? 'aviso-verde' : 'aviso-amarelo'" style="margin-top: 14px">
-          <span class="icone">{{ previaImportacao.novos.length ? '✓' : 'ℹ' }}</span>
-          <div>
-            <strong>Só o que é novo entra: {{ previaImportacao.novos.length }} de {{ itensImportacao.length }} linha(s).</strong>
-            {{ previaImportacao.repetidos.length }} já {{ previaImportacao.repetidos.length === 1 ? 'existe e será mantida' : 'existem e serão mantidas' }} como está/estão.
-            <div v-for="r in previaImportacao.repetidos.slice(0, 5)" :key="rotuloItemImportado(r)" class="suave" style="margin-top: 5px">
-              já existe: <strong>{{ rotuloItemImportado(r) }}</strong>
-            </div>
-            <div v-if="previaImportacao.repetidos.length > 5" class="suave" style="margin-top: 5px">
-              … e mais {{ previaImportacao.repetidos.length - 5 }}.
-            </div>
-          </div>
-        </div>
-
-        <div class="linha-botoes">
-          <button class="botao botao-escuro" @click="modalImportar = false">Cancelar</button>
-          <button
-            class="botao botao-roxo"
-            :disabled="!previaImportacao.novos.length || importando"
-            @click="executarImportacao"
-          >
-            {{ importando ? 'Importando…' : previaImportacao.novos.length ? `Importar ${previaImportacao.novos.length} nova(s)` : 'Nada novo para importar' }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    
-    <div v-if="transferindo" class="modal-fundo" @click.self="fecharTransferencia">
-      <div class="modal" style="max-width: 620px">
-        <h3>Transferir vínculos para excluir</h3>
-        <p class="suave" style="margin: -8px 0 16px; line-height: 1.6">
-          <strong>{{ transferindo.id }} — {{ abaAtual.rotuloDe(transferindo) }}</strong> está vinculado a
-          <strong>{{ contagemVinculos }} código(s) completo(s)</strong>. Para liberar a exclusão, escolha
-          um item da mesma tabela para <strong>receber esses vínculos</strong> — depois o item de origem
-          é excluído definitivamente.
-        </p>
-        <div class="campo-form">
-          <label>Receber os vínculos em</label>
-          <ComboboxBusca
-            :carregar="abaAtual.carregar"
-            :nome-de="(i) => String(i.id ?? '') + ' — ' + abaAtual.rotuloDe(i)"
-            :id-de="() => ''"
-            :permite-criar="false"
-            placeholder="Buscar item desta tabela para receber os vínculos…"
-            @update:model-value="(v) => (destinoVinculos = (v as Item) || null)"
-          />
-        </div>
-        <div class="linha-botoes">
-          <button class="botao botao-escuro" @click="fecharTransferencia">Cancelar</button>
-          <button
-            class="botao botao-vermelho"
-            :disabled="!destinoVinculos || processandoTransferencia"
-            @click="confirmarTransferencia"
-          >
-            {{ processandoTransferencia ? 'Transferindo…' : '⇄ Transferir vínculos e excluir' }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="modalAlteracoes" class="modal-fundo" @click.self="modalAlteracoes = false">
-      <div class="modal" style="max-width: 860px">
-        <h3>Itens alterados e excluídos na base</h3>
-        <p class="suave" style="margin: -8px 0 14px; line-height: 1.6">
-          Histórico completo das limpezas e decisões: itens <strong>excluídos</strong>,
-          vínculos <strong>transferidos</strong>, composições <strong>mescladas</strong> e itens
-          <strong>desativados/reativados</strong> — cada linha com o motivo registrado.
-        </p>
-        <div class="lista-alteracoes">
-          <div v-if="carregandoAlteracoes" class="suave centralizado" style="padding: 22px">Carregando…</div>
-          <div v-else-if="!alteracoes.length" class="suave centralizado" style="padding: 22px">
-            Nenhuma alteração registrada ainda.
-          </div>
-          <div v-for="(e, i) in alteracoes" :key="e.id || i" class="linha-alteracao">
-            <span class="badge" :class="classeAlteracao(e)">{{ rotuloAlteracao(e) }}</span>
-            <strong class="id-alteracao">{{ e.entityId }}</strong>
-            <span class="motivo-alteracao">{{ e.reason || '—' }}</span>
-            <span class="data-alteracao">{{ formatarData(e.occurredAt) }}</span>
-          </div>
-        </div>
-        <div class="linha-botoes">
-          <button class="botao botao-escuro" @click="modalAlteracoes = false">Fechar</button>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="marcando" class="modal-fundo" @click.self="marcando = null">
-      <div class="modal" style="max-width: 540px">
-        <h3>Marcar como caso especial</h3>
-        <p class="suave" style="margin: -8px 0 16px; line-height: 1.6">
-          O item <strong>{{ marcando.id }} — {{ abaAtual.rotuloDe(marcando) }}</strong> receberá o
-          <span class="badge-excecao">!</span> e passará a aparecer no filtro
-          <strong>Casos especiais</strong>. Registre o motivo — é ele que aparece no hover do badge.
-        </p>
-        <div class="campo-form">
-          <label>Motivo do caso especial</label>
-          <textarea
-            v-model="motivoMarcacao"
-            style="min-height: 84px"
-            placeholder="Ex.: possível duplicidade de “X” — confirmar antes de excluir."
-          ></textarea>
-        </div>
-        <div class="linha-botoes">
-          <button class="botao botao-escuro" @click="marcando = null">Cancelar</button>
-          <button
-            class="botao botao-roxo"
-            :disabled="!motivoMarcacao.trim() || resolvendoAgora"
-            @click="confirmarMarcacao"
-          >
-            ✓ Marcar com (!)
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <ModalConfirmacao
-      v-if="resolvendo"
-      titulo="Resolver caso especial?"
-      :mensagem="`Motivo registrado: ${String(resolvendo.motivoCasoIsolado || 'caso especial registrado')}. Ao resolver, o (!) é removido do item e ele sai do filtro de casos especiais. O histórico continua na auditoria.`"
-      rotulo-secundario="✕ Excluir definitivamente"
-      :secundario-perigoso="true"
-      rotulo-confirmar="✓ Resolver e remover (!)"
-      :acao-perigosa="false"
-      @secundario="pedirExclusao"
-      @confirmar="confirmarResolucao"
-      @cancelar="resolvendo = null"
-    />
-    <ModalConfirmacao
-      v-if="excluindo"
-      titulo="Excluir definitivamente?"
-      :mensagem="`O item ${excluindo.id} — ${abaAtual.rotuloDe(excluindo)} será APAGADO do banco de dados. Esta ação NÃO pode ser desfeita. Se houver vínculos ativos, a exclusão será bloqueada. Se o item puder voltar um dia, prefira apenas desativar.`"
-      rotulo-confirmar="✕ Excluir para sempre"
-      :acao-perigosa="true"
-      @confirmar="confirmarExclusao"
-      @cancelar="excluindo = null"
-    />
-    <ModalConfirmacao
-      v-if="confirmandoDesfazer"
-      titulo="Desfazer a importação?"
-      :mensagem="`${ultimaImportacao?.ids.length ?? 0} item(ns) adicionado(s) agora serão removidos, voltando ao estado anterior. O que já existia não é tocado.`"
-      rotulo-confirmar="Desfazer importação"
-      :acao-perigosa="true"
-      @confirmar="desfazerImportacao"
-      @cancelar="confirmandoDesfazer = false"
-    />
-    <ModalConfirmacao
-      v-if="confirmando"
-      :titulo="confirmando === 'DESATIVADO' ? 'Desativar itens do catálogo?' : 'Reativar itens do catálogo?'"
-      :mensagem="confirmando === 'DESATIVADO'
-        ? `${selecionadosAtivos.length} item(ns) de ${abaAtual.rotulo.toLowerCase()} sairão de circulação: somem das listas de uso e da similaridade. Nada é perdido — vínculos, histórico e auditoria continuam, e dá para reativar quando quiser.`
-        : `${selecionadosDesativados.length} item(ns) de ${abaAtual.rotulo.toLowerCase()} voltarão para as listas de uso. A ação fica registrada na auditoria.`"
-      :rotulo-confirmar="confirmando === 'DESATIVADO' ? '✕ Desativar' : '↻ Reativar'"
-      :acao-perigosa="confirmando === 'DESATIVADO'"
-      @confirmar="executarSituacao"
-      @cancelar="confirmando = null"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { api } from '../services/api'
 import { toast } from '../services/toast'
-import { casaComTermo } from '../services/texto'
-import ModalConfirmacao from '../components/ModalConfirmacao.vue'
-import ComboboxBusca from '../components/ComboboxBusca.vue'
-import type { EventoAuditoria, ItemImportacao } from '../types'
+import { downloadCsv, parseCsv } from '../services/csv'
+import { formatDate } from '../services/formato'
+import { statusClass, statusLabel } from '../services/rotulos'
+import { matchesTerm, normalize, normalizeHeader } from '../services/texto'
+import ConfirmModal from '../components/ModalConfirmacao.vue'
+import SearchCombobox from '../components/ComboboxBusca.vue'
+import type { AuditEvent, Item, ImportItem } from '../types'
 
-type Item = Record<string, unknown>
-type ChaveAba = 'GS' | 'CF' | 'CS' | 'UM'
-type TipoExclusao = 'GS' | 'CF' | 'CS' | 'UM'
+type TabKey = 'GS' | 'CF' | 'CS' | 'UM'
+type ComponentKind = 'GS' | 'CF' | 'CS' | 'UM'
 
-const props = withDefaults(defineProps<{ usuario?: string; papel?: string }>(), { usuario: '', papel: 'USUARIO' })
-const isAdmin = computed(() => props.papel === 'ADMIN')
+const props = withDefaults(defineProps<{ user?: string; role?: string }>(), { user: '', role: 'USUARIO' })
+const isAdmin = computed(() => props.role === 'ADMIN')
 
-interface Coluna { chave: string; rotulo: string }
-interface Aba {
-  chave: ChaveAba
-  rotulo: string
-  colunas: Coluna[]
-  carregar: (query?: string, limite?: number, incluirTodos?: boolean) => Promise<unknown[]>
-  rotuloDe: (i: Item) => string
+interface Column { key: string; label: string }
+interface Tab {
+  key: TabKey
+  label: string
+  columns: Column[]
+  load: (query?: string, limite?: number, incluirTodos?: boolean) => Promise<unknown[]>
+  labelOf: (index: Item) => string
 }
 
-const abas: Aba[] = [
+const tabs: Tab[] = [
   {
-    chave: 'GS',
-    rotulo: 'Grupo de Serviço',
-    colunas: [{ chave: 'id', rotulo: 'ID' }, { chave: 'nome', rotulo: 'Nome' }, { chave: 'origem', rotulo: 'Origem' },
-      { chave: 'createdAt', rotulo: 'Criado em' }, { chave: 'criadoPor', rotulo: 'Criado por' }],
-    carregar: api.gruposServico.listar,
-    rotuloDe: (i) => String(i.nome ?? i.id)
+    key: 'GS',
+    label: 'Grupo de Serviço',
+    columns: [{ key: 'id', label: 'ID' }, { key: 'nome', label: 'Nome' }, { key: 'origem', label: 'Origem' },
+      { key: 'createdAt', label: 'Criado em' }, { key: 'criadoPor', label: 'Criado por' }],
+    load: api.serviceGroups.list,
+    labelOf: (index) => String(index.nome ?? index.id)
   },
   {
-    chave: 'CF',
-    rotulo: 'Código de Fornecedor',
-    colunas: [
-      { chave: 'id', rotulo: 'ID' },
-      { chave: 'codigoFornecedorSAP', rotulo: 'SAP' },
-      { chave: 'nome', rotulo: 'Nome' },
-      { chave: 'origem', rotulo: 'Origem' },
-      { chave: 'createdAt', rotulo: 'Criado em' },
-      { chave: 'criadoPor', rotulo: 'Criado por' }
+    key: 'CF',
+    label: 'Código de Fornecedor',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'codigoFornecedorSAP', label: 'SAP' },
+      { key: 'nome', label: 'Nome' },
+      { key: 'origem', label: 'Origem' },
+      { key: 'createdAt', label: 'Criado em' },
+      { key: 'criadoPor', label: 'Criado por' }
     ],
-    carregar: api.codigosFornecedor.listar,
-    rotuloDe: (i) => String(i.nome ?? i.id)
+    load: api.supplierCodes.list,
+    labelOf: (index) => String(index.nome ?? index.id)
   },
   {
-    chave: 'CS',
-    rotulo: 'Código de Serviço',
-    colunas: [
-      { chave: 'id', rotulo: 'ID' },
-      { chave: 'descricao', rotulo: 'Descrição' },
-      { chave: 'quantidadeCaracteres', rotulo: 'Caracteres' },
-      { chave: 'origem', rotulo: 'Origem' },
-      { chave: 'createdAt', rotulo: 'Criado em' },
-      { chave: 'criadoPor', rotulo: 'Criado por' }
+    key: 'CS',
+    label: 'Código de Serviço',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'descricao', label: 'Descrição' },
+      { key: 'quantidadeCaracteres', label: 'Caracteres' },
+      { key: 'origem', label: 'Origem' },
+      { key: 'createdAt', label: 'Criado em' },
+      { key: 'criadoPor', label: 'Criado por' }
     ],
-    carregar: api.codigosServico.listar,
-    rotuloDe: (i) => String(i.descricao ?? i.id)
+    load: api.serviceCodes.list,
+    labelOf: (index) => String(index.descricao ?? index.id)
   },
   {
-    chave: 'UM',
-    rotulo: 'Unidade de Medida',
-    colunas: [
-      { chave: 'sigla', rotulo: 'Sigla' },
-      { chave: 'nome', rotulo: 'Nome' },
-      { chave: 'origem', rotulo: 'Origem' },
-      { chave: 'createdAt', rotulo: 'Criado em' },
-      { chave: 'criadoPor', rotulo: 'Criado por' }
+    key: 'UM',
+    label: 'Unidade de Medida',
+    columns: [
+      { key: 'sigla', label: 'Sigla' },
+      { key: 'nome', label: 'Nome' },
+      { key: 'origem', label: 'Origem' },
+      { key: 'createdAt', label: 'Criado em' },
+      { key: 'criadoPor', label: 'Criado por' }
     ],
-    carregar: api.unidadesMedida.listar,
-    rotuloDe: (i) => `${String(i.sigla ?? '')} - ${String(i.nome ?? '')}`
+    load: api.unitsOfMeasure.list,
+    labelOf: (index) => `${String(index.sigla ?? '')} - ${String(index.nome ?? '')}`
   }
 ]
 
-const aba = ref<ChaveAba>('GS')
-const busca = ref('')
-const pagina = ref(0)
+const tab = ref<TabKey>('GS')
+const search = ref('')
+const page = ref(0)
 const porPagina = 25
-const dados = ref<Record<ChaveAba, Item[]>>({ GS: [], CF: [], CS: [], UM: [] })
-const carregado = ref<Record<ChaveAba, boolean>>({ GS: false, CF: false, CS: false, UM: false })
+const data = ref<Record<TabKey, Item[]>>({ GS: [], CF: [], CS: [], UM: [] })
+const carregado = ref<Record<TabKey, boolean>>({ GS: false, CF: false, CS: false, UM: false })
 const selecionados = ref<Item[]>([])
 const confirmando = ref<'DESATIVADO' | 'ATIVO' | null>(null)
-const alterando = ref(false)
-const falhas = ref<{ id: string; motivo: string }[]>([])
+const applying = ref(false)
+const failures = ref<{ id: string; motivo: string }[]>([])
 
-const abaAtual = computed(() => abas.find((a) => a.chave === aba.value) as Aba)
-const totais = computed<Record<string, number>>(() => ({
-  GS: dados.value.GS.length,
-  CF: dados.value.CF.length,
-  CS: dados.value.CS.length,
-  UM: dados.value.UM.length
+const currentTab = computed(() => tabs.find((section) => section.key === tab.value) as Tab)
+const totals = computed<Record<string, number>>(() => ({
+  GS: data.value.GS.length,
+  CF: data.value.CF.length,
+  CS: data.value.CS.length,
+  UM: data.value.UM.length
 }))
 
-
-function normalizar(texto: string): string {
-  return texto
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
+const onlyExceptions = ref(false)
+const exceptionCount = computed(() => data.value[tab.value].filter((index) => Boolean(index.casoIsolado)).length)
+function toggleExceptionFilter(): void {
+  onlyExceptions.value = !onlyExceptions.value
+  page.value = 0
 }
 
-/* ============================================================================
-   CASOS ESPECIAIS — o badge "(!)" que acompanha o item em toda a interface.
-   Ciclo: MARCAR (manual ou pela governança/varredura) → REVISAR (filtro + hover
-   com o motivo) → RESOLVER (limpa a marca) ou EXCLUIR (com transferência de
-   vínculos). Também dá para transferir vínculos antes de excluir quando o item
-   está preso a composições, e consultar tudo que foi mexido em "📋 Alterações".
-   ========================================================================== */
-
-// filtro dos casos especiais — os itens marcados com (!)
-const somenteExcecoes = ref(false)
-const totalExcecoes = computed(() => dados.value[aba.value].filter((i) => Boolean(i.casoIsolado)).length)
-function alternarFiltroExcecao(): void {
-  somenteExcecoes.value = !somenteExcecoes.value
-  pagina.value = 0
-}
-
-// lista do que foi alterado/transferido/excluído na base (histórico de auditoria)
-const modalAlteracoes = ref(false)
-const alteracoes = ref<EventoAuditoria[]>([])
-const carregandoAlteracoes = ref(false)
-async function abrirAlteracoes(): Promise<void> {
-  modalAlteracoes.value = true
-  carregandoAlteracoes.value = true
+const changesModal = ref(false)
+const changes = ref<AuditEvent[]>([])
+const loadingChanges = ref(false)
+async function openChanges(): Promise<void> {
+  changesModal.value = true
+  loadingChanges.value = true
   try {
-    const eventos = await api.eventos()
-    const acoes = new Set(['EXCLUSAO_COMPONENTE', 'TRANSFERENCIA_VINCULOS', 'DESATIVACAO_COMPONENTE', 'REATIVACAO_COMPONENTE'])
-    alteracoes.value = eventos.filter((e) => acoes.has(e.action))
-  } catch (e) {
-    toast.erro((e as Error).message)
+    const events = await api.events()
+    const actions = new Set(['EXCLUSAO_COMPONENTE', 'TRANSFERENCIA_VINCULOS', 'DESATIVACAO_COMPONENTE', 'REATIVACAO_COMPONENTE'])
+    changes.value = events.filter((event) => actions.has(event.action))
+  } catch (error) {
+    toast.error((error as Error).message)
   } finally {
-    carregandoAlteracoes.value = false
+    loadingChanges.value = false
   }
 }
-function rotuloAlteracao(e: EventoAuditoria): string {
-  if (e.action === 'EXCLUSAO_COMPONENTE') return 'Excluído'
-  if (e.action === 'TRANSFERENCIA_VINCULOS') return e.decision === 'MESCLAGEM' ? 'Mesclado' : 'Transferido'
-  if (e.action === 'DESATIVACAO_COMPONENTE') return 'Desativado'
+function changeLabel(event: AuditEvent): string {
+  if (event.action === 'EXCLUSAO_COMPONENTE') return 'Excluído'
+  if (event.action === 'TRANSFERENCIA_VINCULOS') return event.decision === 'MESCLAGEM' ? 'Mesclado' : 'Transferido'
+  if (event.action === 'DESATIVACAO_COMPONENTE') return 'Desativado'
   return 'Reativado'
 }
-function classeAlteracao(e: EventoAuditoria): string {
-  return e.action === 'EXCLUSAO_COMPONENTE' ? 'badge-revisar'
-    : e.action === 'TRANSFERENCIA_VINCULOS' ? 'badge-alertar' : 'badge-permitir'
+function changeClass(event: AuditEvent): string {
+  return event.action === 'EXCLUSAO_COMPONENTE' ? 'badge-revisar'
+    : event.action === 'TRANSFERENCIA_VINCULOS' ? 'badge-alertar' : 'badge-permitir'
 }
 
-// resolver um caso especial: clica no (!), confere o motivo e remove a marca
-const resolvendo = ref<Item | null>(null)
-const resolvendoAgora = ref(false)
-const excluindo = ref<Item | null>(null)
-const marcando = ref<Item | null>(null)
-const motivoMarcacao = ref('')
-function abrirResolucao(item: Item): void {
-  resolvendo.value = item
+const resolving = ref<Item | null>(null)
+const resolvingNow = ref(false)
+const deleting = ref<Item | null>(null)
+const marking = ref<Item | null>(null)
+const markingReason = ref('')
+function openResolution(item: Item): void {
+  resolving.value = item
 }
-function abrirMarcacao(item: Item): void {
-  marcando.value = item
-  motivoMarcacao.value = ''
+function openMarking(item: Item): void {
+  marking.value = item
+  markingReason.value = ''
 }
-async function confirmarMarcacao(): Promise<void> {
-  const item = marcando.value
-  const motivo = motivoMarcacao.value.trim()
-  if (!item || !motivo || resolvendoAgora.value) return
-  resolvendoAgora.value = true
-  marcando.value = null
+async function confirmMarking(): Promise<void> {
+  const item = marking.value
+  const motivo = markingReason.value.trim()
+  if (!item || !motivo || resolvingNow.value) return
+  resolvingNow.value = true
+  marking.value = null
   try {
-    await api.catalogo.marcarExcecao(String(item.id), motivo)
+    await api.catalogo.markException(String(item.id), motivo)
     item.casoIsolado = true
     item.motivoCasoIsolado = motivo
-    toast.sucesso('Item marcado com (!) — ele aparece no filtro Casos especiais.')
-  } catch (e) {
-    toast.erro((e as Error).message)
+    toast.success('Item marcado com (!) — ele aparece no filtro Casos especiais.')
+  } catch (error) {
+    toast.error((error as Error).message)
   } finally {
-    resolvendoAgora.value = false
+    resolvingNow.value = false
   }
 }
-function pedirExclusao(): void {
-  excluindo.value = resolvendo.value
-  resolvendo.value = null
+function askDeactivation(): void {
+  deleting.value = resolving.value
+  resolving.value = null
 }
-async function confirmarResolucao(): Promise<void> {
-  const item = resolvendo.value
-  if (!item || resolvendoAgora.value) return
-  resolvendoAgora.value = true
-  resolvendo.value = null
+async function confirmResolution(): Promise<void> {
+  const item = resolving.value
+  if (!item || resolvingNow.value) return
+  resolvingNow.value = true
+  resolving.value = null
   try {
-    await api.catalogo.limparCasoIsolado(String(item.id))
+    await api.catalogo.clearSpecialCase(String(item.id))
     item.casoIsolado = false
     item.motivoCasoIsolado = null
-    toast.sucesso('Caso resolvido — o (!) foi removido do item.')
-  } catch (e) {
-    toast.erro((e as Error).message)
+    toast.success('Caso resolvido — o (!) foi removido do item.')
+  } catch (error) {
+    toast.error((error as Error).message)
   } finally {
-    resolvendoAgora.value = false
+    resolvingNow.value = false
   }
 }
-async function confirmarExclusao(): Promise<void> {
-  const item = excluindo.value
-  if (!item || resolvendoAgora.value) return
-  resolvendoAgora.value = true
-  excluindo.value = null
+async function confirmDeletion(): Promise<void> {
+  const item = deleting.value
+  if (!item || resolvingNow.value) return
+  resolvingNow.value = true
+  deleting.value = null
   try {
-    await api.componentes.excluir(aba.value as TipoExclusao, String(item.id))
-    const lista = dados.value[aba.value]
-    const i = lista.findIndex((x) => String(x.id) === String(item.id))
-    if (i >= 0) lista.splice(i, 1)
-    selecionados.value = selecionados.value.filter((s) => String(s.id) !== String(item.id))
-    toast.sucesso(`Item ${item.id} excluído definitivamente.`)
-  } catch (e) {
-    const msg = (e as Error).message || ''
-    if (msg.toLowerCase().includes('vincul')) {
-      // tem vínculo: abre o modal para escolher quem recebe antes de excluir
-      await abrirTransferencia(item)
+    await api.components.remove(tab.value as ComponentKind, String(item.id))
+    const list = data.value[tab.value]
+    const index = list.findIndex((candidato) => String(candidato.id) === String(item.id))
+    if (index >= 0) list.splice(index, 1)
+    selecionados.value = selecionados.value.filter((selecionado) => String(selecionado.id) !== String(item.id))
+    toast.success(`Item ${item.id} excluído definitivamente.`)
+  } catch (error) {
+    const errorMessage = (error as Error).message || ''
+    if (errorMessage.toLowerCase().includes('vincul')) {
+      await openTransfer(item)
     } else {
-      toast.erro(msg)
+      toast.error(errorMessage)
     }
   } finally {
-    resolvendoAgora.value = false
+    resolvingNow.value = false
   }
 }
 
-// transferir vínculos para outro item e então excluir o de origem
-const transferindo = ref<Item | null>(null)
-const destinoVinculos = ref<Item | null>(null)
+const transferring = ref<Item | null>(null)
+const linkTarget = ref<Item | null>(null)
 const contagemVinculos = ref(0)
-const processandoTransferencia = ref(false)
+const transferInProgress = ref(false)
 
-async function abrirTransferencia(item: Item): Promise<void> {
-  transferindo.value = item
-  destinoVinculos.value = null
+async function openTransfer(item: Item): Promise<void> {
+  transferring.value = item
+  linkTarget.value = null
   contagemVinculos.value = 0
   try {
-    const v = await api.catalogo.vinculos(aba.value as 'GS' | 'CF' | 'CS' | 'UM', String(item.id))
-    contagemVinculos.value = v.total
+    const rawValue = await api.catalogo.vinculos(tab.value as 'GS' | 'CF' | 'CS' | 'UM', String(item.id))
+    contagemVinculos.value = rawValue.total
   } catch {
     contagemVinculos.value = 0
   }
 }
-function fecharTransferencia(): void {
-  transferindo.value = null
-  destinoVinculos.value = null
+function closeTransfer(): void {
+  transferring.value = null
+  linkTarget.value = null
 }
-async function confirmarTransferencia(): Promise<void> {
-  const item = transferindo.value
-  const destino = destinoVinculos.value
-  if (!item || !destino || processandoTransferencia.value) return
-  processandoTransferencia.value = true
+async function confirmTransfer(): Promise<void> {
+  const item = transferring.value
+  const destino = linkTarget.value
+  if (!item || !destino || transferInProgress.value) return
+  transferInProgress.value = true
   try {
-    const r = await api.catalogo.transferirVinculos({
-      tipo: aba.value as 'GS' | 'CF' | 'CS' | 'UM',
+    const response = await api.catalogo.transferLinks({
+      tipo: tab.value as 'GS' | 'CF' | 'CS' | 'UM',
       de: String(item.id),
       para: String(destino.id),
       excluirOrigem: true
     })
-    if (r.excluido) {
-      const lista = dados.value[aba.value]
-      const i = lista.findIndex((x) => String(x.id) === String(item.id))
-      if (i >= 0) lista.splice(i, 1)
-      selecionados.value = selecionados.value.filter((s) => String(s.id) !== String(item.id))
-      const partes = [`${r.transferidos} vínculo(s) transferido(s) para ${destino.id}`]
-      if (r.mesclados) partes.push(`${r.mesclados} composição(ões) redundante(s) mesclada(s)`)
-      toast.sucesso(`${partes.join(' e ')} — ${item.id} excluído definitivamente.`)
-      fecharTransferencia()
+    if (response.excluido) {
+      const list = data.value[tab.value]
+      const index = list.findIndex((candidato) => String(candidato.id) === String(item.id))
+      if (index >= 0) list.splice(index, 1)
+      selecionados.value = selecionados.value.filter((selecionado) => String(selecionado.id) !== String(item.id))
+      const parts = [`${response.transferidos} vínculo(s) transferido(s) para ${destino.id}`]
+      if (response.mesclados) parts.push(`${response.mesclados} composição(ões) redundante(s) mesclada(s)`)
+      toast.success(`${parts.join(' e ')} — ${item.id} excluído definitivamente.`)
+      closeTransfer()
     } else {
-      toast.aviso(`Transferidos ${r.transferidos}, mas ${r.conflitos.length} composição(ões) não puderam ser movidas — confira os vínculos antes de excluir.`)
+      toast.warning(`Transferidos ${response.transferidos}, mas ${response.conflitos.length} composição(ões) não puderam ser movidas — confira os vínculos antes de excluir.`)
     }
-  } catch (e) {
-    toast.erro((e as Error).message)
+  } catch (error) {
+    toast.error((error as Error).message)
   } finally {
-    processandoTransferencia.value = false
+    transferInProgress.value = false
   }
 }
 
-const filtrados = computed<Item[]>(() => {
-  const termo = busca.value.trim()
-  const lista = dados.value[aba.value]
-  const base = somenteExcecoes.value ? lista.filter((i) => Boolean(i.casoIsolado)) : lista
-  if (!termo) return base
-  return base.filter((i) =>
-    casaComTermo(
-      `${String(i.id ?? '')} ${String(i.nome ?? '')} ${String(i.descricao ?? '')} ${String(i.sigla ?? '')} ${String(i.codigoFornecedorSAP ?? '')}`,
-      termo
+const filtered = computed<Item[]>(() => {
+  const term = search.value.trim()
+  const list = data.value[tab.value]
+  const base = onlyExceptions.value ? list.filter((index) => Boolean(index.casoIsolado)) : list
+  if (!term) return base
+  return base.filter((index) =>
+    matchesTerm(
+      `${String(index.id ?? '')} ${String(index.nome ?? '')} ${String(index.descricao ?? '')} ${String(index.sigla ?? '')} ${String(index.codigoFornecedorSAP ?? '')}`,
+      term
     )
   )
 })
 
-const totalPaginas = computed(() => Math.max(1, Math.ceil(filtrados.value.length / porPagina)))
+const totalPages = computed(() => Math.max(1, Math.ceil(filtered.value.length / porPagina)))
 
-const ordem = ref<{ chave: string; direcao: 1 | -1 } | null>(null)
+const order = ref<{ key: string; direction: 1 | -1 } | null>(null)
 
-function ordenarPor(chave: string): void {
-  // ciclo de 3 estados: primeira direção -> direção oposta -> sem ordenação
-  const primeira = chave === 'createdAt' ? -1 : 1
+function sortBy(key: string): void {
+  const primeira = key === 'createdAt' ? -1 : 1
   const segunda = primeira === 1 ? -1 : 1
-  const atual = ordem.value
-  if (!atual || atual.chave !== chave) {
-    ordem.value = { chave, direcao: primeira }
-  } else if (atual.direcao === primeira) {
-    ordem.value = { chave, direcao: segunda }
+  const atual = order.value
+  if (!atual || atual.key !== key) {
+    order.value = { key, direction: primeira }
+  } else if (atual.direction === primeira) {
+    order.value = { key, direction: segunda }
   } else {
-    ordem.value = null
+    order.value = null
   }
-  pagina.value = 0
+  page.value = 0
 }
 
-function comparar(a: Item, b: Item, chave: string): number {
-  const va = a[chave]
-  const vb = b[chave]
-  const vazio = (v: unknown): boolean => v === null || v === undefined || v === ''
-  if (vazio(va)) return vazio(vb) ? 0 : -1
-  if (vazio(vb)) return 1
-  if (chave === 'createdAt') return new Date(String(va)).getTime() - new Date(String(vb)).getTime()
-  const na = Number(va)
-  const nb = Number(vb)
-  if (String(va).trim() !== '' && String(vb).trim() !== '' && Number.isFinite(na) && Number.isFinite(nb)) {
-    return na - nb
+function compare(left: Item, right: Item, key: string): number {
+  const leftValue = left[key]
+  const rightValue = right[key]
+  const isBlank = (value: unknown): boolean => value === null || value === undefined || value === ''
+  if (isBlank(leftValue)) return isBlank(rightValue) ? 0 : -1
+  if (isBlank(rightValue)) return 1
+  if (key === 'createdAt') {
+    return new Date(String(leftValue)).getTime() - new Date(String(rightValue)).getTime()
   }
-  return String(va).localeCompare(String(vb), 'pt-BR', { sensitivity: 'base', numeric: true })
+  const leftNumber = Number(leftValue)
+  const rightNumber = Number(rightValue)
+  const bothNumeric = String(leftValue).trim() !== '' && String(rightValue).trim() !== ''
+    && Number.isFinite(leftNumber) && Number.isFinite(rightNumber)
+  if (bothNumeric) return leftNumber - rightNumber
+  return String(leftValue).localeCompare(String(rightValue), 'pt-BR', { sensitivity: 'base', numeric: true })
 }
 
-const ordenados = computed<Item[]>(() => {
-  const o = ordem.value
-  if (!o) return filtrados.value
-  return [...filtrados.value].sort((a, b) => comparar(a, b, o.chave) * o.direcao)
+const sorted = computed<Item[]>(() => {
+  const criterio = order.value
+  if (!criterio) return filtered.value
+  return [...filtered.value].sort((left, right) => compare(left, right, criterio.key) * criterio.direction)
 })
 
-const paginaVisivel = computed<Item[]>(() =>
-  ordenados.value.slice(pagina.value * porPagina, pagina.value * porPagina + porPagina)
+const visiblePage = computed<Item[]>(() =>
+  sorted.value.slice(page.value * porPagina, page.value * porPagina + porPagina)
 )
 
-function valor(item: Item, chave: string): string {
-  const v = item[chave]
-  if (v === null || v === undefined || v === '') return '—'
-  if (chave === 'createdAt') return formatarData(String(v))
-  return String(v)
+function value(item: Item, key: string): string {
+  const rawValue = item[key]
+  if (rawValue === null || rawValue === undefined || rawValue === '') return '—'
+  if (key === 'createdAt') return formatDate(String(rawValue))
+  return String(rawValue)
 }
 
-function formatarData(iso: string): string {
-  const d = new Date(iso)
-  return isNaN(d.getTime()) ? iso : d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
-}
-
-function rotuloStatus(status: unknown): string {
-  const s = String(status || 'ATIVO').toUpperCase()
-  return s === 'PENDENTE_VALIDACAO'
-    ? 'Pendente de aprovação'
-    : s === 'REJEITADO'
-      ? 'Rejeitado'
-      : s === 'DESATIVADO'
-        ? 'Desativado'
-        : 'Ativo'
-}
-
-function classeStatus(status: unknown): string {
-  const s = String(status || 'ATIVO').toUpperCase()
-  return s === 'PENDENTE_VALIDACAO'
-    ? 'badge-alertar'
-    : s === 'REJEITADO'
-      ? 'badge-revisar'
-      : s === 'DESATIVADO'
-        ? 'badge-desativado'
-        : 'badge-permitir'
-}
-
-async function carregarAba(): Promise<void> {
-  if (carregado.value[aba.value]) return
+async function loadTab(): Promise<void> {
+  if (carregado.value[tab.value]) return
   try {
-    
-    dados.value[aba.value] = (await abaAtual.value.carregar('', 20000, true)) as Item[]
-    carregado.value[aba.value] = true
-  } catch (e) {
-    toast.erro((e as Error).message)
+
+    data.value[tab.value] = (await currentTab.value.load('', 20000, true)) as Item[]
+    carregado.value[tab.value] = true
+  } catch (error) {
+    toast.error((error as Error).message)
   }
 }
 
-function trocarAba(chave: ChaveAba): void {
-  aba.value = chave
-  pagina.value = 0
-  busca.value = ''
-  ordem.value = null
+function switchTab(key: TabKey): void {
+  tab.value = key
+  page.value = 0
+  search.value = ''
+  order.value = null
   selecionados.value = []
-  falhas.value = []
-  void carregarAba()
+  failures.value = []
+  void loadTab()
 }
 
-watch(busca, () => {
-  pagina.value = 0
+watch(search, () => {
+  page.value = 0
 })
 
-
-
-function estaSelecionado(item: Item): boolean {
-  return selecionados.value.some((s) => String(s.id) === String(item.id))
+function isSelected(item: Item): boolean {
+  return selecionados.value.some((selecionado) => String(selecionado.id) === String(item.id))
 }
 
-function alternarSelecao(item: Item): void {
-  const i = selecionados.value.findIndex((s) => String(s.id) === String(item.id))
-  if (i >= 0) selecionados.value.splice(i, 1)
+function toggleSelection(item: Item): void {
+  const index = selecionados.value.findIndex((selecionado) => String(selecionado.id) === String(item.id))
+  if (index >= 0) selecionados.value.splice(index, 1)
   else selecionados.value.push(item)
 }
 
-// botões de ação só aparecem quando há itens marcados e sempre no estado certo:
-// desativar vale para os em circulação; reativar, para os já desativados
-const ehDesativado = (i: Item): boolean => String(i.status ?? 'ATIVO').toUpperCase() === 'DESATIVADO'
-const selecionadosAtivos = computed<Item[]>(() => selecionados.value.filter((i) => !ehDesativado(i)))
-const selecionadosDesativados = computed<Item[]>(() => selecionados.value.filter((i) => ehDesativado(i)))
+const isDeactivated = (index: Item): boolean => String(index.status ?? 'ATIVO').toUpperCase() === 'DESATIVADO'
+const activeSelected = computed<Item[]>(() => selecionados.value.filter((index) => !isDeactivated(index)))
+const deactivatedSelected = computed<Item[]>(() => selecionados.value.filter((index) => isDeactivated(index)))
 
-const todosPaginaSelecionados = computed(
-  () => paginaVisivel.value.length > 0 && paginaVisivel.value.every(estaSelecionado)
+const allPageSelected = computed(
+  () => visiblePage.value.length > 0 && visiblePage.value.every(isSelected)
 )
-const algumSelecionadoNaPagina = computed(() => paginaVisivel.value.some(estaSelecionado))
+const somePageSelected = computed(() => visiblePage.value.some(isSelected))
 
-function alternarPaginaInteira(): void {
-  if (todosPaginaSelecionados.value) {
-    for (const item of paginaVisivel.value) {
-      const i = selecionados.value.findIndex((s) => String(s.id) === String(item.id))
-      if (i >= 0) selecionados.value.splice(i, 1)
+function toggleWholePage(): void {
+  if (allPageSelected.value) {
+    for (const item of visiblePage.value) {
+      const index = selecionados.value.findIndex((selecionado) => String(selecionado.id) === String(item.id))
+      if (index >= 0) selecionados.value.splice(index, 1)
     }
   } else {
-    for (const item of paginaVisivel.value) {
-      if (!estaSelecionado(item)) selecionados.value.push(item)
+    for (const item of visiblePage.value) {
+      if (!isSelected(item)) selecionados.value.push(item)
     }
   }
 }
 
-
-async function executarSituacao(): Promise<void> {
+async function applyStatus(): Promise<void> {
   const situacao = confirmando.value
   if (!situacao) return
   confirmando.value = null
-  alterando.value = true
+  applying.value = true
   try {
-    const alvos = situacao === 'DESATIVADO' ? selecionadosAtivos.value : selecionadosDesativados.value
-    const ids = alvos.map((i) => String(i.id))
-    const relatorio = await api.situacaoComponentes(aba.value as TipoExclusao, ids, situacao)
-    const ok = relatorio.filter((r) => r.alterado)
-    falhas.value = relatorio.filter((r) => !r.alterado).map((r) => ({ id: r.id, motivo: r.motivo }))
+    const targets = situacao === 'DESATIVADO' ? activeSelected.value : deactivatedSelected.value
+    const ids = targets.map((index) => String(index.id))
+    const report = await api.setComponentStatus(tab.value as ComponentKind, ids, situacao)
+    const ok = report.filter((response) => response.alterado)
+    failures.value = report.filter((response) => !response.alterado).map((response) => ({ id: response.id, motivo: response.motivo }))
     if (ok.length) {
-      toast.sucesso(
+      toast.success(
         situacao === 'DESATIVADO'
           ? `${ok.length} item(ns) desativado(s) — fora de circulação, dá para reativar quando quiser.`
           : `${ok.length} item(ns) reativado(s) — de volta às listas de uso.`
       )
     }
-    if (falhas.value.length) {
-      toast.aviso(`${falhas.value.length} item(ns) mantido(s) — veja o relatório na tela.`)
+    if (failures.value.length) {
+      toast.warning(`${failures.value.length} item(ns) mantido(s) — veja o relatório na tela.`)
     }
     selecionados.value = []
-    carregado.value[aba.value] = false
-    await carregarAba()
-  } catch (e) {
-    toast.erro((e as Error).message)
+    carregado.value[tab.value] = false
+    await loadTab()
+  } catch (error) {
+    toast.error((error as Error).message)
   } finally {
-    alterando.value = false
+    applying.value = false
   }
 }
 
+const exportModal = ref(false)
+const exportTable = ref<TabKey | 'TODAS'>('TODAS')
 
-const modalExportar = ref(false)
-const exportarTabela = ref<ChaveAba | 'TODAS'>('TODAS')
-
-const ARQUIVO_TABELA: Record<ChaveAba, string> = {
+const TABLE_FILES: Record<TabKey, string> = {
   GS: 'grupos_servico',
   CF: 'codigos_fornecedor',
   CS: 'codigos_servico',
   UM: 'unidades_medida'
 }
 
-function abrirExportacao(): void {
-  exportarTabela.value = aba.value
-  modalExportar.value = true
+function openExport(): void {
+  exportTable.value = tab.value
+  exportModal.value = true
 }
 
-
-function baixarCsv(nome: string, linhas: string[][]): void {
-  const csv = linhas.map((l) => l.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(';')).join('\n')
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = nome
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
-function linhasDaTabela(chave: ChaveAba): string[][] {
-  const config = abas.find((a) => a.chave === chave) as Aba
-  const cabecalho = [...config.colunas.map((c) => c.rotulo), 'Status']
-  const linhas = dados.value[chave].map((item) => [
-    ...config.colunas.map((c) => String(item[c.chave] ?? '')),
-    rotuloStatus(item.status)
+function tableRows(key: TabKey): string[][] {
+  const config = tabs.find((section) => section.key === key) as Tab
+  const header = [...config.columns.map((column) => column.label), 'Status']
+  const linhas = data.value[key].map((item) => [
+    ...config.columns.map((column) => String(item[column.key] ?? '')),
+    statusLabel(item.status)
   ])
-  return [cabecalho, ...linhas]
+  return [header, ...linhas]
 }
 
-async function executarExportacao(): Promise<void> {
-  const alvos: ChaveAba[] = exportarTabela.value === 'TODAS' ? abas.map((a) => a.chave) : [exportarTabela.value]
-  modalExportar.value = false
-  for (const chave of alvos) {
-    if (!carregado.value[chave]) {
+async function runExport(): Promise<void> {
+  const targets: TabKey[] = exportTable.value === 'TODAS' ? tabs.map((section) => section.key) : [exportTable.value]
+  exportModal.value = false
+  for (const key of targets) {
+    if (!carregado.value[key]) {
       try {
-        dados.value[chave] = (await (abas.find((a) => a.chave === chave) as Aba).carregar('', 20000, true)) as Item[]
-        carregado.value[chave] = true
+        data.value[key] = (await (tabs.find((section) => section.key === key) as Tab).load('', 20000, true)) as Item[]
+        carregado.value[key] = true
       } catch {
         continue
       }
     }
-    baixarCsv(`${ARQUIVO_TABELA[chave]}.csv`, linhasDaTabela(chave))
-    
-    if (alvos.length > 1) await new Promise((r) => setTimeout(r, 350))
+    downloadCsv(`${TABLE_FILES[key]}.csv`, tableRows(key))
+
+    if (targets.length > 1) await new Promise((response) => setTimeout(response, 350))
   }
-  toast.sucesso(
-    alvos.length > 1 ? `${alvos.length} arquivos exportados (um por tabela).` : `Arquivo ${ARQUIVO_TABELA[alvos[0]]}.csv exportado.`
+  toast.success(
+    targets.length > 1 ? `${targets.length} arquivos exportados (um por tabela).` : `Arquivo ${TABLE_FILES[targets[0]]}.csv exportado.`
   )
 }
 
+const importModal = ref(false)
+const importTable = ref<TabKey>('GS')
+const importItems = ref<ImportItem[]>([])
+const importing = ref(false)
+const lastImport = ref<{ tabela: TabKey; label: string; ids: string[] } | null>(null)
+const confirmingUndo = ref(false)
 
-const modalImportar = ref(false)
-const importarTabela = ref<ChaveAba>('GS')
-const itensImportacao = ref<ItemImportacao[]>([])
-const importando = ref(false)
-const ultimaImportacao = ref<{ tabela: ChaveAba; rotulo: string; ids: string[] } | null>(null)
-const confirmandoDesfazer = ref(false)
-
-function rotuloItemImportado(item: ItemImportacao): string {
+function importedItemLabel(item: ImportItem): string {
   return String(item.nome || item.descricao || item.sigla || item.codigoSap || item.id || '')
 }
 
-function jaExisteNoCatalogo(tipo: ChaveAba, item: ItemImportacao, existentes: Item[]): boolean {
-  const alvo = (v: unknown) => normalizar(String(v ?? '').trim())
+function alreadyInCatalog(tipo: TabKey, item: ImportItem, existentes: Item[]): boolean {
+  const target = (rawValue: unknown) => normalize(String(rawValue ?? '').trim())
   const id = String(item.id ?? '').trim()
   const sap = String(item.codigoSap ?? id).trim()
   const descricao = String(item.descricao ?? item.nome ?? '').trim()
-  return existentes.some((e) => {
+  return existentes.some((event) => {
     switch (tipo) {
       case 'GS':
-        return alvo(e.nome) === alvo(item.nome) || String(e.id).toUpperCase() === alvo(item.nome).replace(/ /g, '_').toUpperCase()
+        return target(event.nome) === target(item.nome) || String(event.id).toUpperCase() === target(item.nome).replace(/ /g, '_').toUpperCase()
       case 'CF':
-        return (sap && String(e.id) === sap) || (!sap && alvo(e.nome) === alvo(item.nome))
+        return (sap && String(event.id) === sap) || (!sap && target(event.nome) === target(item.nome))
       case 'CS':
-        return alvo(e.descricao) === alvo(descricao)
+        return target(event.descricao) === target(descricao)
       default:
-        return String(e.id).toUpperCase() === String(item.sigla ?? item.id ?? '').trim().toUpperCase()
+        return String(event.id).toUpperCase() === String(item.sigla ?? item.id ?? '').trim().toUpperCase()
     }
   })
 }
 
-const previaImportacao = computed(() => {
-  const existentes = dados.value[importarTabela.value] ?? []
-  const novos: ItemImportacao[] = []
-  const repetidos: ItemImportacao[] = []
-  for (const item of itensImportacao.value) {
-    ;(jaExisteNoCatalogo(importarTabela.value, item, existentes) ? repetidos : novos).push(item)
+const importPreview = computed(() => {
+  const existentes = data.value[importTable.value] ?? []
+  const novos: ImportItem[] = []
+  const repetidos: ImportItem[] = []
+  for (const item of importItems.value) {
+    ;(alreadyInCatalog(importTable.value, item, existentes) ? repetidos : novos).push(item)
   }
   return { novos, repetidos }
 })
 
-const dicaColunas = computed(
+const columnsHint = computed(
   () =>
     ({
       GS: 'Colunas aceitas: id; nome; origem; status — obrigatória: nome.',
       CF: 'Colunas aceitas: id; codigoSap; nome; origem; status — obrigatória: nome (recomendado: codigoSap).',
       CS: 'Colunas aceitas: id; descricao; caracteres; origem; status — obrigatória: descricao (máx. 40 caracteres).',
       UM: 'Colunas aceitas: id; sigla; nome; origem; status — obrigatória: sigla (nome é opcional).'
-    })[importarTabela.value]
+    })[importTable.value]
 )
 
-function abrirImportacao(): void {
-  importarTabela.value = aba.value
-  modalImportar.value = true
-  limparImportacao()
+function openImport(): void {
+  importTable.value = tab.value
+  importModal.value = true
+  clearImport()
 }
 
-function limparImportacao(): void {
-  itensImportacao.value = []
-  const campo = document.getElementById('arquivo-importar') as HTMLInputElement | null
-  if (campo) campo.value = ''
+function clearImport(): void {
+  importItems.value = []
+  const field = document.getElementById('arquivo-importar') as HTMLInputElement | null
+  if (field) field.value = ''
 }
 
-
-function parseCsv(texto: string): string[][] {
-  const limpo = texto.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n')
-  const primeiraLinha = limpo.split('\n')[0] || ''
-  const separador = (primeiraLinha.match(/;/g)?.length ?? 0) >= (primeiraLinha.match(/,/g)?.length ?? 0) ? ';' : ','
-  const linhas: string[][] = []
-  let linha: string[] = []
-  let campo = ''
-  let aspas = false
-  for (let i = 0; i < limpo.length; i++) {
-    const c = limpo[i]
-    if (aspas) {
-      if (c === '"') {
-        if (limpo[i + 1] === '"') {
-          campo += '"'
-          i++
-        } else {
-          aspas = false
-        }
-      } else {
-        campo += c
-      }
-    } else if (c === '"') {
-      aspas = true
-    } else if (c === separador) {
-      linha.push(campo)
-      campo = ''
-    } else if (c === '\n') {
-      linha.push(campo)
-      campo = ''
-      if (linha.some((v) => v.trim() !== '')) linhas.push(linha)
-      linha = []
-    } else {
-      campo += c
-    }
-  }
-  linha.push(campo)
-  if (linha.some((v) => v.trim() !== '')) linhas.push(linha)
-  return linhas
-}
-
-function normalizarCabecalho(c: string): string {
-  return c
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-}
-
-const CAMPOS_CABECALHO: Record<string, keyof ItemImportacao> = {
+const HEADER_FIELDS: Record<string, keyof ImportItem> = {
   id: 'id',
   codigo: 'id',
-  chave: 'id',
+  key: 'id',
   nome: 'nome',
   name: 'nome',
   descricao: 'descricao',
@@ -1041,154 +531,154 @@ const CAMPOS_CABECALHO: Record<string, keyof ItemImportacao> = {
   codigofornecedorsap: 'codigoSap'
 }
 
-const ASSINATURA_TABELA: { campo: string; tabela: ChaveAba }[] = [
-  { campo: 'sigla', tabela: 'UM' },
-  { campo: 'codigosap', tabela: 'CF' },
-  { campo: 'sap', tabela: 'CF' },
-  { campo: 'codigofornecedor', tabela: 'CF' },
-  { campo: 'codigofornecedorsap', tabela: 'CF' },
-  { campo: 'descricao', tabela: 'CS' },
-  { campo: 'nome', tabela: 'GS' }
+const TABLE_SIGNATURE: { field: string; tabela: TabKey }[] = [
+  { field: 'sigla', tabela: 'UM' },
+  { field: 'codigosap', tabela: 'CF' },
+  { field: 'sap', tabela: 'CF' },
+  { field: 'codigofornecedor', tabela: 'CF' },
+  { field: 'codigofornecedorsap', tabela: 'CF' },
+  { field: 'descricao', tabela: 'CS' },
+  { field: 'nome', tabela: 'GS' }
 ]
 
-function rotuloDaTabela(chave: ChaveAba): string {
-  return (abas.find((a) => a.chave === chave) as Aba).rotulo
+function tableLabel(key: TabKey): string {
+  return (tabs.find((section) => section.key === key) as Tab).label
 }
 
-function detectarTabelaDoArquivo(cabecalho: string[]): ChaveAba | null {
-  const campos = new Set(cabecalho.map(normalizarCabecalho))
-  for (const assinatura of ASSINATURA_TABELA) {
-    if (campos.has(assinatura.campo)) return assinatura.tabela
+function detectFileTable(header: string[]): TabKey | null {
+  const campos = new Set(header.map(normalizeHeader))
+  for (const assinatura of TABLE_SIGNATURE) {
+    if (campos.has(assinatura.field)) return assinatura.tabela
   }
   return null
 }
 
-function paraItensImportacao(tipo: ChaveAba, matriz: string[][]): ItemImportacao[] {
-  const cabecalho = matriz[0] || []
-  const posicoes: Partial<Record<keyof ItemImportacao, number>> = {}
-  cabecalho.forEach((coluna, i) => {
-    const campo = CAMPOS_CABECALHO[normalizarCabecalho(coluna)]
-    if (campo && posicoes[campo] === undefined) posicoes[campo] = i
+function toImportItems(tipo: TabKey, matriz: string[][]): ImportItem[] {
+  const header = matriz[0] || []
+  const positions: Partial<Record<keyof ImportItem, number>> = {}
+  header.forEach((coluna, index) => {
+    const field = HEADER_FIELDS[normalizeHeader(coluna)]
+    if (field && positions[field] === undefined) positions[field] = index
   })
-  const obrigatorio: Record<ChaveAba, keyof ItemImportacao> = { GS: 'nome', CF: 'nome', CS: 'descricao', UM: 'sigla' }
-  const exigido = obrigatorio[tipo]
-  if (posicoes[exigido] === undefined) {
-    throw new Error(`Cabeçalho sem a coluna “${exigido}”. Exporte a tabela antes para ver o formato exato.`)
+  const required: Record<TabKey, keyof ImportItem> = { GS: 'nome', CF: 'nome', CS: 'descricao', UM: 'sigla' }
+  const requiredField = required[tipo]
+  if (positions[requiredField] === undefined) {
+    throw new Error(`Cabeçalho sem a coluna “${requiredField}”. Exporte a tabela antes para ver o formato exato.`)
   }
   return matriz.slice(1).map((linha) => {
-    const celula = (campo: keyof ItemImportacao): string | null => {
-      const i = posicoes[campo]
-      return i === undefined ? null : (linha[i] ?? '').trim() || null
+    const cell = (field: keyof ImportItem): string | null => {
+      const index = positions[field]
+      return index === undefined ? null : (linha[index] ?? '').trim() || null
     }
     return {
-      id: celula('id'),
-      nome: celula('nome'),
-      descricao: celula('descricao'),
-      sigla: celula('sigla'),
-      codigoSap: celula('codigoSap')
+      id: cell('id'),
+      nome: cell('nome'),
+      descricao: cell('descricao'),
+      sigla: cell('sigla'),
+      codigoSap: cell('codigoSap')
     }
   })
 }
 
-async function lerArquivoImportacao(event: Event): Promise<void> {
-  const alvo = event.target as HTMLInputElement
-  const arquivo = alvo.files?.[0]
-  itensImportacao.value = []
+async function readImportFile(event: Event): Promise<void> {
+  const target = event.target as HTMLInputElement
+  const arquivo = target.files?.[0]
+  importItems.value = []
   if (!arquivo) return
   try {
     const matriz = parseCsv(await arquivo.text())
     if (matriz.length < 2) {
       throw new Error('O arquivo precisa do cabeçalho e de pelo menos uma linha de dados.')
     }
-    const tabelaDoArquivo = detectarTabelaDoArquivo(matriz[0] || [])
-    if (tabelaDoArquivo && tabelaDoArquivo !== importarTabela.value) {
+    const tabelaDoArquivo = detectFileTable(matriz[0] || [])
+    if (tabelaDoArquivo && tabelaDoArquivo !== importTable.value) {
       throw new Error(
-        `Este arquivo parece ser de ${rotuloDaTabela(tabelaDoArquivo)}, mas a tabela escolhida é ` +
-          `${rotuloDaTabela(importarTabela.value)}. Troque a tabela ou envie o arquivo certo — nada foi importado.`
+        `Este arquivo parece ser de ${tableLabel(tabelaDoArquivo)}, mas a tabela escolhida é ` +
+          `${tableLabel(importTable.value)}. Troque a tabela ou envie o arquivo certo — nada foi importado.`
       )
     }
-    if (!carregado.value[importarTabela.value]) {
-      const config = abas.find((a) => a.chave === importarTabela.value) as Aba
-      dados.value[importarTabela.value] = (await config.carregar('', 20000, true)) as Item[]
-      carregado.value[importarTabela.value] = true
+    if (!carregado.value[importTable.value]) {
+      const config = tabs.find((section) => section.key === importTable.value) as Tab
+      data.value[importTable.value] = (await config.load('', 20000, true)) as Item[]
+      carregado.value[importTable.value] = true
     }
-    itensImportacao.value = paraItensImportacao(importarTabela.value, matriz)
-    const { novos, repetidos } = previaImportacao.value
-    toast.aviso(
-      `${itensImportacao.value.length} linha(s) lida(s): ${novos.length} nova(s) entra(m), ` +
+    importItems.value = toImportItems(importTable.value, matriz)
+    const { novos, repetidos } = importPreview.value
+    toast.warning(
+      `${importItems.value.length} linha(s) lida(s): ${novos.length} nova(s) entra(m), ` +
         `${repetidos.length} já existe(m) e não ${repetidos.length === 1 ? 'muda' : 'mudam'}.`
     )
-  } catch (e) {
-    toast.erro((e as Error).message)
+  } catch (error) {
+    toast.error((error as Error).message)
   }
 }
 
-async function executarImportacao(): Promise<void> {
-  importando.value = true
+async function runImport(): Promise<void> {
+  importing.value = true
   try {
-    const r = await api.importarCatalogo(importarTabela.value, itensImportacao.value)
-    const novos = r.adicionados
-    const mantidos = r.ignorados.length
+    const response = await api.importCatalog(importTable.value, importItems.value)
+    const novos = response.adicionados
+    const mantidos = response.ignorados.length
     if (novos && mantidos) {
-      toast.sucesso(
+      toast.success(
         `Importação concluída: ${novos} novo(s) adicionado(s) · ${mantidos} já existiam e foram mantidos como estavam.`
       )
     } else if (novos) {
-      toast.sucesso(`${novos} item(ns) adicionado(s) a ${abaAtual.value.rotulo.toLowerCase()}.`)
+      toast.success(`${novos} item(ns) adicionado(s) a ${currentTab.value.label.toLowerCase()}.`)
     } else {
-      toast.aviso(
+      toast.warning(
         `Nada novo: ${mantidos} linha(s) já ${mantidos === 1 ? 'existia e foi mantida' : 'existiam e foram mantidas'} como estavam.`
       )
     }
-    const foraDoPadrao = r.ignorados.find((f) => !/mantid/i.test(f.motivo))
-    if (foraDoPadrao) {
-      toast.aviso(`Linha ${foraDoPadrao.linha} não entrou: ${foraDoPadrao.motivo}`)
+    const offPattern = response.ignorados.find((failure) => !/mantid/i.test(failure.motivo))
+    if (offPattern) {
+      toast.warning(`Linha ${offPattern.linha} não entrou: ${offPattern.motivo}`)
     }
-    ultimaImportacao.value = novos
-      ? { tabela: importarTabela.value, rotulo: rotuloDaTabela(importarTabela.value), ids: r.idsAdicionados }
+    lastImport.value = novos
+      ? { tabela: importTable.value, label: tableLabel(importTable.value), ids: response.idsAdicionados }
       : null
-    modalImportar.value = false
-    limparImportacao()
-    carregado.value[importarTabela.value] = false
-    if (importarTabela.value === aba.value) await carregarAba()
-  } catch (e) {
-    toast.erro((e as Error).message)
+    importModal.value = false
+    clearImport()
+    carregado.value[importTable.value] = false
+    if (importTable.value === tab.value) await loadTab()
+  } catch (error) {
+    toast.error((error as Error).message)
   } finally {
-    importando.value = false
+    importing.value = false
   }
 }
 
-async function desfazerImportacao(): Promise<void> {
-  const alvo = ultimaImportacao.value
-  confirmandoDesfazer.value = false
-  if (!alvo) return
+async function undoImport(): Promise<void> {
+  const target = lastImport.value
+  confirmingUndo.value = false
+  if (!target) return
   try {
-    const relatorio = await api.exclusaoEmMassa(alvo.tabela, alvo.ids)
-    const ok = relatorio.filter((r) => r.excluido)
+    const report = await api.bulkDelete(target.tabela, target.ids)
+    const ok = report.filter((response) => response.excluido)
     if (ok.length) {
-      toast.sucesso(`Importação desfeita: ${ok.length} item(ns) removido(s) — estado anterior restaurado.`)
+      toast.success(`Importação desfeita: ${ok.length} item(ns) removido(s) — estado anterior restaurado.`)
     }
-    const naoRemovidos = relatorio.filter((r) => !r.excluido)
-    if (naoRemovidos.length) {
-      toast.aviso(`${naoRemovidos.length} item(ns) não puderam ser removidos (${naoRemovidos[0].motivo}).`)
+    const notRemoved = report.filter((response) => !response.excluido)
+    if (notRemoved.length) {
+      toast.warning(`${notRemoved.length} item(ns) não puderam ser removidos (${notRemoved[0].motivo}).`)
     }
-    ultimaImportacao.value = null
-    carregado.value[alvo.tabela] = false
-    if (alvo.tabela === aba.value) await carregarAba()
-  } catch (e) {
-    toast.erro((e as Error).message)
+    lastImport.value = null
+    carregado.value[target.tabela] = false
+    if (target.tabela === tab.value) await loadTab()
+  } catch (error) {
+    toast.error((error as Error).message)
   }
 }
 
 onMounted(async () => {
-  await carregarAba()
-  
-  for (const a of abas) {
-    if (a.chave === aba.value || carregado.value[a.chave]) continue
-    a.carregar('', 20000, true)
+  await loadTab()
+
+  for (const section of tabs) {
+    if (section.key === tab.value || carregado.value[section.key]) continue
+    section.load('', 20000, true)
       .then((itens) => {
-        dados.value[a.chave] = itens as Item[]
-        carregado.value[a.chave] = true
+        data.value[section.key] = itens as Item[]
+        carregado.value[section.key] = true
       })
       .catch(() => {})
   }
@@ -1196,8 +686,396 @@ onMounted(async () => {
 </script>
 
 <script lang="ts">
-export default { name: 'CatalogoView' }
+export default { name: 'CatalogView' }
 </script>
+
+<template>
+  <div>
+    <h2 style="margin: 0 0 6px; font-size: 1.35rem; color: var(--azul-escuro)">Catálogo</h2>
+    <p class="suave" style="margin: 0 0 20px">
+      Consulta somente leitura de todos os componentes: grupos, fornecedores, serviços e unidades.
+      Itens aguardando aprovação aparecem com o selo de status — só entram em uso depois de aprovados.
+    </p>
+
+    <div class="abas">
+      <button
+        v-for="section in tabs"
+        :key="section.key"
+        class="aba"
+        :class="{ ativa: tab === section.key }"
+        @click="switchTab(section.key)"
+      >
+        {{ section.label }}
+        <span class="aba-contagem">{{ totals[section.key] ?? '…' }}</span>
+      </button>
+    </div>
+
+    <div class="linha-campo" style="margin: 18px 0">
+      <div class="campo-busca-wrap">
+        <input
+          v-model="search"
+          type="text"
+          class="campo-busca"
+          :placeholder="`Buscar em ${currentTab.label.toLowerCase()} por nome, descrição ou código…`"
+        />
+        <button v-if="search" type="button" class="btn-limpar-busca" title="Limpar busca" @click="search = ''">✕</button>
+      </div>
+      <button
+        type="button"
+        class="botao-filtro-excecao"
+        :class="{ ativo: onlyExceptions }"
+        :title="onlyExceptions
+          ? 'Mostrando apenas casos especiais — clique para ver todos'
+          : 'Mostrar apenas os itens com (!): exceções aprovadas e duplicidades tratadas'"
+        @click="toggleExceptionFilter"
+      >
+        <span class="badge-excecao">!</span>
+        Casos especiais
+        <span class="contagem">{{ exceptionCount }}</span>
+      </button>
+      <button
+        type="button"
+        class="botao-filtro-excecao btn-alteracoes"
+        title="Ver a lista de itens alterados, transferidos e excluídos na base"
+        @click="openChanges"
+      >
+        📋 Alterações
+      </button>
+      <span v-if="isAdmin && selecionados.length" class="badge badge-alertar">
+        {{ selecionados.length }} selecionado(s)
+      </span>
+      <span style="flex: 1"></span>
+      <button class="botao botao-escuro" @click="openExport">⤓ Exportar CSV</button>
+      <button v-if="isAdmin" class="botao botao-escuro" @click="openImport">⤓ Importar CSV</button>
+      <button
+        v-if="isAdmin && activeSelected.length"
+        class="botao botao-escuro"
+        :disabled="applying"
+        @click="confirmando = 'DESATIVADO'"
+      >
+        {{ applying ? 'Aplicando…' : `✕ Desativar selecionados (${activeSelected.length})` }}
+      </button>
+      <button
+        v-if="isAdmin && deactivatedSelected.length"
+        class="botao botao-verde"
+        :disabled="applying"
+        @click="confirmando = 'ATIVO'"
+      >
+        ↻ Reativar selecionados ({{ deactivatedSelected.length }})
+      </button>
+    </div>
+
+    <div v-if="lastImport" class="aviso aviso-azul" style="margin-bottom: 16px">
+      <span class="icone">↩</span>
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+        <span>
+          <strong>Importação concluída:</strong> {{ lastImport.ids.length }} item(ns)
+          adicionado(s) a {{ lastImport.label }}.
+        </span>
+        <button class="botao botao-escuro" @click="confirmingUndo = true">Desfazer importação</button>
+        <button class="cb-excluir" title="Dispensar aviso" @click="lastImport = null">✕</button>
+      </div>
+    </div>
+
+    <div v-if="failures.length" class="aviso aviso-amarelo" style="margin-bottom: 16px">
+      <span class="icone">⚠</span>
+      <div>
+        <strong>{{ failures.length }} item(ns) não tiveram a situação alterada:</strong>
+        <div v-for="failure in failures.slice(0, 5)" :key="failure.id" style="margin-top: 6px">
+          <strong>{{ failure.id }}</strong> — {{ failure.motivo }}
+        </div>
+      </div>
+    </div>
+
+    <div class="painel" style="overflow-x: auto">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th v-if="isAdmin" style="width: 38px">
+              <input
+                type="checkbox"
+                :checked="allPageSelected"
+                :indeterminate.prop="somePageSelected && !allPageSelected"
+                title="Selecionar todos desta página"
+                @change="toggleWholePage"
+              />
+            </th>
+            <th
+              v-for="column in currentTab.columns"
+              :key="column.key"
+              class="th-ordenable"
+              :title="`Ordenar por ${column.label.toLowerCase()}`"
+              @click="sortBy(column.key)"
+            >
+              {{ column.label }}
+              <span v-if="order?.key === column.key" class="seta-ordenacao">{{ order.direction === 1 ? '▲' : '▼' }}</span>
+            </th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in visiblePage" :key="String(item.id)" :class="{ 'linha-excecao': item.casoIsolado }">
+            <td v-if="isAdmin">
+              <input type="checkbox" :checked="isSelected(item)" @change="toggleSelection(item)" />
+            </td>
+            <td v-for="column in currentTab.columns" :key="column.key">
+              <span v-if="column.key === 'id'" class="id-codigo">{{ value(item, column.key) }}</span>
+              <template v-else>{{ value(item, column.key) }}</template>
+              <button
+                v-if="item.casoIsolado && (column.key === 'id' || column.key === 'sigla' || column.key === 'nome' || column.key === 'descricao')"
+                type="button"
+                class="badge-excecao"
+                :title="String(item.motivoCasoIsolado || 'Caso especial registrado') + ' — clique para resolver e remover o (!)'"
+                @click.stop="openResolution(item)"
+              >!</button>
+            </td>
+            <td>
+              <span class="badge" :class="statusClass(item.status)">{{ statusLabel(item.status) }}</span>
+              <button
+                v-if="!item.casoIsolado"
+                type="button"
+                class="btn-marcar-excecao"
+                title="Marcar como caso especial (!) — para revisar, resolver ou excluir depois"
+                @click.stop="openMarking(item)"
+              >!</button>
+            </td>
+          </tr>
+          <tr v-if="!visiblePage.length">
+            <td :colspan="currentTab.columns.length + (isAdmin ? 2 : 1)" class="suave centralizado">
+              <template v-if="onlyExceptions">Nenhum caso especial ({{ exceptionCount }}) nesta aba.</template>
+              <template v-else>Nenhum item encontrado para “{{ search }}”.</template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div v-if="totalPages > 1" class="paginacao" style="margin-top: 16px">
+        <button class="pulo" :disabled="page === 0" @click="page = 0" title="Início">|‹</button>
+        <button class="pulo" :disabled="page === 0" @click="page--" title="Página anterior">‹</button>
+        <span class="info">
+          <strong>{{ page + 1 }}</strong> / {{ totalPages }} — {{ filtered.length }} item(ns)
+        </span>
+        <button class="pulo" :disabled="page + 1 >= totalPages" @click="page++" title="Próxima página">›</button>
+        <button class="pulo" :disabled="page + 1 >= totalPages" @click="page = totalPages - 1" title="Fim">›|</button>
+      </div>
+    </div>
+
+    <p class="legenda-excecao suave">
+      <span class="badge-excecao">!</span>
+      <span>
+        <strong>Caso especial</strong> — item com exceção aprovada (similar aceito com justificativa)
+        ou duplicidade tratada na varredura. Passe o mouse sobre o ! para ver o motivo.
+      </span>
+    </p>
+
+    <div v-if="exportModal" class="modal-fundo" @click.self="exportModal = false">
+      <div class="modal" style="max-width: 540px">
+        <h3>Exportar catálogo (CSV)</h3>
+        <p class="suave" style="margin: -8px 0 16px">
+          O arquivo abre direto no Excel (separador “;”, com acentuação correta).
+        </p>
+        <div class="campo-form">
+          <label for="tabela-exportar">Qual tabela exportar?</label>
+          <select id="tabela-exportar" v-model="exportTable">
+            <option value="TODAS">Todas as tabelas (um arquivo por tabela)</option>
+            <option v-for="section in tabs" :key="section.key" :value="section.key">{{ section.label }}</option>
+          </select>
+        </div>
+        <div class="linha-botoes">
+          <button class="botao botao-escuro" @click="exportModal = false">Cancelar</button>
+          <button class="botao botao-roxo" @click="runExport">⤓ Exportar</button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="importModal" class="modal-fundo" @click.self="importModal = false">
+      <div class="modal" style="max-width: 620px">
+        <h3>Importar catálogo (CSV)</h3>
+        <div class="aviso aviso-verde" style="margin: 0 0 16px">
+          <span class="icone">✓</span>
+          <div>
+            <strong>Só é adicionado o que for novo.</strong> Nada que já existe no banco é
+            apagado ou alterado — linhas repetidas voltam no relatório como “ignoradas”.
+          </div>
+        </div>
+        <div class="campo-form">
+          <label for="tabela-importar">Qual tabela será alimentada?</label>
+          <select id="tabela-importar" v-model="importTable" @change="clearImport">
+            <option v-for="section in tabs" :key="section.key" :value="section.key">{{ section.label }}</option>
+          </select>
+        </div>
+        <div class="campo-form">
+          <label for="arquivo-importar">Arquivo CSV</label>
+          <input id="arquivo-importar" type="file" accept=".csv,text/csv" @change="readImportFile" />
+        </div>
+        <div class="aviso aviso-azul">
+          <span class="icone">ℹ</span>
+          <div>
+            {{ columnsHint }}<br />
+            A <strong>primeira linha deve ser o cabeçalho</strong> — exporte antes para ver o formato exato.
+            <strong>“Criado em” e “Criado por” são gravados automaticamente</strong> com o momento e o
+            usuário que fez a importação (valores do arquivo são ignorados).
+          </div>
+        </div>
+
+        <div v-if="importItems.length" class="aviso" :class="importPreview.novos.length ? 'aviso-verde' : 'aviso-amarelo'" style="margin-top: 14px">
+          <span class="icone">{{ importPreview.novos.length ? '✓' : 'ℹ' }}</span>
+          <div>
+            <strong>Só o que é novo entra: {{ importPreview.novos.length }} de {{ importItems.length }} linha(s).</strong>
+            {{ importPreview.repetidos.length }} já {{ importPreview.repetidos.length === 1 ? 'existe e será mantida' : 'existem e serão mantidas' }} como está/estão.
+            <div v-for="response in importPreview.repetidos.slice(0, 5)" :key="importedItemLabel(response)" class="suave" style="margin-top: 5px">
+              já existe: <strong>{{ importedItemLabel(response) }}</strong>
+            </div>
+            <div v-if="importPreview.repetidos.length > 5" class="suave" style="margin-top: 5px">
+              … e mais {{ importPreview.repetidos.length - 5 }}.
+            </div>
+          </div>
+        </div>
+
+        <div class="linha-botoes">
+          <button class="botao botao-escuro" @click="importModal = false">Cancelar</button>
+          <button
+            class="botao botao-roxo"
+            :disabled="!importPreview.novos.length || importing"
+            @click="runImport"
+          >
+            {{ importing ? 'Importando…' : importPreview.novos.length ? `Importar ${importPreview.novos.length} nova(s)` : 'Nada novo para importar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="transferring" class="modal-fundo" @click.self="closeTransfer">
+      <div class="modal" style="max-width: 620px">
+        <h3>Transferir vínculos para excluir</h3>
+        <p class="suave" style="margin: -8px 0 16px; line-height: 1.6">
+          <strong>{{ transferring.id }} — {{ currentTab.labelOf(transferring) }}</strong> está vinculado a
+          <strong>{{ contagemVinculos }} código(s) completo(s)</strong>. Para liberar a exclusão, escolha
+          um item da mesma tabela para <strong>receber esses vínculos</strong> — depois o item de origem
+          é excluído definitivamente.
+        </p>
+        <div class="campo-form">
+          <label>Receber os vínculos em</label>
+          <SearchCombobox
+            :load="currentTab.load"
+            :name-of="(item) => String(item.id ?? '') + ' — ' + currentTab.labelOf(item)"
+            :id-of="() => ''"
+            :allow-create="false"
+            placeholder="Buscar item desta tabela para receber os vínculos…"
+            @update:model-value="(rawValue) => (linkTarget = (rawValue as Item) || null)"
+          />
+        </div>
+        <div class="linha-botoes">
+          <button class="botao botao-escuro" @click="closeTransfer">Cancelar</button>
+          <button
+            class="botao botao-vermelho"
+            :disabled="!linkTarget || transferInProgress"
+            @click="confirmTransfer"
+          >
+            {{ transferInProgress ? 'Transferindo…' : '⇄ Transferir vínculos e excluir' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="changesModal" class="modal-fundo" @click.self="changesModal = false">
+      <div class="modal" style="max-width: 860px">
+        <h3>Itens alterados e excluídos na base</h3>
+        <p class="suave" style="margin: -8px 0 14px; line-height: 1.6">
+          Histórico completo das limpezas e decisões: itens <strong>excluídos</strong>,
+          vínculos <strong>transferidos</strong>, composições <strong>mescladas</strong> e itens
+          <strong>desativados/reativados</strong> — cada linha com o motivo registrado.
+        </p>
+        <div class="lista-alteracoes">
+          <div v-if="loadingChanges" class="suave centralizado" style="padding: 22px">Carregando…</div>
+          <div v-else-if="!changes.length" class="suave centralizado" style="padding: 22px">
+            Nenhuma alteração registrada ainda.
+          </div>
+          <div v-for="(event, index) in changes" :key="event.id || index" class="linha-alteracao">
+            <span class="badge" :class="changeClass(event)">{{ changeLabel(event) }}</span>
+            <strong class="id-alteracao">{{ event.entityId }}</strong>
+            <span class="motivo-alteracao">{{ event.reason || '—' }}</span>
+            <span class="data-alteracao">{{ formatDate(event.occurredAt) }}</span>
+          </div>
+        </div>
+        <div class="linha-botoes">
+          <button class="botao botao-escuro" @click="changesModal = false">Fechar</button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="marking" class="modal-fundo" @click.self="marking = null">
+      <div class="modal" style="max-width: 540px">
+        <h3>Marcar como caso especial</h3>
+        <p class="suave" style="margin: -8px 0 16px; line-height: 1.6">
+          O item <strong>{{ marking.id }} — {{ currentTab.labelOf(marking) }}</strong> receberá o
+          <span class="badge-excecao">!</span> e passará a aparecer no filtro
+          <strong>Casos especiais</strong>. Registre o motivo — é ele que aparece no hover do badge.
+        </p>
+        <div class="campo-form">
+          <label>Motivo do caso especial</label>
+          <textarea
+            v-model="markingReason"
+            style="min-height: 84px"
+            placeholder="Ex.: possível duplicidade de “X” — confirmar antes de excluir."
+          ></textarea>
+        </div>
+        <div class="linha-botoes">
+          <button class="botao botao-escuro" @click="marking = null">Cancelar</button>
+          <button
+            class="botao botao-roxo"
+            :disabled="!markingReason.trim() || resolvingNow"
+            @click="confirmMarking"
+          >
+            ✓ Marcar com (!)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ConfirmModal
+      v-if="resolving"
+      title="Resolver caso especial?"
+      :message="`Motivo registrado: ${String(resolving.motivoCasoIsolado || 'caso especial registrado')}. Ao resolver, o (!) é removido do item e ele sai do filtro de casos especiais. O histórico continua na auditoria.`"
+      secondary-label="✕ Excluir definitivamente"
+      :secondary-dangerous="true"
+      confirm-label="✓ Resolver e remover (!)"
+      :dangerous-action="false"
+      @secondary="askDeactivation"
+      @confirm="confirmResolution"
+      @cancel="resolving = null"
+    />
+    <ConfirmModal
+      v-if="deleting"
+      title="Excluir definitivamente?"
+      :message="`O item ${deleting.id} — ${currentTab.labelOf(deleting)} será APAGADO do banco de dados. Esta ação NÃO pode ser desfeita. Se houver vínculos ativos, a exclusão será bloqueada. Se o item puder voltar um dia, prefira apenas desativar.`"
+      confirm-label="✕ Excluir para sempre"
+      :dangerous-action="true"
+      @confirm="confirmDeletion"
+      @cancel="deleting = null"
+    />
+    <ConfirmModal
+      v-if="confirmingUndo"
+      title="Desfazer a importação?"
+      :message="`${lastImport?.ids.length ?? 0} item(ns) adicionado(s) agora serão removidos, voltando ao estado anterior. O que já existia não é tocado.`"
+      confirm-label="Desfazer importação"
+      :dangerous-action="true"
+      @confirm="undoImport"
+      @cancel="confirmingUndo = false"
+    />
+    <ConfirmModal
+      v-if="confirmando"
+      :title="confirmando === 'DESATIVADO' ? 'Desativar itens do catálogo?' : 'Reativar itens do catálogo?'"
+      :message="confirmando === 'DESATIVADO'
+        ? `${activeSelected.length} item(ns) de ${currentTab.label.toLowerCase()} sairão de circulação: somem das listas de uso e da similaridade. Nada é perdido — vínculos, histórico e auditoria continuam, e dá para reativar quando quiser.`
+        : `${deactivatedSelected.length} item(ns) de ${currentTab.label.toLowerCase()} voltarão para as listas de uso. A ação fica registrada na auditoria.`"
+      :confirm-label="confirmando === 'DESATIVADO' ? '✕ Desativar' : '↻ Reativar'"
+      :dangerous-action="confirmando === 'DESATIVADO'"
+      @confirm="applyStatus"
+      @cancel="confirmando = null"
+    />
+  </div>
+</template>
 
 <style scoped>
 .abas {

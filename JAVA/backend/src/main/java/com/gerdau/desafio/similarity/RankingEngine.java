@@ -41,7 +41,6 @@ public final class RankingEngine {
         List<String> palavrasConsulta = TextoUtil.palavrasDoNucleoSemNumeros(consulta);
         Set<String> tokensConsulta = SimilarityEngine.tokens(consultaNormalizada);
         List<String> numerosConsulta = SimilarityEngine.numeros(consultaNormalizada);
-        // palavras incomuns no catálogo: uma delas casando sozinha já vale um alerta
         Set<String> palavrasEspecificas = palavrasEspecificas(palavrasConsulta, catalogo);
 
         List<Pontuado> pontuados = new ArrayList<>();
@@ -51,21 +50,16 @@ public final class RankingEngine {
                     || consultaBruta.equals(item.id()));
             boolean textoIgual = consultaNormalizada.equals(item.descricaoNormalizada());
             List<String> palavrasItem = TextoUtil.palavrasDoNucleoSemNumeros(item.descricao());
-            // números são MEDIDA, não palavra — colado ("telhado2") ou com espaço
-            // ("telhado 2") tem o mesmo tratamento: número a mais só de um lado não
-            // muda o nome; números diferentes dos dois lados são medidas diferentes
             boolean medidasDiferentes = !numerosConsulta.isEmpty() && !item.numeros().isEmpty()
                     && !numerosConsulta.equals(item.numeros());
             boolean essencialmenteIgual = !medidasDiferentes && !palavrasConsulta.isEmpty()
                     && (palavrasConsulta.equals(palavrasItem)
                     || mesmaEssenciaPalavraAPalavra(palavrasConsulta, palavrasItem));
-            // 1 palavra completa em comum (aceitando erro de digitação) já gera ALERTA:
-            // descrições longas não podem "diluir" o match de uma palavra que casa
             String palavraEmComum = null;
             if (!essencialmenteIgual) {
                 for (String palavra : palavrasConsulta) {
                     if (!palavrasEspecificas.contains(palavra)) {
-                        continue; // palavra genérica não dispara alerta sozinha
+                        continue;
                     }
                     if (palavrasItem.stream().anyMatch(p -> palavraEssencialmenteIgual(palavra, p))) {
                         palavraEmComum = palavra;
@@ -91,11 +85,9 @@ public final class RankingEngine {
                 score = 1.0;
             }
             if (essencialmenteIgual) {
-                // mesma essência: duplicidade garantida, mesmo com grafia/numeração diferente
                 score = 1.0;
             }
             if (palavraEmComum != null && score < PISO_ALERTA_PALAVRA_ESPECIFICA) {
-                // palavra específica casando nunca fica abaixo do nível de alerta
                 score = PISO_ALERTA_PALAVRA_ESPECIFICA;
             }
             if (score >= scoreMinimo) {
@@ -132,16 +124,9 @@ public final class RankingEngine {
 
     private static final double SEMELHANCA_PALAVRA_IGUAL = 0.80;
     private static final int APENDICE_TOLERADO = 3;
-    /** nível mínimo do score quando uma palavra específica casa (0.70 = ALERTA) */
     private static final double PISO_ALERTA_PALAVRA_ESPECIFICA = 0.70;
-    /** uma palavra que aparece em mais de 5% do catálogo (mín. 2 itens) é genérica */
     private static final double FRACAO_PALAVRA_GENERICA = 0.05;
 
-    /**
-     * Palavras incomuns no catálogo: só elas disparam o alerta por palavra única —
-     * palavras genéricas ("manutenção", "serviço") aparecem em muitos itens e
-     * sozinhas não dizem nada.
-     */
     private static Set<String> palavrasEspecificas(List<String> palavrasConsulta, List<CatalogoItem> catalogo) {
         Set<String> especificas = new LinkedHashSet<>();
         for (String palavra : palavrasConsulta) {
@@ -168,11 +153,6 @@ public final class RankingEngine {
         return false;
     }
 
-    /**
-     * Cada par de palavras precisa ser essencialmente a mesma ("telhados" vs
-     * "telhadoa"/"tehado"/"telhadoo"). Palavras curtas precisam casar exato
-     * ("m2" vs "m3" são medidas diferentes).
-     */
     private static boolean mesmaEssenciaPalavraAPalavra(List<String> a, List<String> b) {
         if (a.size() != b.size()) {
             return false;
@@ -191,14 +171,12 @@ public final class RankingEngine {
         }
         int menor = Math.min(a.length(), b.length());
         int maior = Math.max(a.length(), b.length());
-        // uma palavra é a outra com um apêndice curto ("telhado" vs "telhadoxyz")
         if (maior - menor <= APENDICE_TOLERADO && (a.startsWith(b) || b.startsWith(a))) {
             return true;
         }
         if (menor < 5) {
             return false;
         }
-        // digitação: uma letra a mais/menos/trocada ("tehado", "telhadoa")
         return 1.0 - (double) distanciaEdicao(a, b) / maior >= SEMELHANCA_PALAVRA_IGUAL;
     }
 

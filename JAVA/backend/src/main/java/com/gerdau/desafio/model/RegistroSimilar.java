@@ -2,11 +2,6 @@ package com.gerdau.desafio.model;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
-/**
- * Snapshot de um item similar encontrado no momento do cadastro.
- * Classe simples (não record) de propósito: documentos antigos, gravados sem os
- * campos novos, continuam sendo lidos — com os padrões declarados abaixo.
- */
 public class RegistroSimilar {
 
     @Field("posicao")
@@ -33,10 +28,6 @@ public class RegistroSimilar {
     @Field("motivoCasoIsolado")
     private String motivoCasoIsolado;
 
-    /**
-     * Componente ao qual o match pertence (CS, GS, CF ou UM). Documentos antigos
-     * ficam sem o campo e valem como "CS" (ver {@link #getTipo()}).
-     */
     @Field("tipo")
     private String tipo;
 

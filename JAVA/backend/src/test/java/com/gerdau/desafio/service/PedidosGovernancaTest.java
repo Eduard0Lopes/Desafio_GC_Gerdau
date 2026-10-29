@@ -88,7 +88,6 @@ class PedidosGovernancaTest {
 
     @Test
     void composicaoComPedidoPendenteTambemCriaUmNovoVinculo() {
-        // vínculos repetidos são permitidos: um pedido pendente não bloqueia um novo envio
         when(previewService.montarPreview(any())).thenReturn(previewCom(true, CodigoCompleto.STATUS_PENDENTE));
         when(previewService.resolver(any(), anyBoolean())).thenReturn(new PreviewService.ComponentesResolvidos(
                 new GrupoServico(), false, new CodigoFornecedor(), false,
@@ -102,7 +101,6 @@ class PedidosGovernancaTest {
 
     @Test
     void composicaoAtivaTambemCriaUmNovoVinculo() {
-        // a composição pode ser vinculada quantas vezes forem necessárias
         when(previewService.montarPreview(any())).thenReturn(previewCom(true, CodigoCompleto.STATUS_ATIVO));
         when(previewService.resolver(any(), anyBoolean())).thenReturn(new PreviewService.ComponentesResolvidos(
                 new GrupoServico(), false, new CodigoFornecedor(), false,
@@ -133,7 +131,6 @@ class PedidosGovernancaTest {
         when(previewService.resolver(any(), anyBoolean())).thenReturn(new PreviewService.ComponentesResolvidos(
                 grupo, false, fornecedor, false, servico, false, unidade, false));
         when(previewService.montarSnapshot(any())).thenReturn("snap");
-        // o primeiro _id da composição já está ocupado
         when(codigoCompletoRepository.findById("GOVERNANCA_1440531_CS-000010_UN"))
                 .thenReturn(Optional.of(pendente()));
 

@@ -18,23 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Vinculação em massa (feedback Gerdau): o usuário escolhe Grupo de Serviço,
- * Código de Fornecedor e Unidade de Medida uma vez e marca vários Códigos de
- * Serviço — o servidor vincula todos de uma vez, linha a linha:
- *
- *   - código existente (ou duplicidade provável) → REUTILIZA o existente;
- *   - código novo sem parecidos               → CRIA e vincula ativo;
- *   - código novo com similaridade alertada   → cria o pedido e envia para a
- *     GOVERNANÇA (que vê os matches e decide);
- *   - linha vazia ou fora do limite SAP       → não entra, com o motivo.
- *
- * Repetir um código nunca é barrado: textos repetidos na lista são avaliados
- * uma vez só e cada ocorrência vira um vínculo próprio (a composição pode ser
- * vinculada quantas vezes forem necessárias). Uma linha que falha não derruba
- * as demais. O vocabulário é o mesmo do vínculo único: a cada linha vale a
- * régua de decisão PERMITIR | ALERTAR | REVISAR.
- */
 @Service
 public class VinculacaoLoteService {
 
@@ -43,13 +26,11 @@ public class VinculacaoLoteService {
     static final String JUSTIFICATIVA_LOTE =
             "Vinculação em massa — item com similaridade alertada; encaminhado para validação da Governança.";
 
-    // destino de uma linha (os mesmos valores da análise em lote)
     static final String DISPONIVEL = "DISPONIVEL";
     static final String CRIAR = "CRIAR";
     static final String BLOQUEADA = "BLOQUEADA";
     static final String FALHA = "FALHA";
 
-    // régua de decisão do vínculo único
     static final String ALERTAR = "ALERTAR";
 
     private final CodigoCompletoService codigoCompletoService;
@@ -77,12 +58,6 @@ public class VinculacaoLoteService {
         return resposta;
     }
 
-    /**
-     * Os códigos novos passam pelas MESMAS regras da tela de informação
-     * (similaridade/lote). Textos repetidos são avaliados uma vez só e cada
-     * ocorrência recebe a mesma análise — repetir não é barrado, cada linha
-     * vira um vínculo próprio.
-     */
     private Map<Integer, ItemLoteResponse> avaliarNovos(List<ItemVinculacaoLote> itens) {
         List<String> textos = new ArrayList<>();
         Map<String, Integer> posicaoDoTexto = new HashMap<>();
@@ -90,8 +65,8 @@ public class VinculacaoLoteService {
         for (int i = 0; i < itens.size(); i++) {
             ItemVinculacaoLote item = itens.get(i);
             String texto = item.texto() == null ? "" : item.texto().trim();
-            if (!vazio(item.csId()) || texto.isEmpty()) {
-                continue; // código já escolhido ou linha vazia não passam pela análise
+            if (!TextoUtil.vazio(item.csId()) || texto.isEmpty()) {
+                continue;
             }
             String chave = TextoUtil.normalizar(texto);
             Integer posicao = posicaoDoTexto.get(chave);
@@ -119,22 +94,21 @@ public class VinculacaoLoteService {
         String texto = item.texto() == null ? "" : item.texto().trim();
         String csId = item.csId() == null ? "" : item.csId().trim();
 
-        if (vazio(csId) && texto.isEmpty()) {
+        if (TextoUtil.vazio(csId) && texto.isEmpty()) {
             return bloqueada(linha, "", "Linha vazia — escolha um Código de Serviço.");
         }
-        if (vazio(csId) && analise == null) {
+        if (TextoUtil.vazio(csId) && analise == null) {
             return bloqueada(linha, texto, "Item não avaliado — refaça a verificação.");
         }
-        if (vazio(csId) && BLOQUEADA.equals(analise.classificacao())) {
+        if (TextoUtil.vazio(csId) && BLOQUEADA.equals(analise.classificacao())) {
             return bloqueada(linha, texto, analise.motivo());
         }
 
-        // destino da linha, a decisão da régua e a ação enviada — regras do vínculo único
         String classificacao;
         String decisao;
         String motivo;
         String acao = PreviewService.ACAO_CRIAR;
-        if (!vazio(csId)) {
+        if (!TextoUtil.vazio(csId)) {
             classificacao = DISPONIVEL;
             decisao = null;
             motivo = "Código existente escolhido para reutilizar.";
@@ -148,7 +122,6 @@ public class VinculacaoLoteService {
             decisao = analise.decisao();
             motivo = analise.motivo();
             if (ALERTAR.equals(decisao)) {
-                // há parecidos: a decisão é humana — a Governança vê os matches e resolve
                 acao = PreviewService.ACAO_ENVIAR_VALIDACAO;
                 motivo = motivo + " Encaminhado para validação da Governança.";
             }
@@ -165,13 +138,13 @@ public class VinculacaoLoteService {
         } catch (Exception e) {
             String mensagem = e.getMessage() == null ? "Não foi possível vincular." : e.getMessage();
             return new ItemVinculacaoResponse(linha, texto.isEmpty() ? csId : texto,
-                    FALHA, null, mensagem, vazio(csId) ? null : csId, null, false);
+                    FALHA, null, mensagem, TextoUtil.vazio(csId) ? null : csId, null, false);
         }
     }
 
     private static CriarCodigoCompletoRequest payload(VinculacaoLoteRequest request, String csId,
                                                       String texto, String acao) {
-        boolean novo = vazio(csId);
+        boolean novo = TextoUtil.vazio(csId);
         boolean validacao = PreviewService.ACAO_ENVIAR_VALIDACAO.equals(acao);
         return new CriarCodigoCompletoRequest(
                 request.gsId(), null, request.cfId(), null, null,
@@ -192,14 +165,13 @@ public class VinculacaoLoteService {
         int aguardandoValidacao = 0;
         for (ItemVinculacaoResponse item : itens) {
             if (item.requisicaoRepetida() || item.idCompleto() == null) {
-                continue; // nada novo foi criado nesta linha
+                continue;
             }
             if (DISPONIVEL.equals(item.classificacao())) {
                 reutilizados++;
             } else {
                 criados++;
             }
-            // ALERTAR = código novo encaminhado à Governança; o resto sai vinculado e ativo
             if (CRIAR.equals(item.classificacao()) && ALERTAR.equals(item.decisao())) {
                 aguardandoValidacao++;
             } else {
@@ -211,10 +183,6 @@ public class VinculacaoLoteService {
     }
 
     private static String chave(String base, int linha) {
-        return vazio(base) ? null : base + "-" + linha;
-    }
-
-    private static boolean vazio(String valor) {
-        return valor == null || valor.isBlank();
+        return TextoUtil.vazio(base) ? null : base + "-" + linha;
     }
 }

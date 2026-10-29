@@ -2,6 +2,7 @@ package com.gerdau.desafio.seed;
 
 import com.gerdau.desafio.model.*;
 import com.gerdau.desafio.repository.*;
+import com.gerdau.desafio.util.ComposicaoUtil;
 import com.gerdau.desafio.util.TextoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,7 @@ public class DataSeeder implements ApplicationRunner {
             log.info("[SEED] Carga desabilitada (app.seed.enabled=false).");
             return;
         }
-        
+
         long total = matrizDeParaRepository.count();
         boolean formatoAtual = total > 0
                 && matrizDeParaRepository.findAll(org.springframework.data.domain.PageRequest.of(0, 5))
@@ -219,7 +220,7 @@ public class DataSeeder implements ApplicationRunner {
             String cfId = l.getCodigoFornecedor() == null ? "0" : String.valueOf(l.getCodigoFornecedor());
             String csId = doc.getNewId();
             String umId = doc.getUnidadeMedida() == null ? "" : doc.getUnidadeMedida().toUpperCase();
-            String idCompleto = gsId + "_" + cfId + "_" + csId + "_" + umId;
+            String idCompleto = ComposicaoUtil.montarIdCompleto(gsId, cfId, csId, umId);
             if (!vistos.add(idCompleto)) {
                 continue;
             }
@@ -230,8 +231,8 @@ public class DataSeeder implements ApplicationRunner {
             cc.setCfId(cfId);
             cc.setCsId(csId);
             cc.setUmId(umId);
-            cc.setDescricaoSnapshot(doc.getGrupoServico() + " | " + "Fornecedor " + cfId
-                    + " | " + doc.getDescricaoCanonica() + " | " + umId);
+            cc.setDescricaoSnapshot(ComposicaoUtil.montarSnapshot(doc.getGrupoServico(),
+                    "Fornecedor " + cfId, doc.getDescricaoCanonica(), umId));
             cc.setOrigem("MIGRACAO");
             cc.setLegacyIds(List.of(l.getLegacyId()));
             cc.setStatus(CodigoCompleto.STATUS_ATIVO);

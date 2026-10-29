@@ -7,8 +7,8 @@ import com.gerdau.desafio.exception.ConflictException;
 import com.gerdau.desafio.exception.ResourceNotFoundException;
 import com.gerdau.desafio.model.*;
 import com.gerdau.desafio.repository.*;
-import com.gerdau.desafio.search.SearchClient;
 import com.gerdau.desafio.seed.DataSeeder;
+import com.gerdau.desafio.util.ComposicaoUtil;
 import com.gerdau.desafio.util.TextoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class CatalogoService {
     public List<GrupoServicoResponse> grupos(String query, int limite, boolean incluirTodos) {
         List<GrupoServico> itens = (query == null || query.isBlank())
                 ? grupoServicoRepository.findAll()
-                : grupoServicoRepository.buscarPorTexto(regex(query));
+                : grupoServicoRepository.buscarPorTexto(TextoUtil.padraoBusca(query));
         return apenasAtivos(itens, incluirTodos, GrupoServico::getStatus).stream().limit(limite).map(g ->
                 paraGrupo(g)).toList();
     }
@@ -60,7 +60,7 @@ public class CatalogoService {
     public List<CodigoFornecedorResponse> fornecedores(String query, int limite, boolean incluirTodos) {
         List<CodigoFornecedor> itens = (query == null || query.isBlank())
                 ? codigoFornecedorRepository.findAll()
-                : codigoFornecedorRepository.buscarPorTexto(regex(query));
+                : codigoFornecedorRepository.buscarPorTexto(TextoUtil.padraoBusca(query));
         return apenasAtivos(itens, incluirTodos, CodigoFornecedor::getStatus).stream().limit(limite).map(f ->
                 paraFornecedor(f)).toList();
 
@@ -69,14 +69,14 @@ public class CatalogoService {
     public List<CodigoServicoResponse> servicos(String query, int limite, boolean incluirTodos) {
         List<CodigoServico> itens = (query == null || query.isBlank())
                 ? codigoServicoRepository.findAll()
-                : codigoServicoRepository.buscarPorTexto(regex(query));
+                : codigoServicoRepository.buscarPorTexto(TextoUtil.padraoBusca(query));
         return apenasAtivos(itens, incluirTodos, CodigoServico::getStatus).stream().limit(limite).map(this::servicoResponse).toList();
     }
 
     public List<UnidadeMedidaResponse> unidades(String query, int limite, boolean incluirTodos) {
         List<UnidadeMedida> itens = (query == null || query.isBlank())
                 ? unidadeMedidaRepository.findAll()
-                : unidadeMedidaRepository.buscarPorTexto(regex(query));
+                : unidadeMedidaRepository.buscarPorTexto(TextoUtil.padraoBusca(query));
         return apenasAtivos(itens, incluirTodos, UnidadeMedida::getStatus).stream().limit(limite).map(u ->
                 paraUnidade(u)).toList();
 
@@ -120,7 +120,7 @@ public class CatalogoService {
             f.setId(codigoSap.trim());
             f.setCodigoFornecedorSAP(Long.parseLong(codigoSap.trim()));
         } else {
-            
+
             long candidato = System.currentTimeMillis() % 10_000_000;
             while (codigoFornecedorRepository.existsById(String.valueOf(candidato))) {
                 candidato = (candidato + 1) % 10_000_000;
@@ -207,16 +207,10 @@ public class CatalogoService {
         }
     }
 
-    /**
-     * Regra de ouro: não existem dois Códigos de Serviço com o mesmo nome.
-     * Qualquer tentativa de criar uma descrição já cadastrada (ativa ou não) é bloqueada —
-     * o correto é reutilizar (ou reativar) o item existente.
-     */
     public void exigirServicoLivre(String descricao) {
         exigirServicoLivre(descricao, null);
     }
 
-    /** Mesma regra, ignorando um id (renomear o próprio item não pode colidir consigo mesmo). */
     public void exigirServicoLivre(String descricao, String ignorado) {
         if (descricao == null || descricao.isBlank()) {
             throw new BusinessException("A descrição do Código de Serviço é obrigatória.");
@@ -233,10 +227,6 @@ public class CatalogoService {
         }
     }
 
-    /**
-     * Marca um Código de Serviço aprovado apesar da similaridade como "caso isolado":
-     * é uma exceção consciente (com motivo registrado), não um erro de cadastro.
-     */
     public void marcarCasoIsolado(String csId, String motivo) {
         if (csId == null) {
             return;
@@ -339,10 +329,6 @@ public class CatalogoService {
         return itens.stream().filter(i -> StatusComponente.ativo(status.apply(i))).toList();
     }
 
-    /**
-     * Tira (ou devolve) um Código de Serviço da lista ativa — soft delete:
-     * nada é apagado; vínculos, histórico e auditoria continuam.
-     */
     public void definirStatusServico(String csId, String novoStatus) {
         if (csId == null) {
             return;
@@ -361,11 +347,6 @@ public class CatalogoService {
         });
     }
 
-    /**
-     * Altera a descrição de um Código de Serviço que ainda está em validação
-     * (pertencente a um pedido). Códigos já em circulação não podem ser renomeados
-     * por aqui — podem ser compartilhados por outros vínculos.
-     */
     public void atualizarDescricaoServico(String csId, String descricao) {
         CodigoServico cs = codigoServicoRepository.findById(csId)
                 .orElseThrow(() -> new BusinessException("Código de Serviço do pedido não encontrado."));
@@ -390,62 +371,25 @@ public class CatalogoService {
         log.info("[CATALOGO] Descrição do serviço {} atualizada: {}", cs.getId(), cs.getDescricao());
     }
 
-    /**
-     * Ao cancelar um pedido, os componentes que nasceram com ele (ainda em validação)
-     * e não são usados por nenhum outro pedido vivo não podem ficar órfãos: saem de cena.
-     * Componentes compartilhados com outros pedidos continuam — serão decididos por eles.
-     */
-    public void desativarPendentesNaoUsados(CodigoCompleto codigo,
-                                            boolean gsEmUso, boolean cfEmUso, boolean csEmUso, boolean umEmUso) {
+    public void desativarPendentesNaoUsados(CodigoCompleto codigo) {
+        boolean gsEmUso = codigoCompletoRepository.contarOutrosGs(codigo.getGsId(), codigo.getId()) > 0;
+        boolean cfEmUso = codigoCompletoRepository.contarOutrosCf(codigo.getCfId(), codigo.getId()) > 0;
+        boolean csEmUso = codigoCompletoRepository.contarOutrosCs(codigo.getCsId(), codigo.getId()) > 0;
+        boolean umEmUso = codigoCompletoRepository.contarOutrosUm(codigo.getUmId(), codigo.getId()) > 0;
         if (!gsEmUso) {
-            grupoServicoRepository.findById(codigo.getGsId()).ifPresent(g -> {
-                if (pendente(g.getStatus())) {
-                    g.setStatus(StatusComponente.DESATIVADO);
-                    g.setUpdatedAt(java.time.Instant.now());
-                    grupoServicoRepository.save(g);
-                }
-            });
+            definirStatusSePendente("GS", codigo.getGsId(), StatusComponente.DESATIVADO);
         }
         if (!cfEmUso) {
-            codigoFornecedorRepository.findById(codigo.getCfId()).ifPresent(f -> {
-                if (pendente(f.getStatus())) {
-                    f.setStatus(StatusComponente.DESATIVADO);
-                    f.setUpdatedAt(java.time.Instant.now());
-                    codigoFornecedorRepository.save(f);
-                }
-            });
+            definirStatusSePendente("CF", codigo.getCfId(), StatusComponente.DESATIVADO);
         }
         if (!csEmUso) {
-            codigoServicoRepository.findById(codigo.getCsId()).ifPresent(cs -> {
-                if (pendente(cs.getStatus())) {
-                    cs.setStatus(StatusComponente.DESATIVADO);
-                    cs.setUpdatedAt(java.time.Instant.now());
-                    codigoServicoRepository.save(cs);
-                    similaridadeService.invalidarCache();
-                }
-            });
+            definirStatusSePendente("CS", codigo.getCsId(), StatusComponente.DESATIVADO);
         }
         if (!umEmUso) {
-            unidadeMedidaRepository.findById(codigo.getUmId()).ifPresent(u -> {
-                if (pendente(u.getStatus())) {
-                    u.setStatus(StatusComponente.DESATIVADO);
-                    u.setUpdatedAt(java.time.Instant.now());
-                    unidadeMedidaRepository.save(u);
-                }
-            });
+            definirStatusSePendente("UM", codigo.getUmId(), StatusComponente.DESATIVADO);
         }
     }
 
-    /**
-     * Marca itens com o badge de caso especial (!) e o motivo exibido no hover.
-     * Usado pela varredura de duplicidades e por exceções aprovadas.
-     *
-     * Ciclo de vida do caso especial (regra de negócio apresentada):
-     *   1. MARCAR  — humano marca pelo catálogo (motivo obrigatório) ou a governança marca
-     *                ao aprovar algo com similaridade / ao unificar duplicidades;
-     *   2. REVISAR — o item aparece no filtro "Casos especiais" e o hover explica o motivo;
-     *   3. RESOLVER (limparCasosIsolados) ou EXCLUIR (com transferência de vínculos).
-     */
     public java.util.Map<String, Object> marcarCasosIsolados(List<String> ids, String motivo) {
         return marcarCasosIsolados(ids, motivo, null);
     }
@@ -465,7 +409,6 @@ public class CatalogoService {
         return java.util.Map.of("marcados", marcados);
     }
 
-    /** Remove a marcação (!) dos itens informados. */
     public java.util.Map<String, Object> limparCasosIsolados(List<String> ids) {
         int limpos = 0;
         for (String id : ids == null ? List.<String>of() : ids) {
@@ -482,9 +425,6 @@ public class CatalogoService {
         return java.util.Map.of("limpos", limpos);
     }
 
-    /**
-     * Desativa (soft delete) vários serviços de uma vez — usado pela varredura de duplicidades.
-     */
     public int desativarServicos(List<String> ids) {
         int desativados = 0;
         for (String id : ids == null ? List.<String>of() : ids) {
@@ -498,41 +438,50 @@ public class CatalogoService {
 
     public void definirStatusComponentes(CodigoCompleto codigo, String novoStatus) {
         String alvo = StatusComponente.normalizar(novoStatus);
-        grupoServicoRepository.findById(codigo.getGsId()).ifPresent(g -> {
-            if (pendente(g.getStatus())) {
-                g.setStatus(alvo);
-                g.setUpdatedAt(java.time.Instant.now());
-                grupoServicoRepository.save(g);
-            }
-        });
-        codigoFornecedorRepository.findById(codigo.getCfId()).ifPresent(f -> {
-            if (pendente(f.getStatus())) {
-                f.setStatus(alvo);
-                f.setUpdatedAt(java.time.Instant.now());
-                codigoFornecedorRepository.save(f);
-            }
-        });
-        codigoServicoRepository.findById(codigo.getCsId()).ifPresent(cs -> {
-            if (pendente(cs.getStatus())) {
-                cs.setStatus(alvo);
-                cs.setUpdatedAt(java.time.Instant.now());
-                codigoServicoRepository.save(cs);
-            }
-        });
-        unidadeMedidaRepository.findById(codigo.getUmId()).ifPresent(u -> {
-            if (pendente(u.getStatus())) {
-                u.setStatus(alvo);
-                u.setUpdatedAt(java.time.Instant.now());
-                unidadeMedidaRepository.save(u);
-            }
-        });
+        definirStatusSePendente("GS", codigo.getGsId(), alvo);
+        definirStatusSePendente("CF", codigo.getCfId(), alvo);
+        definirStatusSePendente("CS", codigo.getCsId(), alvo);
+        definirStatusSePendente("UM", codigo.getUmId(), alvo);
+    }
+
+    private void definirStatusSePendente(String tipo, String id, String novoStatus) {
+        switch (tipo) {
+            case "GS" -> grupoServicoRepository.findById(id).ifPresent(g -> {
+                if (pendente(g.getStatus())) {
+                    g.setStatus(novoStatus);
+                    g.setUpdatedAt(java.time.Instant.now());
+                    grupoServicoRepository.save(g);
+                }
+            });
+            case "CF" -> codigoFornecedorRepository.findById(id).ifPresent(f -> {
+                if (pendente(f.getStatus())) {
+                    f.setStatus(novoStatus);
+                    f.setUpdatedAt(java.time.Instant.now());
+                    codigoFornecedorRepository.save(f);
+                }
+            });
+            case "CS" -> codigoServicoRepository.findById(id).ifPresent(cs -> {
+                if (pendente(cs.getStatus())) {
+                    cs.setStatus(novoStatus);
+                    cs.setUpdatedAt(java.time.Instant.now());
+                    codigoServicoRepository.save(cs);
+                    similaridadeService.invalidarCache();
+                }
+            });
+            case "UM" -> unidadeMedidaRepository.findById(id).ifPresent(u -> {
+                if (pendente(u.getStatus())) {
+                    u.setStatus(novoStatus);
+                    u.setUpdatedAt(java.time.Instant.now());
+                    unidadeMedidaRepository.save(u);
+                }
+            });
+        }
     }
 
     private static boolean pendente(String status) {
         return StatusComponente.PENDENTE_VALIDACAO.equals(StatusComponente.normalizar(status));
     }
 
-    /** Quantidade de composições (códigos completos) que referenciam o componente. */
     public long contarVinculos(String tipo, String id) {
         return switch (tipo == null ? "" : tipo.trim().toUpperCase()) {
             case "GS" -> codigoCompletoRepository.countByGsId(id);
@@ -543,18 +492,6 @@ public class CatalogoService {
         };
     }
 
-    /**
-     * Transfere os vínculos de um componente para outro (da mesma natureza) e, quando
-     * possível, exclui o de origem — é o caminho para deduplicar itens que têm vínculos.
-     *
-     * Semântica de mesclagem (por que "composição já existente" não é erro):
-     *   - composição que já existe no destino ⇒ o vínculo de origem é REDUNDANTE;
-     *     ele é removido (mesclagem) e o destino continua valendo;
-     *   - composição que não existe ⇒ o documento é recriado com o novo id de composição
-     *     (o _id do Mongo é imutável), preservando status, justificativas e histórico;
-     *   - no fim, sem vínculos restantes, o item de origem pode ser excluído de verdade.
-     * Tudo é auditado (TRANSFERENCIA_VINCULOS / MESCLAGEM).
-     */
     public java.util.Map<String, Object> transferirVinculos(String tipo, String de, String para, boolean excluirOrigem) {
         String t = tipo == null ? "" : tipo.trim().toUpperCase();
         if (de == null || de.isBlank() || para == null || para.isBlank() || de.equals(para)) {
@@ -582,16 +519,13 @@ public class CatalogoService {
         int mesclados = 0;
         List<String> problemas = new ArrayList<>();
         for (CodigoCompleto c : vinculos) {
-            String novoId = ("GS".equals(t) ? para : c.getGsId()) + "_" + ("CF".equals(t) ? para : c.getCfId())
-                    + "_" + ("CS".equals(t) ? para : c.getCsId()) + "_" + ("UM".equals(t) ? para : c.getUmId());
-            // a composição de destino pode ter vários registros (inclusive com sufixo #N):
-            // o vínculo só é redundante se já existir OUTRO registro com essa composição
+            String novoId = ComposicaoUtil.montarIdCompleto(
+                    "GS".equals(t) ? para : c.getGsId(), "CF".equals(t) ? para : c.getCfId(),
+                    "CS".equals(t) ? para : c.getCsId(), "UM".equals(t) ? para : c.getUmId());
             CodigoCompleto existente = codigoCompletoRepository.findByIdCompletoOrderByCreatedAtDesc(novoId).stream()
                     .filter(outro -> !outro.getId().equals(c.getId()))
                     .findFirst().orElse(null);
             if (existente != null) {
-                // a composição já existe no destino: o vínculo de origem é REDUNDANTE —
-                // em vez de travar, ele é removido (mesclagem) e o destino continua valendo
                 codigoCompletoRepository.delete(c);
                 mesclados++;
                 auditoriaService.registrar(EventoAuditoria.ACAO_TRANSFERENCIA_VINCULOS, "CODIGO_COMPLETO",
@@ -645,9 +579,6 @@ public class CatalogoService {
         n.setAprovadoPor(c.getAprovadoPor());
         n.setAprovadoEm(c.getAprovadoEm());
         n.setObservacaoAprovacao(c.getObservacaoAprovacao());
-        // a Idempotency-Key pertence à requisição que criou o vínculo original —
-        // copiá-la deixaria a chave "presa" a outra composição e faria um novo envio
-        // da composição antiga ser respondido como se tivesse sido criado (sem criar nada)
         n.setIdempotencyKey(null);
         n.setIdempotencyHash(null);
         return n;
@@ -815,7 +746,7 @@ public class CatalogoService {
     }
 
     private String importarGrupo(ImportacaoCatalogoRequest.ItemImportacao item) {
-        String nome = texto(item.nome());
+        String nome = TextoUtil.nvl(item.nome());
         if (nome.isEmpty()) {
             throw new BusinessException("Informe a coluna 'nome'.");
         }
@@ -827,8 +758,8 @@ public class CatalogoService {
     }
 
     private String importarFornecedor(ImportacaoCatalogoRequest.ItemImportacao item) {
-        String nome = texto(item.nome());
-        String sap = texto(item.codigoSap()).isEmpty() ? texto(item.id()) : texto(item.codigoSap());
+        String nome = TextoUtil.nvl(item.nome());
+        String sap = TextoUtil.nvl(item.codigoSap()).isEmpty() ? TextoUtil.nvl(item.id()) : TextoUtil.nvl(item.codigoSap());
         if (nome.isEmpty()) {
             throw new BusinessException("Informe a coluna 'nome'.");
         }
@@ -843,7 +774,7 @@ public class CatalogoService {
     }
 
     private String importarServico(ImportacaoCatalogoRequest.ItemImportacao item) {
-        String descricao = texto(item.descricao());
+        String descricao = TextoUtil.nvl(item.descricao());
         if (descricao.isEmpty()) {
             throw new BusinessException("Informe a coluna 'descricao'.");
         }
@@ -858,11 +789,11 @@ public class CatalogoService {
     }
 
     private String importarUnidade(ImportacaoCatalogoRequest.ItemImportacao item) {
-        String sigla = texto(item.sigla()).isEmpty() ? texto(item.id()) : texto(item.sigla());
+        String sigla = TextoUtil.nvl(item.sigla()).isEmpty() ? TextoUtil.nvl(item.id()) : TextoUtil.nvl(item.sigla());
         if (sigla.isEmpty()) {
             throw new BusinessException("Informe a coluna 'sigla'.");
         }
-        String nome = texto(item.nome()).isEmpty() ? sigla : texto(item.nome());
+        String nome = TextoUtil.nvl(item.nome()).isEmpty() ? sigla : TextoUtil.nvl(item.nome());
         if (unidadeMedidaRepository.existsById(sigla.trim().toUpperCase())) {
             throw new ConflictException("Ja existe Unidade de Medida com a sigla "
                     + sigla.trim().toUpperCase() + " — a item atual foi mantida.");
@@ -874,15 +805,11 @@ public class CatalogoService {
         if (item == null) {
             return "";
         }
-        String rotulo = texto(item.nome());
-        if (rotulo.isEmpty()) rotulo = texto(item.descricao());
-        if (rotulo.isEmpty()) rotulo = texto(item.sigla());
-        if (rotulo.isEmpty()) rotulo = texto(item.codigoSap());
+        String rotulo = TextoUtil.nvl(item.nome());
+        if (rotulo.isEmpty()) rotulo = TextoUtil.nvl(item.descricao());
+        if (rotulo.isEmpty()) rotulo = TextoUtil.nvl(item.sigla());
+        if (rotulo.isEmpty()) rotulo = TextoUtil.nvl(item.codigoSap());
         return rotulo;
-    }
-
-    private static String texto(String valor) {
-        return valor == null ? "" : valor.trim();
     }
 
     private static GrupoServicoResponse paraGrupo(GrupoServico g) {
@@ -899,9 +826,5 @@ public class CatalogoService {
     private static UnidadeMedidaResponse paraUnidade(UnidadeMedida u) {
         return new UnidadeMedidaResponse(u.getId(), u.getSigla(), u.getNome(), u.getNomeNormalizado(),
                 u.getOrigem(), StatusComponente.normalizar(u.getStatus()), u.getCreatedAt(), u.getCriadoPor());
-    }
-
-    private static String regex(String termo) {
-        return com.gerdau.desafio.util.TextoUtil.padraoBusca(termo);
     }
 }

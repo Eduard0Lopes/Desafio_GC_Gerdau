@@ -3,9 +3,9 @@ import { mount } from '@vue/test-utils'
 import { createRouter, createWebHistory } from 'vue-router'
 import App from '../src/App.vue'
 
-function montarComPapel(papel: string) {
-  localStorage.setItem('papel', papel)
-  localStorage.setItem('usuario', '403921')
+function montarComPapel(role: string) {
+  localStorage.setItem('role', role)
+  localStorage.setItem('user', '403921')
 
   const router = createRouter({
     history: createWebHistory(),

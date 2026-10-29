@@ -25,7 +25,7 @@ class SequenceServiceTest {
         atual.setId("codigos_servico");
         atual.setValor(valor);
         when(mongo.findById(eq("codigos_servico"), eq(Contador.class))).thenReturn(atual);
-        
+
         when(mongo.findAndModify(any(), any(), any(), eq(Contador.class))).thenAnswer(inv -> {
             atual.setValor(atual.getValor() + 1);
             return atual;
@@ -37,8 +37,8 @@ class SequenceServiceTest {
     void pulaIdsJaUtilizadosPeloRegistroMigrado() {
         MongoTemplate mongo = mongoComContador(5);
         CodigoServicoRepository repo = Mockito.mock(CodigoServicoRepository.class);
-        when(repo.existsById("CS-000006")).thenReturn(true);   
-        when(repo.existsById("CS-000007")).thenReturn(false);  
+        when(repo.existsById("CS-000006")).thenReturn(true);
+        when(repo.existsById("CS-000007")).thenReturn(false);
 
         SequenceService sequence = new SequenceService(mongo, repo);
         assertEquals("CS-000007", sequence.proximoCodigoServico());
@@ -46,7 +46,7 @@ class SequenceServiceTest {
 
     @Test
     void contadorAlinhadoAosMigradosEhReajustadoNaoEsgota() {
-        
+
         MongoTemplate mongo = mongoComContador(999999);
         CodigoServicoRepository repo = Mockito.mock(CodigoServicoRepository.class);
         when(repo.existsById(anyString())).thenReturn(false);
@@ -85,7 +85,7 @@ class SequenceServiceTest {
     void faixaRealmenteEsgotadaGeraErroDeDominio() {
         MongoTemplate mongo = mongoComContador(999999);
         CodigoServicoRepository repo = Mockito.mock(CodigoServicoRepository.class);
-        
+
         when(repo.existsById(anyString())).thenReturn(true);
 
         SequenceService sequence = new SequenceService(mongo, repo);

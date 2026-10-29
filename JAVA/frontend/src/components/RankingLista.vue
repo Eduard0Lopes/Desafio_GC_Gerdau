@@ -1,22 +1,3 @@
-<template>
-  <div class="ranking">
-    <div v-for="(item, i) in itens" :key="item.id" class="ranking-item">
-      <div class="posicao" :class="'posicao-' + (i + 1)">{{ i + 1 }}º</div>
-      <div class="info">
-        <div class="linha">
-          <span class="id">{{ item.id }}</span>
-          <strong class="nome">{{ item.nome }}</strong>
-          <span v-if="item.grupo" class="grupo">{{ item.grupo }}</span>
-        </div>
-        <div class="trilha">
-          <div class="barra" :style="{ width: largura(item.valor), background: corBarra(i) }"></div>
-          <span class="valor">{{ item.valor.toLocaleString('pt-BR') }} {{ rotuloValor }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 
@@ -24,21 +5,40 @@ interface Item {
   id: string
   nome: string
   grupo?: string
-  valor: number
+  value: number
 }
 
-const props = defineProps<{ itens: Item[]; rotuloValor?: string }>()
+const props = defineProps<{ itens: Item[]; valueLabel?: string }>()
 
-const maximo = computed(() => Math.max(...props.itens.map((i) => i.valor), 1))
+const maxValue = computed(() => Math.max(...props.itens.map((entry) => entry.value), 1))
 
-function largura(valor: number): string {
-  return `${Math.max(8, (valor / maximo.value) * 100)}%`
+function width(value: number): string {
+  return `${Math.max(8, (value / maxValue.value) * 100)}%`
 }
 
-function corBarra(indice: number): string {
-  return ['var(--barra-1)', 'var(--barra-2)', 'var(--barra-3)', 'var(--barra-4)'][indice % 4]
+function barColor(index: number): string {
+  return ['var(--barra-1)', 'var(--barra-2)', 'var(--barra-3)', 'var(--barra-4)'][index % 4]
 }
 </script>
+
+<template>
+  <div class="ranking">
+    <div v-for="(item, entry) in itens" :key="item.id" class="ranking-item">
+      <div class="posicao" :class="'posicao-' + (entry + 1)">{{ entry + 1 }}º</div>
+      <div class="info">
+        <div class="linha">
+          <span class="id">{{ item.id }}</span>
+          <strong class="nome">{{ item.nome }}</strong>
+          <span v-if="item.grupo" class="grupo">{{ item.grupo }}</span>
+        </div>
+        <div class="trilha">
+          <div class="barra" :style="{ width: width(item.value), background: barColor(entry) }"></div>
+          <span class="valor">{{ item.value.toLocaleString('pt-BR') }} {{ valueLabel }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .ranking {

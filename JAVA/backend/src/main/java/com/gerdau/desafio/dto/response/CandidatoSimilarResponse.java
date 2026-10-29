@@ -15,12 +15,10 @@ public record CandidatoSimilarResponse(
         String motivo,
         boolean casoIsolado,
         String motivoCasoIsolado,
-        /** componente ao qual o match pertence: CS, GS, CF ou UM */
         String tipo
 
 ) {
 
-    /** Compatibilidade: sem tipo informado, o candidato é de Código de Serviço (CS). */
     public CandidatoSimilarResponse(
             int posicao, String id, String codigoOriginal, String descricao,
             double score, double scoreTokens, double scoreCaracteres, List<String> tokensEmComum,

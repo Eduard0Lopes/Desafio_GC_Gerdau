@@ -1,23 +1,23 @@
-<template>
-  <div class="toasts" aria-live="polite">
-    <transition-group name="toast">
-      <div v-for="t in toast.estado.itens" :key="t.id" class="toast" :class="'toast-' + t.tipo"
-           :style="{ '--duracao': t.tipo === 'erro' ? '7s' : '4.2s' }">
-        <span class="icone">{{ icone(t.tipo) }}</span>
-        <span class="mensagem">{{ t.mensagem }}</span>
-        <button class="fechar" aria-label="Fechar" @click="toast.remover(t.id)">✕</button>
-      </div>
-    </transition-group>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { toast } from '../services/toast'
 
 function icone(tipo: string): string {
-  return tipo === 'sucesso' ? '✓' : tipo === 'erro' ? '⚠' : 'ℹ'
+  return tipo === 'success' ? '✓' : tipo === 'error' ? '⚠' : 'ℹ'
 }
 </script>
+
+<template>
+  <div class="toasts" aria-live="polite">
+    <transition-group name="toast">
+      <div v-for="entry in toast.state.itens" :key="entry.id" class="toast" :class="'toast-' + entry.tipo"
+           :style="{ '--duracao': entry.tipo === 'error' ? '7s' : '4.2s' }">
+        <span class="icone">{{ icone(entry.tipo) }}</span>
+        <span class="mensagem">{{ entry.message }}</span>
+        <button class="fechar" aria-label="Fechar" @click="toast.removeItem(entry.id)">✕</button>
+      </div>
+    </transition-group>
+  </div>
+</template>
 
 <style scoped>
 .toasts {
